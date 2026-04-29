@@ -1155,22 +1155,22 @@ function toggleChallengeMode(){
   btn.className=challengeMode?'challenge':'easy';
 })();
 
-// ── Quiz data (5歳児向け) ──
+// ── Quiz data (保育園向け) ──
 const QUIZZES=[
   {q:'りんごは　なにいろ？',choices:['あお','きいろ','あか'],ans:2},
-  {q:'1 + 1 は？',choices:['1','2','3'],ans:1},
+  {q:'にんじんは　なにいろ？',choices:['あお','しろ','オレンジ'],ans:2},
   {q:'いぬは　どんな　なきごえ？',choices:['にゃーにゃー','わんわん','もーもー'],ans:1},
   {q:'おひさまは　なにいろ？',choices:['あお','あか','きいろ'],ans:2},
   {q:'みかんは　なんのかたち？',choices:['しかく','まる','さんかく'],ans:1},
   {q:'バナナは　なにいろ？',choices:['あか','きいろ','みどり'],ans:1},
-  {q:'3 + 2 は？',choices:['4','5','6'],ans:1},
+  {q:'ぶたは　どんな　なきごえ？',choices:['もーもー','ブーブー','わんわん'],ans:1},
   {q:'ねこは　どんな　なきごえ？',choices:['わんわん','もーもー','にゃーにゃー'],ans:2},
   {q:'うみで　およぐのは？',choices:['ねこ','いぬ','さかな'],ans:2},
-  {q:'5 - 3 は？',choices:['1','2','3'],ans:1},
+  {q:'ゆきは　なにいろ？',choices:['あか','きいろ','しろ'],ans:2},
   {q:'そらは　なにいろ？',choices:['あか','あお','みどり'],ans:1},
   {q:'たまごを　うむのは？',choices:['いぬ','にわとり','ねこ'],ans:1},
   {q:'りんごは　なにのなかま？',choices:['やさい','さかな','くだもの'],ans:2},
-  {q:'2 × 3 は？',choices:['4','5','6'],ans:2},
+  {q:'ライオンは　どこに　すむ？',choices:['うみ','さばく','そら'],ans:1},
   {q:'かえるは　どこにすむ？',choices:['さばく','うみ','いけ'],ans:2},
 ];
 
@@ -1191,7 +1191,7 @@ function makeStudyQ(wp){
 
 const MG_TYPES=['quiz','study','rps'];
 let mgCurrentEnemy=null;
-let rpsWins=0, rpsRound=0;
+let rpsRound=0;
 
 function startMiniGame(wp){
   mgCurrentEnemy=wp;
@@ -1243,7 +1243,7 @@ function showStudy(wp){
 }
 
 function showRPS(){
-  rpsWins=0; rpsRound=0;
+  rpsRound=0;
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent='じゃんけん'; lbl.className='mg-type-label mg-type-rps';
   document.getElementById('mgTitle').textContent='じゃんけんで　かてたら　ゲット！';
@@ -1251,9 +1251,9 @@ function showRPS(){
 }
 
 function renderRPS(){
-  const stars='⭐'.repeat(rpsWins)+'☆'.repeat(2-rpsWins);
+  const msg=rpsRound===0?'さいしょは　グー！　じゃんけん…':'あいこ！　もう　いちど！';
   document.getElementById('mgBody').innerHTML=`
-    <div class="mg-score">のこり ${3-rpsRound} かい ／ ${stars}</div>
+    <div class="mg-question">${msg}</div>
     <div class="mg-rps-row">
       <button class="mg-rps-btn" onclick="playRPS('グー')">✊<span class="mg-rps-label">グー</span></button>
       <button class="mg-rps-btn" onclick="playRPS('チョキ')">✌️<span class="mg-rps-label">チョキ</span></button>
@@ -1262,22 +1262,26 @@ function renderRPS(){
     <div class="mg-rps-result" id="rpsResult"></div>`;
 }
 
-function playRPS(player){
+function playRPS(playerChoice){
   const hands=['グー','チョキ','パー'];
   const emoji={'グー':'✊','チョキ':'✌️','パー':'🖐️'};
   const cpu=hands[Math.floor(Math.random()*3)];
   rpsRound++;
-  let res,won=false;
-  if(player===cpu) res='引き分け！';
-  else if((player==='グー'&&cpu==='チョキ')||(player==='チョキ'&&cpu==='パー')||(player==='パー'&&cpu==='グー')){res='かった！✨';won=true;rpsWins++;}
-  else res='まけた…';
   document.querySelectorAll('.mg-rps-btn').forEach(b=>b.disabled=true);
-  document.getElementById('rpsResult').innerHTML=`${emoji[player]} vs ${emoji[cpu]}　→ <strong>${res}</strong>`;
-  setTimeout(()=>{
-    if(rpsWins>=2){ miniGameWin(); return; }
-    if(rpsRound>=3){ miniGameFail(); return; }
-    renderRPS();
-  },1200);
+  if(playerChoice===cpu){
+    document.getElementById('rpsResult').innerHTML=`${emoji[playerChoice]} vs ${emoji[cpu]}　→ <strong>あいこ！</strong>`;
+    setTimeout(()=>renderRPS(),1000);
+  } else if(
+    (playerChoice==='グー'&&cpu==='チョキ')||
+    (playerChoice==='チョキ'&&cpu==='パー')||
+    (playerChoice==='パー'&&cpu==='グー')
+  ){
+    document.getElementById('rpsResult').innerHTML=`${emoji[playerChoice]} vs ${emoji[cpu]}　→ <strong class="mg-result-ok">かった！✨</strong>`;
+    setTimeout(()=>miniGameWin(),1000);
+  } else {
+    document.getElementById('rpsResult').innerHTML=`${emoji[playerChoice]} vs ${emoji[cpu]}　→ <strong class="mg-result-ng">まけた…</strong>`;
+    setTimeout(()=>miniGameFail(),1400);
+  }
 }
 
 function miniGameWin(){
