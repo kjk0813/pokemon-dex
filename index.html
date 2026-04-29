@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>イーブイフレンズ図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#CC0000;--red2:#990000;--yellow:#FFCB05;
+  --bg:#F2F2F7;--white:#fff;--text:#1a1a2e;--muted:#888;
+  --r-lg:24px;--r-md:16px;
+  --sh:0 4px 24px rgba(0,0,0,.10);--sh2:0 14px 44px rgba(0,0,0,.22);
+}
+html{scroll-behavior:smooth}
+body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── TOP NAV ── */
+.top-nav{background:linear-gradient(135deg,var(--red),var(--red2));display:flex;align-items:center;gap:12px;padding:10px 20px;position:sticky;top:0;z-index:300;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.nav-logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:1.1rem;font-weight:900;text-shadow:1px 2px 4px rgba(0,0,0,.3)}
+.nav-logo svg{width:32px;height:32px;animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.nav-logo .acc{color:var(--yellow)}
+.nav-tabs{display:flex;gap:6px;margin-left:auto}
+.nav-tab{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:6px 16px;border-radius:20px;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit;transition:background .2s}
+.nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,.32)}
+.nav-caught{color:rgba(255,255,255,.85);font-size:.8rem;font-weight:800;white-space:nowrap}
+
+/* ── GAME SCREEN ── */
+#gameScreen{position:relative;width:100%;overflow:hidden}
+#gameCanvas{display:block;cursor:none}
+/* Controls hint */
+#gameHint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:.78rem;font-weight:700;padding:8px 18px;border-radius:20px;pointer-events:none;transition:opacity .5s;white-space:nowrap}
+/* Flash overlay */
+#flashEl{position:absolute;inset:0;background:#fff;pointer-events:none;opacity:0;z-index:50}
+
+/* ── BATTLE OVERLAY ── */
+#battleOverlay{position:absolute;inset:0;z-index:60;display:none;flex-direction:column;overflow:hidden}
+.bat-sky{flex:1;background:linear-gradient(180deg,#87CEEB 0%,#B0E0FF 100%);position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:20px 40px 0}
+.bat-ground{height:38%;background:linear-gradient(180deg,#7EC850 0%,#5A9E30 100%);position:relative}
+.bat-enemy-platform{position:absolute;top:-18px;right:60px;width:180px;height:36px;background:radial-gradient(ellipse,rgba(0,0,0,.22) 60%,transparent 100%);border-radius:50%}
+.bat-player-platform{position:absolute;top:-18px;left:60px;width:160px;height:36px;background:radial-gradient(ellipse,rgba(0,0,0,.18) 60%,transparent 100%);border-radius:50%}
+
+/* Enemy info box */
+.bat-enemy-info{position:absolute;top:24px;left:32px;background:#fff;border-radius:12px;padding:10px 16px;box-shadow:0 3px 12px rgba(0,0,0,.2);min-width:160px}
+.bat-ename{display:block;font-size:1rem;font-weight:900;color:var(--text)}
+.bat-elv{font-size:.8rem;font-weight:700;color:var(--muted)}
+
+/* Enemy sprite */
+.bat-enemy-sprite{position:absolute;bottom:0;right:50px;width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.2));transition:opacity .3s,transform .4s}
+.bat-enemy-sprite.vanish{opacity:0;transform:scale(0.1)}
+
+/* Player pokeball */
+#battleBall{position:absolute;bottom:60px;left:80px;width:52px;height:52px;transition:none;transform-origin:center center}
+#battleBall svg{width:100%;height:100%}
+#battleBall.idle-anim{animation:ballIdle 1.2s ease-in-out infinite}
+@keyframes ballIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+#battleBall.throwing{animation:ballThrow .65s cubic-bezier(.2,0,.8,1) forwards}
+@keyframes ballThrow{
+  0%{transform:translate(0,0) rotate(0deg)}
+  100%{transform:translate(var(--bx),var(--by)) rotate(540deg)}
+}
+#battleBall.shaking{animation:ballShake .4s ease-in-out 3 forwards}
+@keyframes ballShake{
+  0%,100%{transform:translate(var(--bx),var(--by)) rotate(0deg)}
+  25%{transform:translate(calc(var(--bx) - 10px),var(--by)) rotate(-18deg)}
+  75%{transform:translate(calc(var(--bx) + 10px),var(--by)) rotate(18deg)}
+}
+#battleBall.caught{transform:translate(var(--bx),var(--by)) rotate(0deg)}
+
+/* Bat textbox */
+.bat-textbox{background:var(--bg);border-top:3px solid #ccc;padding:18px 24px;min-height:90px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+#batText{font-size:1rem;font-weight:800;color:var(--text);line-height:1.6}
+.bat-hint{font-size:.82rem;font-weight:700;color:var(--muted);animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Catch success overlay */
+#catchSuccess{position:absolute;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:70}
+.catch-card{background:#fff;border-radius:24px;padding:32px 40px;text-align:center;box-shadow:0 16px 60px rgba(0,0,0,.4);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.catch-card img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.2))}
+.catch-got{font-size:1.5rem;font-weight:900;color:var(--red);margin-top:12px}
+.catch-name{font-size:2rem;font-weight:900;color:var(--text);margin:4px 0}
+.catch-sub{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* ── POKÉDEX SCREEN ── */
+#dexScreen{display:none}
+/* Hero */
+.hero{background:linear-gradient(180deg,#07071a,#120828 45%,#0a1435);padding:60px 24px 48px;text-align:center;position:relative;overflow:hidden}
+.stars-wrap{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite var(--del)}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.hero::before{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(138,43,226,.15),transparent 70%);top:-100px;left:10%;pointer-events:none}
+.h-content{position:relative;z-index:1}
+.h-badge{display:inline-block;background:var(--yellow);color:#1a1a1a;font-size:.68rem;font-weight:900;padding:4px 14px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.h-img-wrap{position:relative;display:inline-block;margin-bottom:4px}
+.h-glow{position:absolute;inset:-24px;background:radial-gradient(circle,rgba(255,210,80,.35),transparent 70%);border-radius:50%;animation:hpulse 3s ease-in-out infinite}
+@keyframes hpulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}}
+.h-main{width:180px;height:180px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 0 30px rgba(255,200,80,.5));animation:hfloat 4s ease-in-out infinite;transition:opacity .25s}
+@keyframes hfloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-18px) rotate(1.5deg)}}
+.h-title{font-size:2.8rem;font-weight:900;color:var(--yellow);text-shadow:0 0 50px rgba(255,200,0,.7),0 4px 10px rgba(0,0,0,.6);line-height:1.1;margin-bottom:8px}
+.h-sub{color:rgba(255,255,255,.65);font-size:.95rem;font-weight:600;margin-bottom:36px}
+.h-evos{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.h-evo{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.h-evo:hover{transform:translateY(-6px) scale(1.1)}
+.h-evo img{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+.h-evo span{color:rgba(255,255,255,.75);font-size:.6rem;font-weight:700}
+
+/* Dex main */
+.dex-main{max-width:1280px;margin:0 auto;padding:48px 24px 60px}
+.sec-header{text-align:center;margin-bottom:36px}
+.sec-lbl{display:inline-block;background:var(--red);color:#fff;font-size:.68rem;font-weight:900;padding:3px 14px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:1.9rem;font-weight:900;margin-bottom:6px}
+.sec-title .red{color:var(--red)}
+.sec-desc{color:var(--muted);font-size:.9rem;font-weight:600}
+
+/* Pokémon grid */
+.poke-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:20px}
+
+/* Card */
+.poke-card{border-radius:var(--r-lg);cursor:pointer;box-shadow:var(--sh);overflow:hidden;transition:transform .32s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;opacity:0;animation:fadeUp .5s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.poke-card:hover{transform:translateY(-9px) scale(1.02);box-shadow:var(--sh2)}
+.poke-card:hover .c-sprite{transform:scale(1.12) rotate(-5deg)}
+.c-top{padding:24px 20px 20px;position:relative;overflow:hidden}
+.c-pball{position:absolute;bottom:-28px;right:-28px;width:120px;height:120px;opacity:.07;transition:transform .4s,opacity .3s}
+.poke-card:hover .c-pball{transform:rotate(45deg) scale(1.1);opacity:.12}
+.c-num{position:absolute;top:12px;right:14px;font-size:.78rem;font-weight:900;font-family:monospace;color:rgba(255,255,255,.42)}
+.light .c-num{color:rgba(0,0,0,.28)}
+.caught-badge{position:absolute;top:10px;left:12px;font-size:.65rem;font-weight:900;background:rgba(255,255,255,.3);color:#fff;padding:2px 8px;border-radius:10px}
+.light .caught-badge{background:rgba(0,0,0,.15);color:rgba(0,0,0,.7)}
+.c-ring{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(0,0,0,.14)}
+.c-sprite{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2));transition:transform .32s cubic-bezier(.34,1.56,.64,1)}
+.c-name{text-align:center;color:#fff;font-size:1.28rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,.2);margin-bottom:3px}
+.light .c-name{color:#1a1a1a;text-shadow:none}
+.c-name-en{text-align:center;color:rgba(255,255,255,.62);font-size:.74rem;font-weight:700;letter-spacing:.04em;margin-bottom:10px}
+.light .c-name-en{color:rgba(0,0,0,.48)}
+.c-types{display:flex;justify-content:center;gap:6px}
+/* Mystery card */
+.mystery .c-top{background:#3a3a4a !important}
+.mystery .c-ring{background:rgba(255,255,255,.08)}
+.mystery .c-sprite-q{font-size:3rem;color:rgba(255,255,255,.2)}
+.mystery .c-name{color:rgba(255,255,255,.3)}
+/* Card bottom */
+.c-bot{background:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+.c-stats{display:flex;gap:16px}
+.sm{text-align:center}
+.sm-l{font-size:.58rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sm-v{font-size:.95rem;font-weight:900;color:var(--text)}
+.c-arr{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;transition:background .2s}
+.poke-card:hover .c-arr{background:var(--red);color:#fff}
+
+/* Type badges */
+.tbadge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.7rem;font-weight:800;color:#fff;letter-spacing:.04em}
+.t-normal{background:#A8A878}.t-fire{background:#F08030}.t-water{background:#6890F0}
+.t-electric{background:#c8a800}.t-grass{background:#78C850}.t-ice{background:#60b8c8}
+.t-psychic{background:#F85888}.t-dark{background:#705848}.t-fairy{background:#D070A0}
+.t-poison{background:#A040A0}.t-ghost{background:#705898}.t-steel{background:#B8B8D0;color:#333}
+.t-rock{background:#B8A038}.t-ground{background:#C8A830;color:#fff}.t-bug{background:#A8B820}
+.t-fighting{background:#C03028}.t-dragon{background:#7038F8}.t-flying{background:#A890F0;color:#333}
+/* BG gradients */
+.bg-normal{background:linear-gradient(145deg,#bfaa6e,#9e8c52)}
+.bg-fire{background:linear-gradient(145deg,#ff8c42,#d94d00)}
+.bg-water{background:linear-gradient(145deg,#5ba4e5,#2d6dc0)}
+.bg-electric{background:linear-gradient(145deg,#f5cc00,#d4a800)}
+.bg-grass{background:linear-gradient(145deg,#72cb50,#3a9a1e)}
+.bg-ice{background:linear-gradient(145deg,#6ecad8,#3a9db0)}
+.bg-psychic{background:linear-gradient(145deg,#f060a0,#c0205a)}
+.bg-dark{background:linear-gradient(145deg,#5040a0,#1a0a55)}
+.bg-fairy{background:linear-gradient(145deg,#f080b0,#c04880)}
+.bg-poison{background:linear-gradient(145deg,#b060c0,#7020a0)}
+.bg-ghost{background:linear-gradient(145deg,#8060c0,#40207a)}
+.bg-steel{background:linear-gradient(145deg,#aaaacc,#7a7a9a)}
+.bg-rock{background:linear-gradient(145deg,#d0b840,#a89020)}
+.bg-ground{background:linear-gradient(145deg,#ddb840,#b08820)}
+.bg-bug{background:linear-gradient(145deg,#c0cc38,#889010)}
+.bg-fighting{background:linear-gradient(145deg,#d84040,#a01818)}
+.bg-dragon{background:linear-gradient(145deg,#8048f8,#5010d0)}
+.bg-flying{background:linear-gradient(145deg,#b8a8f8,#7868c8)}
+
+/* ── MODAL ── */
+.m-overlay{position:fixed;inset:0;background:rgba(10,10,30,.65);backdrop-filter:blur(10px);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.m-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:28px;max-width:820px;width:100%;max-height:92vh;overflow-y:auto;transform:translateY(44px) scale(.94);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 28px 80px rgba(0,0,0,.35)}
+.m-overlay.open .modal{transform:translateY(0) scale(1)}
+.m-head{padding:28px 28px 20px;border-radius:28px 28px 0 0;position:relative}
+.m-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.25);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .25s;font-family:inherit}
+.m-close:hover{background:rgba(255,255,255,.45);transform:rotate(90deg)}
+.m-head-row{display:flex;gap:22px;align-items:center}
+.m-sring{width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.2);flex-shrink:0}
+.m-sprite{width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.22));animation:mfloat 3.5s ease-in-out infinite}
+@keyframes mfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.m-no{font-size:.82rem;font-weight:900;color:rgba(255,255,255,.55);font-family:monospace;margin-bottom:3px}
+.m-name{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.2);line-height:1;margin-bottom:3px}
+.m-name-en{font-size:.88rem;color:rgba(255,255,255,.65);font-weight:700;margin-bottom:10px}
+.m-types-row{display:flex;gap:7px;margin-bottom:12px}
+.m-cat{color:rgba(255,255,255,.75);font-size:.8rem;font-weight:700;margin-bottom:12px}
+.m-meas{display:flex;gap:10px}
+.mbox{background:rgba(255,255,255,.18);border-radius:10px;padding:7px 16px;text-align:center}
+.mbox-l{font-size:.58rem;font-weight:900;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em}
+.mbox-v{font-size:.92rem;font-weight:900;color:#fff}
+.m-body{padding:24px 28px 28px}
+.ms{margin-bottom:24px}
+.ms-lbl{font-size:.68rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.ms-lbl::after{content:'';flex:1;height:1px;background:#eee}
+.m-desc{background:var(--bg);border-radius:var(--r-md);padding:14px 16px;font-size:.9rem;line-height:1.85;color:#4a4a4a;font-weight:500}
+.abils{display:flex;gap:8px;flex-wrap:wrap}
+.apill{background:var(--bg);border-radius:20px;padding:7px 16px;font-size:.82rem;font-weight:800;color:var(--text)}
+.apill.ha{background:var(--text);color:var(--yellow)}
+.apill.ha::before{content:'★ '}
+.stat-rows{display:flex;flex-direction:column;gap:8px}
+.srow{display:grid;grid-template-columns:88px 42px 1fr;align-items:center;gap:11px}
+.sl{font-size:.7rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.sv{font-size:.86rem;font-weight:900;color:var(--text);text-align:right}
+.sbg{height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.sb{height:100%;border-radius:4px;width:0%;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+.hp{background:linear-gradient(90deg,#ff6b6b,#ee0979)}
+.atk{background:linear-gradient(90deg,#ffa040,#f08030)}
+.def{background:linear-gradient(90deg,#ffd700,#f0a800)}
+.spa{background:linear-gradient(90deg,#7090f8,#3050e0)}
+.spd{background:linear-gradient(90deg,#78d850,#38a800)}
+.spe{background:linear-gradient(90deg,#f878a8,#d84070)}
+.stat-tot{display:flex;justify-content:flex-end;margin-top:8px;font-size:.8rem;font-weight:800;color:var(--muted);gap:6px;align-items:baseline}
+.stat-tot-v{font-size:1.1rem;font-weight:900;color:var(--red)}
+
+/* Shiny btn */
+.shiny-btn{position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a1a;border:none;border-radius:28px;padding:11px 20px;font-size:.82rem;font-weight:900;cursor:pointer;box-shadow:0 4px 18px rgba(255,165,0,.55);transition:transform .2s,box-shadow .2s;z-index:150;font-family:inherit}
+.shiny-btn:hover{transform:scale(1.07)}
+.shiny-btn.on{background:linear-gradient(135deg,#d8b4fe,#8b5cf6);color:#fff;box-shadow:0 4px 18px rgba(139,92,246,.55)}
+
+footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:28px 24px;font-size:.74rem;font-weight:600;line-height:2}
+.ft-brand{font-size:1rem;font-weight:900;color:var(--yellow);margin-bottom:4px}
+
+@media(max-width:640px){
+  .h-title{font-size:1.9rem}
+  .m-head-row{flex-direction:column;align-items:flex-start}
+  .m-sring{width:110px;height:110px}
+  .m-sprite{width:90px;height:90px}
+  .srow{grid-template-columns:72px 36px 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="47" fill="white" stroke="#ccc" stroke-width="3"/>
+      <path d="M3 50 h94" stroke="#222" stroke-width="4"/>
+      <path d="M3 50 Q3 3 50 3 Q97 3 97 50 Z" fill="#CC0000"/>
+      <circle cx="50" cy="50" r="15" fill="white" stroke="#222" stroke-width="4"/>
+      <circle cx="50" cy="50" r="7" fill="#eee" stroke="#aaa" stroke-width="2"/>
+    </svg>
+    イーブイフレンズ<span class="acc">図鑑</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tabGame" onclick="switchTo('game')">🎮 ゲーム</button>
+    <button class="nav-tab" id="tabDex" onclick="switchTo('dex')">📖 図鑑</button>
+  </div>
+  <span class="nav-caught" id="navCaught">ゲット: 0 / 30</span>
+</nav>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen">
+  <canvas id="gameCanvas"></canvas>
+  <div id="gameHint">← → ↑ ↓ で移動 | 野生のポケモンを探そう！</div>
+  <div id="flashEl"></div>
+
+  <!-- BATTLE OVERLAY -->
+  <div id="battleOverlay">
+    <div class="bat-sky" style="position:relative">
+      <div class="bat-enemy-info">
+        <span class="bat-ename" id="bName">???</span>
+        <span class="bat-elv" id="bLv">Lv.??</span>
+      </div>
+      <img class="bat-enemy-sprite" id="bSprite" src="" alt="">
+    </div>
+    <div class="bat-ground" style="position:relative">
+      <div class="bat-enemy-platform"></div>
+      <div class="bat-player-platform"></div>
+      <div id="battleBall">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="47" fill="white" stroke="#333" stroke-width="5"/>
+          <path d="M3 50 h94" stroke="#333" stroke-width="5"/>
+          <path d="M3 50 Q3 3 50 3 Q97 3 97 50 Z" fill="#CC0000"/>
+          <circle cx="50" cy="50" r="17" fill="white" stroke="#333" stroke-width="5"/>
+          <circle cx="50" cy="50" r="9" fill="#ddd" stroke="#aaa" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+    <div class="bat-textbox">
+      <div id="batText">...</div>
+      <div class="bat-hint" id="batHint" style="display:none">↑ を押してボールを投げよう！</div>
+    </div>
+  </div>
+
+  <!-- CATCH SUCCESS -->
+  <div id="catchSuccess">
+    <div class="catch-card">
+      <img id="csImg" src="" alt="">
+      <div class="catch-got">★ ゲット！</div>
+      <div class="catch-name" id="csName"></div>
+      <div class="catch-sub" id="csSub"></div>
+    </div>
+  </div>
+</div>
+
+<!-- POKÉDEX SCREEN -->
+<div id="dexScreen">
+  <section class="hero">
+    <div class="stars-wrap" id="starsWrap"></div>
+    <div class="h-content">
+      <div class="h-badge">✨ EEVEE FRIENDS POKÉDEX</div>
+      <div class="h-img-wrap">
+        <div class="h-glow"></div>
+        <img class="h-main" id="hMain" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png" alt="イーブイ">
+      </div>
+      <h2 class="h-title">イーブイフレンズ図鑑</h2>
+      <p class="h-sub">ゲームでポケモンをゲットして図鑑を完成させよう！</p>
+      <div class="h-evos" id="hEvos"></div>
+    </div>
+  </section>
+  <main class="dex-main">
+    <div class="sec-header">
+      <div class="sec-lbl">POKÉDEX</div>
+      <h2 class="sec-title">ポケモン<span class="red">図鑑</span></h2>
+      <p class="sec-desc" id="dexDesc">図鑑: 9 / 30 — ゲームでポケモンをゲットしよう</p>
+    </div>
+    <div class="poke-grid" id="pokeGrid"></div>
+  </main>
+  <footer>
+    <div class="ft-brand">⭐ イーブイフレンズ図鑑</div>
+    <p>Pokémon and All Respective Names are Trademark &amp; © of Nintendo / Game Freak / Creatures Inc.</p>
+    <p>This is a fan-made educational site.</p>
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div class="m-overlay" id="mOverlay" onclick="onMOverlay(event)">
+  <div class="modal">
+    <div class="m-head" id="mHead">
+      <button class="m-close" onclick="closeModal()">✕</button>
+      <div class="m-head-row">
+        <div class="m-sring"><img class="m-sprite" id="mSprite" src="" alt=""></div>
+        <div>
+          <div class="m-no" id="mNo"></div>
+          <div class="m-name" id="mName"></div>
+          <div class="m-name-en" id="mNameEn"></div>
+          <div class="m-types-row" id="mTypes"></div>
+          <div class="m-cat" id="mCat"></div>
+          <div class="m-meas" id="mMeas"></div>
+        </div>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="ms"><div class="ms-lbl">説明</div><div class="m-desc" id="mDesc"></div></div>
+      <div class="ms"><div class="ms-lbl">とくせい</div><div class="abils" id="mAbils"></div></div>
+      <div class="ms">
+        <div class="ms-lbl">種族値</div>
+        <div class="stat-rows" id="mStats"></div>
+        <div class="stat-tot">合計 <span class="stat-tot-v" id="mTot"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="shiny-btn" id="shinyBtn" onclick="toggleShiny()" style="display:none">✨ 色違い</button>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+const TNAMES = {normal:'ノーマル',fire:'ほのお',water:'みず',electric:'でんき',
+  grass:'くさ',ice:'こおり',psychic:'エスパー',dark:'あく',fairy:'フェアリー',
+  poison:'どく',ghost:'ゴースト',steel:'はがね',rock:'いわ',ground:'じめん',
+  bug:'むし',fighting:'かくとう',dragon:'ドラゴン',flying:'ひこう'};
+
+const STAT_DEFS = [
+  {k:'hp',l:'HP',c:'hp'},{k:'attack',l:'こうげき',c:'atk'},{k:'defense',l:'ぼうぎょ',c:'def'},
+  {k:'spAtk',l:'とくこう',c:'spa'},{k:'spDef',l:'とくぼう',c:'spd'},{k:'speed',l:'すばやさ',c:'spe'}];
+
+const LIGHT_T = new Set(['electric','ice','normal','steel','ground','flying','bug']);
+
+// Compact: [id, nameJa, nameEn, type1, type2|'', hp,atk,def,spa,spd,spe]
+const COMPACT=[
+[1,'フシギダネ','Bulbasaur','grass','poison',45,49,49,65,65,45],
+[2,'フシギソウ','Ivysaur','grass','poison',60,62,63,80,80,60],
+[3,'フシギバナ','Venusaur','grass','poison',80,82,83,100,100,80],
+[4,'ヒトカゲ','Charmander','fire','',39,52,43,60,50,65],
+[5,'リザード','Charmeleon','fire','',58,64,58,80,65,80],
+[6,'リザードン','Charizard','fire','flying',78,84,78,109,85,100],
+[7,'ゼニガメ','Squirtle','water','',44,48,65,50,64,43],
+[8,'カメール','Wartortle','water','',59,63,80,65,80,58],
+[9,'カメックス','Blastoise','water','',79,83,100,85,105,78],
+[10,'キャタピー','Caterpie','bug','',45,30,35,20,20,45],
+[11,'トランセル','Metapod','bug','',50,20,55,25,25,30],
+[12,'バタフリー','Butterfree','bug','flying',60,45,50,90,80,70],
+[13,'ビードル','Weedle','bug','poison',40,35,30,20,20,50],
+[14,'コクーン','Kakuna','bug','poison',45,25,50,25,25,35],
+[15,'スピアー','Beedrill','bug','poison',65,90,40,45,80,75],
+[16,'ポッポ','Pidgey','normal','flying',40,45,40,35,35,56],
+[17,'ピジョン','Pidgeotto','normal','flying',63,60,55,50,50,71],
+[18,'ピジョット','Pidgeot','normal','flying',83,80,75,70,70,101],
+[19,'コラッタ','Rattata','normal','',30,56,35,25,35,72],
+[20,'ラッタ','Raticate','normal','',55,81,60,50,70,97],
+[21,'オニスズメ','Spearow','normal','flying',40,60,30,31,31,70],
+[22,'オニドリル','Fearow','normal','flying',65,90,65,61,61,100],
+[23,'アーボ','Ekans','poison','',35,60,44,40,54,55],
+[24,'アーボック','Arbok','poison','',60,95,69,65,79,80],
+[25,'ピカチュウ','Pikachu','electric','',35,55,40,50,50,90],
+[26,'ライチュウ','Raichu','electric','',60,90,55,90,80,110],
+[27,'サンド','Sandshrew','ground','',50,75,85,20,30,40],
+[28,'サンドパン','Sandslash','ground','',75,100,110,45,55,65],
+[29,'ニドラン♀','Nidoran-F','poison','',55,47,52,40,40,41],
+[30,'ニドリーナ','Nidorina','poison','',70,62,67,55,55,56],
+[31,'ニドクイン','Nidoqueen','poison','ground',90,92,87,75,85,76],
+[32,'ニドラン♂','Nidoran-M','poison','',46,57,40,40,40,50],
+[33,'ニドリーノ','Nidorino','poison','',61,72,57,55,55,65],
+[34,'ニドキング','Nidoking','poison','ground',81,102,77,85,75,85],
+[35,'ピッピ','Clefairy','fairy','',70,45,48,60,65,35],
+[36,'ピクシー','Clefable','fairy','',95,70,73,95,90,60],
+[37,'ロコン','Vulpix','fire','',38,41,40,50,65,65],
+[38,'キュウコン','Ninetales','fire','',73,76,75,81,100,100],
+[39,'プリン','Jigglypuff','normal','fairy',115,45,20,45,25,20],
+[40,'プクリン','Wigglytuff','normal','fairy',140,70,45,85,50,45],
+[41,'ズバット','Zubat','poison','flying',40,45,35,30,40,55],
+[42,'ゴルバット','Golbat','poison','flying',75,80,70,65,75,90],
+[43,'ナゾノクサ','Oddish','grass','poison',45,50,55,75,65,30],
+[44,'クサイハナ','Gloom','grass','poison',60,65,70,85,75,40],
+[45,'ラフレシア','Vileplume','grass','poison',75,80,85,110,90,50],
+[46,'パラス','Paras','bug','grass',35,70,55,45,55,25],
+[47,'パラセクト','Parasect','bug','grass',60,95,80,60,80,30],
+[48,'コンパン','Venonat','bug','poison',60,55,50,40,55,45],
+[49,'モルフォン','Venomoth','bug','poison',70,65,60,90,75,90],
+[50,'ディグダ','Diglett','ground','',10,55,25,35,45,95],
+[51,'ダグトリオ','Dugtrio','ground','',35,100,50,50,70,120],
+[52,'ニャース','Meowth','normal','',40,45,35,40,40,90],
+[53,'ペルシアン','Persian','normal','',65,70,60,65,65,115],
+[54,'コダック','Psyduck','water','',50,52,48,65,50,55],
+[55,'ゴルダック','Golduck','water','',80,82,78,95,80,85],
+[56,'マンキー','Mankey','fighting','',40,80,35,35,45,70],
+[57,'オコリザル','Primeape','fighting','',65,105,60,60,70,95],
+[58,'ガーディ','Growlithe','fire','',55,70,45,70,50,60],
+[59,'ウインディ','Arcanine','fire','',90,110,80,100,80,95],
+[60,'ニョロモ','Poliwag','water','',40,50,40,40,40,90],
+[61,'ニョロゾ','Poliwhirl','water','',65,65,65,50,50,90],
+[62,'ニョロボン','Poliwrath','water','fighting',90,95,95,70,90,70],
+[63,'ケーシィ','Abra','psychic','',25,20,15,105,55,90],
+[64,'ユンゲラー','Kadabra','psychic','',40,35,30,120,70,105],
+[65,'フーディン','Alakazam','psychic','',55,50,45,135,95,120],
+[66,'ワンリキー','Machop','fighting','',70,80,50,35,35,35],
+[67,'ゴーリキー','Machoke','fighting','',80,100,70,50,60,45],
+[68,'カイリキー','Machamp','fighting','',90,130,80,65,85,55],
+[69,'マダツボミ','Bellsprout','grass','poison',50,75,35,70,30,40],
+[70,'ウツドン','Weepinbell','grass','poison',65,90,50,85,45,55],
+[71,'ウツボット','Victreebel','grass','poison',80,105,65,100,60,70],
+[72,'メノクラゲ','Tentacool','water','poison',40,40,35,50,100,70],
+[73,'ドククラゲ','Tentacruel','water','poison',80,70,65,80,120,100],
+[74,'イシツブテ','Geodude','rock','ground',40,80,100,30,30,20],
+[75,'ゴローン','Graveler','rock','ground',55,95,115,45,45,35],
+[76,'ゴローニャ','Golem','rock','ground',80,120,130,55,65,45],
+[77,'ポニータ','Ponyta','fire','',50,85,55,65,65,90],
+[78,'ギャロップ','Rapidash','fire','',65,100,70,80,80,105],
+[79,'ヤドン','Slowpoke','water','psychic',90,65,65,40,40,15],
+[80,'ヤドラン','Slowbro','water','psychic',95,75,110,100,80,30],
+[81,'コイル','Magnemite','electric','steel',25,35,70,95,55,45],
+[82,'レアコイル','Magneton','electric','steel',50,60,95,120,70,70],
+[83,'カモネギ','Farfetchd','normal','flying',52,90,55,58,62,60],
+[84,'ドードー','Doduo','normal','flying',35,85,45,35,35,75],
+[85,'ドードリオ','Dodrio','normal','flying',60,110,70,60,60,100],
+[86,'パウワウ','Seel','water','',65,45,55,45,70,45],
+[87,'ジュゴン','Dewgong','water','ice',90,70,80,70,95,70],
+[88,'ベトベター','Grimer','poison','',80,80,50,40,50,25],
+[89,'ベトベトン','Muk','poison','',105,105,75,65,100,50],
+[90,'シェルダー','Shellder','water','',30,65,100,45,25,40],
+[91,'パルシェン','Cloyster','water','ice',50,95,180,85,45,70],
+[92,'ゴース','Gastly','ghost','poison',30,35,30,100,35,80],
+[93,'ゴースト','Haunter','ghost','poison',45,50,45,115,55,95],
+[94,'ゲンガー','Gengar','ghost','poison',60,65,60,130,75,110],
+[95,'イワーク','Onix','rock','ground',35,45,160,30,45,70],
+[96,'スリープ','Drowzee','psychic','',60,48,45,43,90,42],
+[97,'スリーパー','Hypno','psychic','',85,73,70,73,115,67],
+[98,'クラブ','Krabby','water','',30,105,90,25,25,50],
+[99,'キングラー','Kingler','water','',55,130,115,50,50,75],
+[100,'ビリリダマ','Voltorb','electric','',40,30,50,55,55,100],
+[101,'マルマイン','Electrode','electric','',60,50,70,80,80,140],
+[102,'タマタマ','Exeggcute','grass','psychic',60,40,80,60,45,40],
+[103,'ナッシー','Exeggutor','grass','psychic',95,95,85,125,65,55],
+[104,'カラカラ','Cubone','ground','',50,50,95,40,50,35],
+[105,'ガラガラ','Marowak','ground','',60,80,110,50,80,45],
+[106,'サワムラー','Hitmonlee','fighting','',50,120,53,35,110,87],
+[107,'エビワラー','Hitmonchan','fighting','',50,105,79,35,110,76],
+[108,'ベロリンガ','Lickitung','normal','',90,55,75,60,75,30],
+[109,'ドガース','Koffing','poison','',40,65,95,60,45,35],
+[110,'マタドガス','Weezing','poison','',65,90,120,85,70,60],
+[111,'サイホーン','Rhyhorn','rock','ground',80,85,95,30,30,25],
+[112,'サイドン','Rhydon','rock','ground',105,130,120,45,45,40],
+[113,'ラッキー','Chansey','normal','',250,5,5,35,105,50],
+[114,'モンジャラ','Tangela','grass','',65,55,115,100,40,60],
+[115,'ガルーラ','Kangaskhan','normal','',105,95,80,40,80,90],
+[116,'タッツー','Horsea','water','',30,40,70,70,25,60],
+[117,'シードラ','Seadra','water','',55,65,95,95,45,85],
+[118,'トサキント','Goldeen','water','',45,67,60,35,50,63],
+[119,'アズマオウ','Seaking','water','',80,92,65,65,80,68],
+[120,'ヒトデマン','Staryu','water','',30,45,55,70,55,85],
+[121,'スターミー','Starmie','water','psychic',60,75,85,100,85,115],
+[122,'バリヤード','Mr. Mime','psychic','fairy',40,45,65,100,120,90],
+[123,'ストライク','Scyther','bug','flying',70,110,80,55,80,105],
+[124,'ルージュラ','Jynx','ice','psychic',65,50,35,115,95,95],
+[125,'エレブー','Electabuzz','electric','',65,83,57,95,85,105],
+[126,'ブーバー','Magmar','fire','',65,95,57,100,85,93],
+[127,'カイロス','Pinsir','bug','',65,125,100,55,70,85],
+[128,'ケンタロス','Tauros','normal','',75,100,95,40,70,110],
+[129,'コイキング','Magikarp','water','',20,10,55,15,20,80],
+[130,'ギャラドス','Gyarados','water','flying',95,125,79,60,100,81],
+[131,'ラプラス','Lapras','water','ice',130,85,80,85,95,60],
+[132,'メタモン','Ditto','normal','',48,48,48,48,48,48],
+// 133-136: Eeveelutions (defined below)
+[137,'ポリゴン','Porygon','normal','',65,60,70,85,75,40],
+[138,'オムナイト','Omanyte','rock','water',35,40,100,90,55,35],
+[139,'オムスター','Omastar','rock','water',70,60,125,115,70,55],
+[140,'カブト','Kabuto','rock','water',30,80,90,55,45,55],
+[141,'カブトプス','Kabutops','rock','water',60,115,105,65,70,80],
+[142,'プテラ','Aerodactyl','rock','flying',80,105,65,60,75,130],
+[143,'カビゴン','Snorlax','normal','',160,110,65,65,110,30],
+[144,'フリーザー','Articuno','ice','flying',90,85,100,95,125,85],
+[145,'サンダー','Zapdos','electric','flying',90,90,85,125,90,100],
+[146,'ファイヤー','Moltres','fire','flying',90,100,90,125,85,90],
+[147,'ミニリュウ','Dratini','dragon','',41,64,45,50,50,50],
+[148,'ハクリュー','Dragonair','dragon','',61,84,65,70,70,70],
+[149,'カイリュー','Dragonite','dragon','flying',91,134,95,100,100,80],
+[150,'ミュウツー','Mewtwo','psychic','',106,110,90,154,90,130],
+[151,'ミュウ','Mew','psychic','',100,100,100,100,100,100],
+[658,'ゲッコウガ','Greninja','water','dark',72,95,67,103,71,122],
+];
+
+// Famous Pokémon descriptions
+const DESCS={
+  1:'背中の種がだんだん大きく育つ。甘い香りで周囲のポケモンを引き寄せる。',
+  4:'しっぽの炎は生命力の象徴。元気なときほど炎が大きく揺れる。',
+  6:'翼で空を飛び、口から1500度の炎を吐く強大なポケモン。',
+  7:'甲羅に閉じこもり水鉄砲で反撃する。甲羅の浮力で水面を滑れる。',
+  9:'背中の2つの大砲から毎秒50kgの水を発射できる。',
+  12:'花粉を風に乗せて散らす。その粉を吸うと眠くなる。',
+  15:'2本の毒針で相手を刺す。ハチの巣を守るため縄張りに入ったものを追い払う。',
+  18:'一度羽ばたくと停止できないほどのスピードで飛ぶ。',
+  25:'両ほっぺに電気を蓄え、いざとなればその電気を放電する。',
+  26:'尻尾から電撃を放ち、10万ボルトの電気も出せる。',
+  35:'月光を翼に受けてふわりと空を飛ぶ。満月の夜に集団で踊る。',
+  39:'大きな瞳で見つめながら眠るまで歌い続ける。聴いたものはすぐ眠る。',
+  52:'ピカピカ光るものが大好きで、見つけるとうっとりしながら集める。',
+  54:'頭痛が激しくなると強力な念力を無意識に使ってしまう。',
+  58:'主人に従順で縄張りを守る。いざとなると炎を吹いて追い払う。',
+  60:'皮膚が薄くて腸がうずまき模様に透けて見える。',
+  63:'一日18時間眠り、夢の中でも念力を使い続けている。',
+  79:'ぼうっとしているが念力は強い。しっぽで魚を釣るのが得意。',
+  81:'両側の磁石から磁力を発して空中に浮かぶ。',
+  86:'寒い海でも元気に泳ぎ回る。額の角で氷を割って進む。',
+  92:'毒ガスでできた体は風が吹くとちぎれてしまう。暗闇を好む。',
+  94:'影に潜む幽霊ポケモン。近づくと体温が2度下がると言われる。',
+  95:'岩山を掘って巣を作る。体の硬さはダイヤモンド以上とも言われる。',
+  113:'栄養満点の卵をたくさん産む。見つけた人は幸せになれると言われる。',
+  129:'役に立たないと言われるが、一生懸命泳ぎ続けた先に強力な進化が待つ。',
+  130:'凶暴なポケモン。コイキングが懸命に泳ぎ続けて進化した。',
+  131:'心優しく知性が高い。波に揺られながら美しい歌声を響かせる。',
+  132:'相手の細胞を分析してどんなものにも変身できる。寝ると元に戻る。',
+  143:'一日に400kg以上食べ、満足すると眠り続ける大食いポケモン。',
+  149:'進化するほど力も知性も高まる。荒れ狂う嵐でも穏やかに飛べる。',
+  150:'遺伝子を操作して作られた伝説のポケモン。計り知れない力を持つ。',
+  151:'すべてのポケモンの遺伝子を持つとされる幻のポケモン。',
+  658:'水で刃を作り、忍者のように素早く戦うポケモン。舌の剣も使う。',
+};
+
+// Type-based fallback descriptions
+const T_DESC={
+  fire:'炎を巧みに操るほのおタイプのポケモン。',
+  water:'水流を使いこなすみずタイプのポケモン。',
+  grass:'光合成で栄養を得るくさタイプのポケモン。',
+  electric:'電撃を放つでんきタイプのポケモン。',
+  psychic:'強い念力を持つエスパータイプのポケモン。',
+  normal:'様々な場所で活躍するノーマルタイプのポケモン。',
+  poison:'毒を使うどくタイプのポケモン。',
+  bug:'素早いむしタイプのポケモン。',
+  rock:'硬い体を持ついわタイプのポケモン。',
+  ground:'大地を操るじめんタイプのポケモン。',
+  ghost:'幽霊のようなゴーストタイプのポケモン。',
+  ice:'氷を操るこおりタイプのポケモン。',
+  dragon:'強大な力を持つドラゴンタイプのポケモン。',
+  fighting:'格闘技を駆使するかくとうタイプのポケモン。',
+  dark:'闇を操るあくタイプのポケモン。',
+  steel:'鋼の体を持つはがねタイプのポケモン。',
+  flying:'空を自由に飛ぶひこうタイプのポケモン。',
+  fairy:'妖精のようなフェアリータイプのポケモン。',
+};
+
+function makeEntry(r){
+  const types=r[4]?[r[3],r[4]]:[r[3]];
+  return {
+    id:r[0],name:r[1],nameEn:r[2],cat:'ポケモン',types,
+    h:'?m',w:'?kg',abil:['とくせい'],ha:null,
+    desc:DESCS[r[0]]||(T_DESC[r[3]]||'謎多きポケモン。'),
+    stats:{hp:r[5],attack:r[6],defense:r[7],spAtk:r[8],spDef:r[9],speed:r[10]}
+  };
+}
+
+// Build ALL: compact entries + Eeveelutions
+const ALL = COMPACT.map(makeEntry);
+
+// Eeveelutions — always shown (isE:true)
+const EEVES=[
+  {id:133,name:'イーブイ',  nameEn:'Eevee',    cat:'しんかポケモン',  types:['normal'],   h:'0.3m',w:'6.5kg', abil:['にげあし','てきおうりょく'],ha:'きけんよち',  desc:'体の中には高い適応力を秘めた特別な遺伝子が組み込まれている。さまざまな進化の可能性を秘めた不思議なポケモン。',stats:{hp:55,attack:55,defense:50,spAtk:45,spDef:65,speed:55},isE:true},
+  {id:134,name:'シャワーズ',nameEn:'Vaporeon', cat:'あわポケモン',    types:['water'],    h:'1.0m',w:'29.0kg',abil:['ちょすい'],ha:'うるおいボディ', desc:'水の分子と同化できる体を持ち、流れる水に溶け込んで透明になることができる。',stats:{hp:130,attack:65,defense:60,spAtk:110,spDef:95,speed:65},isE:true},
+  {id:135,name:'サンダース',nameEn:'Jolteon',  cat:'いかずちポケモン',types:['electric'], h:'0.8m',w:'24.5kg',abil:['ちくでん'],ha:'クイックフィート',desc:'体の細胞が電気を発生させ、全身の毛を逆立てて高圧の電撃を放つ。',stats:{hp:65,attack:65,defense:60,spAtk:110,spDef:95,speed:130},isE:true},
+  {id:136,name:'ブースター',nameEn:'Flareon',  cat:'ほのおポケモン',  types:['fire'],     h:'0.9m',w:'25.0kg',abil:['もらいび'],ha:'こんじょう',     desc:'体内の炎袋で吸い込んだ空気を最高1700度の炎に変える。',stats:{hp:65,attack:130,defense:60,spAtk:95,spDef:110,speed:65},isE:true},
+  {id:196,name:'エーフィ',  nameEn:'Espeon',   cat:'たいようポケモン',types:['psychic'],  h:'0.9m',w:'26.5kg',abil:['シンクロ'],ha:'マジックミラー', desc:'日光を浴びて細胞を活性化させる。額の宝石が念力を凝縮して将来を予知する。',stats:{hp:65,attack:65,defense:60,spAtk:130,spDef:95,speed:110},isE:true},
+  {id:197,name:'ブラッキー', nameEn:'Umbreon',  cat:'むうんポケモン',  types:['dark'],     h:'1.0m',w:'27.0kg',abil:['シンクロ'],ha:'せいしんりょく', desc:'月光を浴び続けることで暗闇に適応して進化した。ストレスを感じるとリングが発光する。',stats:{hp:95,attack:65,defense:110,spAtk:60,spDef:130,speed:65},isE:true},
+  {id:470,name:'リーフィア', nameEn:'Leafeon',  cat:'みずみずポケモン',types:['grass'],    h:'1.0m',w:'25.5kg',abil:['リーフガード'],ha:'ようりょくそ', desc:'清潔な自然の中で光合成を行い栄養を補う。体から常に清々しい香りを漂わせる。',stats:{hp:65,attack:110,defense:130,spAtk:60,spDef:65,speed:95},isE:true},
+  {id:471,name:'グレイシア', nameEn:'Glaceon',  cat:'フレッシュスノーポケモン',types:['ice'],h:'0.8m',w:'25.9kg',abil:['ゆきがくれ'],ha:'アイスボディ', desc:'体温を氷点下に下げて全身の毛を氷の結晶に変え、針のように発射できる。',stats:{hp:65,attack:60,defense:110,spAtk:130,spDef:95,speed:65},isE:true},
+  {id:700,name:'ニンフィア', nameEn:'Sylveon',  cat:'きずなポケモン',  types:['fairy'],    h:'1.0m',w:'23.5kg',abil:['メロメロボディ'],ha:'ピクシーパワー',desc:'リボンのような触手を相手に巻きつけて戦意を喪失させる。フェアリーパワーでドラゴンも苦手とする。',stats:{hp:95,attack:65,defense:65,spAtk:110,spDef:130,speed:60},isE:true},
+];
+EEVES.forEach(e=>{ const i=ALL.findIndex(x=>x.id===e.id); if(i>=0)ALL[i]=e; else ALL.push(e); });
+ALL.sort((a,b)=>a.id-b.id);
+
+const EEVEE_IDS = new Set([133,134,135,136,196,197,470,471,700]);
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let shiny = false;
+let curModal = null;
+let caught = new Set(JSON.parse(localStorage.getItem('caught')||'[]'));
+// Pre-mark Eeveelutions as always in dex (not necessarily "caught")
+function saveCaught(){ localStorage.setItem('caught', JSON.stringify([...caught])); }
+
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
+let currentScreen = 'game';
+
+function switchTo(s){
+  currentScreen = s;
+  document.getElementById('gameScreen').style.display = s==='game' ? 'block' : 'none';
+  document.getElementById('dexScreen').style.display = s==='dex' ? 'block' : 'none';
+  document.getElementById('shinyBtn').style.display = s==='dex' ? '' : 'none';
+  document.getElementById('tabGame').classList.toggle('active', s==='game');
+  document.getElementById('tabDex').classList.toggle('active', s==='dex');
+  if(s==='game'){ startGame(); }
+  else { stopGame(); renderDex(); }
+}
+
+// ═══════════════════════════════════════════
+//  SPRITES
+// ═══════════════════════════════════════════
+const ART_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
+const PX_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+
+function artUrl(id,s=shiny){ return s ? `${ART_BASE}/shiny/${id}.png` : `${ART_BASE}/${id}.png`; }
+function pxUrl(id){ return `${PX_BASE}/${id}.png`; }
+
+// Preload game sprites
+const pxImgs = {};
+ALL.forEach(p=>{ const i=new Image(); i.src=pxUrl(p.id); pxImgs[p.id]=i; });
+
+// ═══════════════════════════════════════════
+//  POKÉDEX RENDER
+// ═══════════════════════════════════════════
+function buildStars(){
+  const w = document.getElementById('starsWrap');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2.8+.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--del:${-Math.random()*5}s`;
+    w.appendChild(s);
+  }
+}
+buildStars();
+
+function buildHeroEvos(){
+  const w=document.getElementById('hEvos');
+  ALL.filter(p=>p.isE).forEach(p=>{
+    const el=document.createElement('div'); el.className='h-evo';
+    el.innerHTML=`<img src="${artUrl(p.id,false)}" data-id="${p.id}" alt="${p.name}"><span>${p.name}</span>`;
+    el.addEventListener('mouseenter',()=>swapHero(p.id));
+    el.addEventListener('mouseleave',()=>swapHero(133));
+    el.addEventListener('click',()=>openModal(p));
+    w.appendChild(el);
+  });
+}
+buildHeroEvos();
+
+function swapHero(id){
+  const img=document.getElementById('hMain');
+  img.style.opacity='0';
+  setTimeout(()=>{ img.src=artUrl(id); img.style.opacity='1'; },200);
+}
+
+function renderDex(){
+  const grid=document.getElementById('pokeGrid');
+  grid.innerHTML='';
+  const total = ALL.length;
+  const known = ALL.filter(p=> p.isE || caught.has(p.id)).length;
+  document.getElementById('dexDesc').textContent=`図鑑: ${known} / ${total} — ゲームでポケモンをゲットしよう`;
+  updateNavCaught();
+
+  ALL.sort((a,b)=>a.id-b.id).forEach((p,i)=>{
+    const isKnown = p.isE || caught.has(p.id);
+    const isCaught = caught.has(p.id);
+    const t0=p.types[0];
+    const light=LIGHT_T.has(t0)?' light':'';
+    const card=document.createElement('div');
+    card.className='poke-card'+(isKnown?'':' mystery');
+    card.style.animationDelay=`${i*.05}s`;
+
+    if(isKnown){
+      const cBadge = isCaught ? `<span class="caught-badge${light?'':''}" style="font-size:.6rem">✓ ゲット</span>` : '';
+      card.innerHTML=`
+        <div class="c-top bg-${t0}${light}">
+          <svg class="c-pball" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="white" stroke-width="8"/><path d="M4 50 h92" stroke="white" stroke-width="8"/><circle cx="50" cy="50" r="14" fill="none" stroke="white" stroke-width="8"/></svg>
+          ${cBadge}
+          <div class="c-num">#${String(p.id).padStart(3,'0')}</div>
+          <div class="c-ring"><img class="c-sprite" src="${artUrl(p.id)}" alt="${p.name}" data-id="${p.id}" loading="lazy"></div>
+          <div class="c-name">${p.name}</div>
+          <div class="c-name-en">${p.nameEn}</div>
+          <div class="c-types">${p.types.map(t=>`<span class="tbadge t-${t}">${TNAMES[t]}</span>`).join('')}</div>
+        </div>
+        <div class="c-bot">
+          <div class="c-stats">
+            <div class="sm"><div class="sm-l">HP</div><div class="sm-v">${p.stats.hp}</div></div>
+            <div class="sm"><div class="sm-l">こうげき</div><div class="sm-v">${p.stats.attack}</div></div>
+            <div class="sm"><div class="sm-l">すばやさ</div><div class="sm-v">${p.stats.speed}</div></div>
+          </div>
+          <div class="c-arr">›</div>
+        </div>`;
+      card.addEventListener('click',()=>openModal(p));
+    } else {
+      card.innerHTML=`
+        <div class="c-top" style="background:#2e2e3e">
+          <div class="c-num" style="color:rgba(255,255,255,.2)">#???</div>
+          <div class="c-ring"><div class="c-sprite-q">？</div></div>
+          <div class="c-name">???</div>
+          <div class="c-name-en">Unknown</div>
+          <div class="c-types"><span class="tbadge" style="background:rgba(255,255,255,.1)">???</span></div>
+        </div>
+        <div class="c-bot" style="justify-content:center;color:var(--muted);font-size:.82rem;font-weight:700">
+          ゲームで探してみよう
+        </div>`;
+    }
+    grid.appendChild(card);
+  });
+}
+
+function openModal(p){
+  curModal=p;
+  const t0=p.types[0];
+  document.getElementById('mHead').className=`m-head bg-${t0}`;
+  document.getElementById('mSprite').src=artUrl(p.id);
+  document.getElementById('mNo').textContent=`No.${String(p.id).padStart(3,'0')}`;
+  document.getElementById('mName').textContent=p.name;
+  document.getElementById('mNameEn').textContent=p.nameEn;
+  document.getElementById('mCat').textContent=`▸ ${p.cat}`;
+  document.getElementById('mTypes').innerHTML=p.types.map(t=>`<span class="tbadge t-${t}">${TNAMES[t]}</span>`).join('');
+  document.getElementById('mMeas').innerHTML=`<div class="mbox"><div class="mbox-l">たかさ</div><div class="mbox-v">${p.h}</div></div><div class="mbox"><div class="mbox-l">おもさ</div><div class="mbox-v">${p.w}</div></div>`;
+  document.getElementById('mDesc').textContent=p.desc;
+  document.getElementById('mAbils').innerHTML=p.abil.map(a=>`<span class="apill">${a}</span>`).join('')+(p.ha?`<span class="apill ha">${p.ha}</span>`:'');
+  document.getElementById('mStats').innerHTML=STAT_DEFS.map(d=>`<div class="srow"><div class="sl">${d.l}</div><div class="sv">${p.stats[d.k]}</div><div class="sbg"><div class="sb ${d.c}" data-v="${p.stats[d.k]}"></div></div></div>`).join('');
+  document.getElementById('mTot').textContent=Object.values(p.stats).reduce((a,b)=>a+b,0);
+  document.getElementById('mOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{ document.querySelectorAll('.sb').forEach(b=>{ b.style.width=`${Math.min(parseInt(b.dataset.v)/255*100,100)}%`; }); },80);
+}
+
+function closeModal(){
+  document.getElementById('mOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  document.querySelectorAll('.sb').forEach(b=>{ b.style.width='0%'; });
+}
+function onMOverlay(e){ if(e.target===document.getElementById('mOverlay')) closeModal(); }
+
+function toggleShiny(){
+  shiny=!shiny;
+  const btn=document.getElementById('shinyBtn');
+  btn.classList.toggle('on',shiny);
+  btn.textContent=shiny?'🌙 ノーマル':'✨ 色違い';
+  document.getElementById('hMain').src=artUrl(133);
+  document.querySelectorAll('.h-evo img').forEach((img,i)=>{ img.src=artUrl(ALL.filter(p=>p.isE)[i].id,false); });
+  document.querySelectorAll('.c-sprite').forEach(img=>{ img.src=artUrl(parseInt(img.dataset.id)); });
+  if(curModal && document.getElementById('mOverlay').classList.contains('open'))
+    document.getElementById('mSprite').src=artUrl(curModal.id);
+}
+
+function updateNavCaught(){
+  const n = caught.size + ALL.filter(p=>p.isE && !caught.has(p.id)).length; // eeveelutions count as known
+  // Actually count all known (eeveelutions + caught others)
+  const known = ALL.filter(p=>p.isE||caught.has(p.id)).length;
+  document.getElementById('navCaught').textContent=`ゲット: ${caught.size} / ${ALL.length}`;
+}
+
+// ═══════════════════════════════════════════
+//  GAME ENGINE
+// ═══════════════════════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const WORLD_W = 2400, WORLD_H = 1800;
+const TILE = 48;
+const COLS = Math.ceil(WORLD_W/TILE), ROWS = Math.ceil(WORLD_H/TILE);
+const PLAYER_SPD = 3.5;
+const WILD_SPD = 0.75;
+const ENC_DIST = 30;
+const MAX_WILD = 14;
+
+// Pre-seed tile map
+const tileMap = [];
+let seed = 42;
+function rng(){ seed=(seed*1664525+1013904223)&0xffffffff; return (seed>>>0)/4294967296; }
+for(let r=0;r<ROWS;r++){ tileMap[r]=[]; for(let c=0;c<COLS;c++) tileMap[r][c]=rng()<.65?0:rng()<.7?1:2; }
+const TCOLS=['#5cb85c','#4cae4c','#78cc78'];
+
+// Trees
+const TREES=[];
+// Border trees
+for(let x=48;x<WORLD_W;x+=96){ TREES.push({x:x+rng()*48,y:24+rng()*36}); TREES.push({x:x+rng()*48,y:WORLD_H-60+rng()*36}); }
+for(let y=96;y<WORLD_H-96;y+=96){ TREES.push({x:24+rng()*36,y:y+rng()*48}); TREES.push({x:WORLD_W-60+rng()*36,y:y+rng()*48}); }
+// Interior
+for(let i=0;i<80;i++){
+  const tx=rng()*WORLD_W, ty=rng()*WORLD_H;
+  if(Math.abs(tx-WORLD_W/2)>300||Math.abs(ty-WORLD_H/2)>300) TREES.push({x:tx,y:ty});
+}
+
+// Player
+const player = { x:WORLD_W/2, y:WORLD_H/2, facing:'down', wf:0 };
+const cam = { x:0, y:0 };
+const keys = {};
+let gameRunning = false;
+let frameId = null;
+let inBattle = false;
+let wildPokes = [];
+let spawnTimer = 0;
+
+// Build wild pool: spawn from ALL, weighted
+function spawnWild(){
+  if(wildPokes.length >= MAX_WILD) return;
+  const p = ALL[Math.floor(Math.random()*ALL.length)];
+  const lv = 3 + Math.floor(Math.random()*14);
+  // Random edge-ish position, not near player
+  let x,y;
+  do { x=80+Math.random()*(WORLD_W-160); y=80+Math.random()*(WORLD_H-160); }
+  while(Math.hypot(x-player.x,y-player.y)<200);
+  const angle=Math.random()*Math.PI*2;
+  wildPokes.push({
+    data:p, lv, x, y,
+    vx:Math.cos(angle)*WILD_SPD, vy:Math.sin(angle)*WILD_SPD,
+    moveTimer:60+Math.floor(Math.random()*120),
+    animT:Math.random()*100,
+    img:pxImgs[p.id]
+  });
+}
+
+function updatePlayer(){
+  let dx=0,dy=0;
+  if(keys['ArrowLeft']||keys['a']){dx=-1; player.facing='left';}
+  if(keys['ArrowRight']||keys['d']){dx=1; player.facing='right';}
+  if(keys['ArrowUp']||keys['w']){dy=-1; player.facing='up';}
+  if(keys['ArrowDown']||keys['s']){dy=1; player.facing='down';}
+  if(dx&&dy){dx*=0.707;dy*=0.707;}
+  const moving=dx||dy;
+  if(moving) player.wf++;
+  player.x=Math.max(24,Math.min(WORLD_W-24,player.x+dx*PLAYER_SPD));
+  player.y=Math.max(24,Math.min(WORLD_H-24,player.y+dy*PLAYER_SPD));
+}
+
+function updateCam(){
+  cam.x=Math.max(0,Math.min(WORLD_W-canvas.width,player.x-canvas.width/2));
+  cam.y=Math.max(0,Math.min(WORLD_H-canvas.height,player.y-canvas.height/2));
+}
+
+function updateWild(){
+  wildPokes.forEach(w=>{
+    w.animT++;
+    w.moveTimer--;
+    if(w.moveTimer<=0){
+      const a=Math.random()*Math.PI*2;
+      w.vx=Math.cos(a)*WILD_SPD; w.vy=Math.sin(a)*WILD_SPD;
+      w.moveTimer=60+Math.floor(Math.random()*120);
+    }
+    w.x+=w.vx; w.y+=w.vy;
+    if(w.x<40||w.x>WORLD_W-40){w.vx*=-1; w.x=Math.max(40,Math.min(WORLD_W-40,w.x));}
+    if(w.y<40||w.y>WORLD_H-40){w.vy*=-1; w.y=Math.max(40,Math.min(WORLD_H-40,w.y));}
+  });
+}
+
+function checkEncounters(){
+  for(let i=wildPokes.length-1;i>=0;i--){
+    const w=wildPokes[i];
+    const d=Math.hypot(player.x-w.x,player.y-w.y);
+    if(d<ENC_DIST){
+      const wp=wildPokes.splice(i,1)[0];
+      startEncounter(wp); return;
+    }
+  }
+}
+
+function drawBg(){
+  const sc=Math.floor(cam.x/TILE), sr=Math.floor(cam.y/TILE);
+  const ec=Math.min(COLS-1,sc+Math.ceil(canvas.width/TILE)+1);
+  const er=Math.min(ROWS-1,sr+Math.ceil(canvas.height/TILE)+1);
+  for(let r=Math.max(0,sr);r<=er;r++){
+    for(let c=Math.max(0,sc);c<=ec;c++){
+      ctx.fillStyle=TCOLS[tileMap[r][c]];
+      ctx.fillRect(c*TILE-cam.x, r*TILE-cam.y, TILE+1, TILE+1);
+    }
+  }
+}
+
+function drawTrees(){
+  // Sort by y for depth
+  const vis=TREES.filter(t=>{
+    const sx=t.x-cam.x, sy=t.y-cam.y;
+    return sx>-80&&sx<canvas.width+80&&sy>-100&&sy<canvas.height+60;
+  }).sort((a,b)=>a.y-b.y);
+  vis.forEach(t=>{
+    const sx=Math.round(t.x-cam.x), sy=Math.round(t.y-cam.y);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,.12)';
+    ctx.beginPath(); ctx.ellipse(sx,sy+6,22,7,0,0,Math.PI*2); ctx.fill();
+    // Trunk
+    ctx.fillStyle='#795548';
+    ctx.fillRect(sx-5,sy-18,10,24);
+    // Foliage
+    ctx.fillStyle='#2e7d32';
+    ctx.beginPath(); ctx.arc(sx,sy-34,24,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#388e3c';
+    ctx.beginPath(); ctx.arc(sx-9,sy-27,18,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#43a047';
+    ctx.beginPath(); ctx.arc(sx+9,sy-27,18,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#66bb6a';
+    ctx.beginPath(); ctx.arc(sx,sy-46,14,0,Math.PI*2); ctx.fill();
+  });
+}
+
+function drawWilds(){
+  wildPokes.forEach(w=>{
+    const sx=Math.round(w.x-cam.x), sy=Math.round(w.y-cam.y);
+    if(sx<-64||sx>canvas.width+64||sy<-64||sy>canvas.height+64) return;
+    const bob=Math.sin(w.animT*.07)*2.5;
+    const dist=Math.hypot(player.x-w.x,player.y-w.y);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,.13)';
+    ctx.beginPath(); ctx.ellipse(sx,sy+20,16,5,0,0,Math.PI*2); ctx.fill();
+    // Exclamation near
+    if(dist<100){
+      ctx.fillStyle='#FFD700'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('!',sx,sy-48+bob);
+    }
+    // Sprite
+    if(w.img.complete&&w.img.naturalWidth>0){
+      if(w.vx<-.1){
+        ctx.save(); ctx.scale(-1,1);
+        ctx.drawImage(w.img,-sx-22,sy-40+bob,44,44); ctx.restore();
+      } else {
+        ctx.drawImage(w.img,sx-22,sy-40+bob,44,44);
+      }
+    }
+  });
+}
+
+function drawPlayer(){
+  const sx=Math.round(player.x-cam.x), sy=Math.round(player.y-cam.y);
+  const leg=Math.sin(player.wf*.2)*4;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,.18)';
+  ctx.beginPath(); ctx.ellipse(sx,sy+22,13,5,0,0,Math.PI*2); ctx.fill();
+  // Legs
+  ctx.fillStyle='#1565c0';
+  ctx.fillRect(sx-8,sy+3,7,14+Math.round(leg));
+  ctx.fillRect(sx+1,sy+3,7,14-Math.round(leg));
+  // Shoes
+  ctx.fillStyle='#111';
+  ctx.fillRect(sx-9,sy+14+Math.max(0,Math.round(leg)),8,5);
+  ctx.fillRect(sx+1,sy+14+Math.max(0,-Math.round(leg)),8,5);
+  // Body
+  ctx.fillStyle='#ef5350'; ctx.fillRect(sx-10,sy-10,20,15);
+  // Arms
+  ctx.fillStyle='#FDBCB4';
+  ctx.fillRect(sx-14,sy-8,5,11); ctx.fillRect(sx+9,sy-8,5,11);
+  // Neck
+  ctx.fillStyle='#FDBCB4'; ctx.fillRect(sx-3,sy-13,6,5);
+  // Head
+  ctx.fillStyle='#FDBCB4'; ctx.beginPath(); ctx.arc(sx,sy-20,11,0,Math.PI*2); ctx.fill();
+  // Hat brim
+  ctx.fillStyle='#d32f2f'; ctx.fillRect(sx-14,sy-27,28,6);
+  // Hat crown
+  ctx.fillStyle='#d32f2f'; ctx.fillRect(sx-9,sy-40,18,15);
+  // Hat detail
+  ctx.fillStyle='#fff'; ctx.fillRect(sx-2,sy-28,4,4);
+  // Eyes
+  if(player.facing!=='up'){
+    ctx.fillStyle='#111';
+    ctx.fillRect(sx-5,sy-23,3,3); ctx.fillRect(sx+2,sy-23,3,3);
+  }
+}
+
+function drawMinimap(){
+  const mw=120,mh=90,mx=canvas.width-mw-10,my=10;
+  ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fillRect(mx,my,mw,mh);
+  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1; ctx.strokeRect(mx,my,mw,mh);
+  // Wild dots
+  wildPokes.forEach(w=>{
+    const dx=(w.x/WORLD_W)*mw, dy=(w.y/WORLD_H)*mh;
+    const t0=w.data.types[0];
+    const col={fire:'#f08030',water:'#6890f0',electric:'#f8d030',grass:'#78c850',ice:'#98d8d8',psychic:'#f85888',dark:'#705848',fairy:'#ee99ac',normal:'#a8a878',poison:'#a040a0',ghost:'#705898',steel:'#b8b8d0'}[t0]||'#fff';
+    ctx.fillStyle=col; ctx.fillRect(mx+dx-2,my+dy-2,4,4);
+  });
+  // Player dot
+  const px=(player.x/WORLD_W)*mw, py=(player.y/WORLD_H)*mh;
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(mx+px,my+py,4,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=var_red; ctx.beginPath(); ctx.arc(mx+px,my+py,3,0,Math.PI*2); ctx.fill();
+}
+const var_red='#CC0000';
+
+function gameLoop(){
+  if(!gameRunning) return;
+  updatePlayer(); updateCam(); updateWild(); checkEncounters();
+  spawnTimer++;
+  if(spawnTimer>90){ spawnWild(); spawnTimer=0; }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawBg(); drawTrees(); drawWilids_and_player();
+  drawMinimap();
+  frameId=requestAnimationFrame(gameLoop);
+}
+
+function drawWilids_and_player(){
+  // Draw wilds and player sorted by y
+  const playerY=player.y;
+  const before=wildPokes.filter(w=>w.y<=playerY);
+  const after=wildPokes.filter(w=>w.y>playerY);
+  before.forEach(w=>drawOneWild(w));
+  drawPlayer();
+  after.forEach(w=>drawOneWild(w));
+}
+
+function drawOneWild(w){
+  const sx=Math.round(w.x-cam.x), sy=Math.round(w.y-cam.y);
+  if(sx<-64||sx>canvas.width+64||sy<-64||sy>canvas.height+64) return;
+  const bob=Math.sin(w.animT*.07)*2.5;
+  const dist=Math.hypot(player.x-w.x,player.y-w.y);
+  ctx.fillStyle='rgba(0,0,0,.13)';
+  ctx.beginPath(); ctx.ellipse(sx,sy+20,16,5,0,0,Math.PI*2); ctx.fill();
+  if(dist<100&&dist>ENC_DIST){
+    ctx.fillStyle='#FFD700'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('!',sx,sy-48+bob);
+    ctx.textAlign='left';
+  }
+  if(w.img.complete&&w.img.naturalWidth>0){
+    if(w.vx<-.1){
+      ctx.save(); ctx.scale(-1,1);
+      ctx.drawImage(w.img,-sx-22,sy-40+bob,44,44); ctx.restore();
+    } else { ctx.drawImage(w.img,sx-22,sy-40+bob,44,44); }
+  }
+}
+
+function resizeCanvas(){
+  const nav=document.querySelector('.top-nav');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight-nav.offsetHeight;
+  updateCam();
+}
+
+function startGame(){
+  resizeCanvas();
+  if(wildPokes.length===0){ for(let i=0;i<MAX_WILD;i++) spawnWild(); }
+  gameRunning=true;
+  if(frameId) cancelAnimationFrame(frameId);
+  frameId=requestAnimationFrame(gameLoop);
+}
+
+function stopGame(){ gameRunning=false; }
+
+window.addEventListener('resize',()=>{ if(currentScreen==='game') resizeCanvas(); });
+
+document.addEventListener('keydown',e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+  keys[e.key]=true;
+  if(e.key==='ArrowUp' && batWaitingThrow) throwBall();
+  if(e.key==='Escape'){ if(document.getElementById('mOverlay').classList.contains('open')) closeModal(); }
+});
+document.addEventListener('keyup',e=>{ keys[e.key]=false; });
+
+// ═══════════════════════════════════════════
+//  BATTLE
+// ═══════════════════════════════════════════
+let batWaitingThrow = false;
+let battleEnemy = null;
+let batBallX = 0, batBallY = 0;
+
+function startEncounter(wp){
+  inBattle=true; gameRunning=false; battleEnemy=wp; batWaitingThrow=false;
+  // Flash
+  const fl=document.getElementById('flashEl');
+  fl.style.transition='none'; fl.style.opacity='1';
+  setTimeout(()=>{ fl.style.transition='opacity .15s'; fl.style.opacity='0'; },60);
+  setTimeout(()=>{ fl.style.opacity='1'; },220);
+  setTimeout(()=>{ fl.style.opacity='0'; },380);
+  setTimeout(()=>{ fl.style.opacity='1'; },540);
+  setTimeout(()=>{ fl.style.opacity='0'; showBattle(wp); },700);
+}
+
+function showBattle(wp){
+  const ov=document.getElementById('battleOverlay');
+  ov.style.display='flex';
+  document.getElementById('bName').textContent=`やせいの ${wp.data.name}`;
+  document.getElementById('bLv').textContent=`Lv.${wp.lv}`;
+  document.getElementById('bSprite').src=artUrl(wp.data.id,false);
+  document.getElementById('bSprite').className='bat-enemy-sprite';
+  // Reset ball
+  const ball=document.getElementById('battleBall');
+  ball.className='bat-pokeball';
+  ball.style.transform='';
+  ball.style.setProperty('--bx','0px');
+  ball.style.setProperty('--by','0px');
+  // Text sequence
+  document.getElementById('batHint').style.display='none';
+  document.getElementById('batText').textContent=`あ！ やせいの ${wp.data.name} が あらわれた！`;
+  setTimeout(()=>{
+    document.getElementById('batText').textContent=`${wp.data.name} が ちかづいてくる！`;
+    setTimeout(()=>{
+      document.getElementById('batText').textContent='ボールを なげよう！';
+      document.getElementById('batHint').style.display='block';
+      document.getElementById('battleBall').classList.add('idle-anim');
+      batWaitingThrow=true;
+    },1200);
+  },1500);
+}
+
+function throwBall(){
+  if(!batWaitingThrow) return;
+  batWaitingThrow=false;
+  const ball=document.getElementById('battleBall');
+  const bRect=ball.getBoundingClientRect();
+  const sRect=document.getElementById('bSprite').getBoundingClientRect();
+  const bx=sRect.left+sRect.width/2-(bRect.left+bRect.width/2);
+  const by=sRect.top+sRect.height/2-(bRect.top+bRect.height/2);
+  ball.classList.remove('idle-anim');
+  ball.style.setProperty('--bx',`${bx}px`);
+  ball.style.setProperty('--by',`${by}px`);
+  ball.classList.add('throwing');
+  document.getElementById('batHint').style.display='none';
+  document.getElementById('batText').textContent='ボールを なげた！';
+  setTimeout(()=>{
+    // Pokémon vanishes
+    document.getElementById('bSprite').classList.add('vanish');
+    document.getElementById('batText').textContent='ボールが うごいている…';
+    ball.classList.remove('throwing');
+    ball.className='bat-pokeball caught';
+    ball.style.transform=`translate(${bx}px,${by}px)`;
+    setTimeout(()=>{
+      ball.style.transform='';
+      ball.className='bat-pokeball';
+      ball.style.setProperty('--bx',`${bx}px`);
+      ball.style.setProperty('--by',`${by}px`);
+      ball.classList.add('shaking');
+      setTimeout(()=>{
+        ball.classList.remove('shaking');
+        gotcha();
+      },1300);
+    },400);
+  },700);
+}
+
+function gotcha(){
+  const wp=battleEnemy;
+  // Register
+  if(!caught.has(wp.data.id)){ caught.add(wp.data.id); saveCaught(); }
+  updateNavCaught();
+  document.getElementById('batText').textContent=`${wp.data.name} を ゲットした！`;
+  // Show success overlay
+  const cs=document.getElementById('catchSuccess');
+  document.getElementById('csImg').src=artUrl(wp.data.id);
+  document.getElementById('csName').textContent=wp.data.name;
+  document.getElementById('csSub').textContent=`No.${String(wp.data.id).padStart(3,'0')} ${wp.data.nameEn} — 図鑑に登録されました！`;
+  cs.style.display='flex';
+  setTimeout(()=>{
+    cs.style.display='none';
+    document.getElementById('battleOverlay').style.display='none';
+    inBattle=false; batWaitingThrow=false;
+    setTimeout(spawnWild,3000);
+    gameRunning=true;
+    if(frameId) cancelAnimationFrame(frameId);
+    frameId=requestAnimationFrame(gameLoop);
+  },2800);
+}
+
+// Mobile D-pad (touch)
+function addTouchPad(){
+  const pad=document.createElement('div');
+  pad.style.cssText='position:absolute;bottom:70px;left:20px;width:120px;height:120px;z-index:10;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:4px';
+  const dirs=[null,'up',null,'left',null,'right',null,'down',null];
+  const keyMap={up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'};
+  dirs.forEach(d=>{
+    const btn=document.createElement('div');
+    if(d){
+      btn.style.cssText='background:rgba(255,255,255,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;user-select:none;-webkit-user-select:none';
+      btn.textContent={up:'↑',down:'↓',left:'←',right:'→'}[d];
+      btn.addEventListener('touchstart',e=>{ e.preventDefault(); keys[keyMap[d]]=true; });
+      btn.addEventListener('touchend',e=>{ e.preventDefault(); keys[keyMap[d]]=false; });
+    }
+    pad.appendChild(btn);
+  });
+  // Throw button
+  const throwB=document.createElement('div');
+  throwB.style.cssText='position:absolute;bottom:70px;right:20px;width:70px;height:70px;background:rgba(204,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:900;cursor:pointer;z-index:10;user-select:none';
+  throwB.textContent='なげる';
+  throwB.addEventListener('touchstart',e=>{ e.preventDefault(); if(batWaitingThrow) throwBall(); });
+  document.getElementById('gameScreen').appendChild(pad);
+  document.getElementById('gameScreen').appendChild(throwB);
+}
+if('ontouchstart' in window) addTouchPad();
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+updateNavCaught();
+switchTo('game');
+
+// Hint fadeout
+setTimeout(()=>{
+  const h=document.getElementById('gameHint');
+  h.style.transition='opacity 1s';
+  h.style.opacity='0';
+  setTimeout(()=>h.style.display='none',1000);
+},5000);
+</script>
+</body>
+</html>
