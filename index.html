@@ -272,6 +272,28 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .mg-result-ok{color:#16a34a}
 .mg-result-ng{color:#dc2626}
 .mg-next-btn{width:100%;margin-top:14px;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 4px 14px rgba(204,0,0,.3)}
+.mg-type-silhouette{background:#e0e7ff;color:#3730a3}
+.mg-type-nakamazure{background:#dcfce7;color:#166534}
+.mg-type-iroate{background:#fff7ed;color:#c2410c}
+/* ── SETTINGS ── */
+#settingsBtn{position:absolute;top:10px;left:10px;z-index:15;border:none;border-radius:50%;width:36px;height:36px;background:rgba(255,255,255,.85);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-family:inherit}
+#settingsBtn:active{transform:scale(.92)}
+#settingsOverlay{position:absolute;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.65);padding:16px}
+#settingsOverlay.open{display:flex}
+.sg-card{background:#fff;border-radius:24px;width:100%;max-width:360px;padding:24px 20px;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
+.sg-head{font-size:1.1rem;font-weight:900;color:var(--text);margin-bottom:4px;text-align:center}
+.sg-sub{font-size:.78rem;color:var(--muted);font-weight:700;text-align:center;margin-bottom:18px}
+.sg-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #f0f0f0}
+.sg-row:last-of-type{border-bottom:none}
+.sg-label{display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:800;color:var(--text)}
+.sg-emoji{font-size:1.2rem;width:24px;text-align:center}
+.sg-toggle{width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.sg-toggle.on{background:var(--red)}
+.sg-toggle.off{background:#ddd}
+.sg-toggle::after{content:'';position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sg-toggle.on::after{left:23px}
+.sg-toggle.off::after{left:3px}
+.sg-close-btn{width:100%;margin-top:18px;padding:13px;border:none;border-radius:14px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 4px 14px rgba(204,0,0,.3)}
 
 /* Shiny btn */
 .shiny-btn{position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a1a;border:none;border-radius:28px;padding:11px 20px;font-size:.82rem;font-weight:900;cursor:pointer;box-shadow:0 4px 18px rgba(255,165,0,.55);transition:transform .2s,box-shadow .2s;z-index:150;font-family:inherit}
@@ -339,6 +361,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   <canvas id="gameCanvas"></canvas>
   <div id="gameHint">← → ↑ ↓ で移動 | 野生のポケモンを探そう！</div>
   <button id="modeToggle" class="easy" onclick="toggleChallengeMode()">かんたん</button>
+  <button id="settingsBtn" onclick="openSettings()">⚙️</button>
   <div id="flashEl"></div>
 
   <!-- MINI-GAME OVERLAY -->
@@ -352,6 +375,16 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
         </div>
       </div>
       <div class="mg-body" id="mgBody"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div id="settingsOverlay">
+    <div class="sg-card">
+      <div class="sg-head">⚙️ ミニゲーム　せってい</div>
+      <p class="sg-sub">でてくる　ゲームを　えらんでね</p>
+      <div id="sgList"></div>
+      <button class="sg-close-btn" onclick="closeSettings()">とじる ✕</button>
     </div>
   </div>
 
@@ -1168,6 +1201,34 @@ function toggleChallengeMode(){
   btn.className=challengeMode?'challenge':'easy';
 })();
 
+// ── Settings ──
+function openSettings(){
+  if(inBattle) return;
+  gameRunning=false;
+  const list=document.getElementById('sgList');
+  list.innerHTML=ALL_MG_TYPES.map(t=>`
+    <div class="sg-row">
+      <div class="sg-label"><span class="sg-emoji">${t.emoji}</span>${t.label}</div>
+      <button class="sg-toggle ${enabledMG.has(t.id)?'on':'off'}" id="sgt-${t.id}" onclick="toggleMG('${t.id}')"></button>
+    </div>`).join('');
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.remove('open');
+  if(!inBattle){
+    gameRunning=true;
+    if(frameId) cancelAnimationFrame(frameId);
+    frameId=requestAnimationFrame(gameLoop);
+  }
+}
+function toggleMG(id){
+  if(enabledMG.has(id)&&enabledMG.size<=1) return;
+  enabledMG.has(id)?enabledMG.delete(id):enabledMG.add(id);
+  localStorage.setItem('mgEnabled',JSON.stringify([...enabledMG]));
+  const btn=document.getElementById(`sgt-${id}`);
+  if(btn) btn.className=`sg-toggle ${enabledMG.has(id)?'on':'off'}`;
+}
+
 // ── Quiz data (保育園向け) ──
 const QUIZZES=[
   {q:'りんごは　なにいろ？',choices:['あお','きいろ','あか'],ans:2},
@@ -1185,6 +1246,53 @@ const QUIZZES=[
   {q:'りんごは　なにのなかま？',choices:['やさい','さかな','くだもの'],ans:2},
   {q:'ライオンは　どこに　すむ？',choices:['うみ','さばく','そら'],ans:1},
   {q:'かえるは　どこにすむ？',choices:['さばく','うみ','いけ'],ans:2},
+  {q:'いちごは　なにいろ？',choices:['きいろ','あか','あお'],ans:1},
+  {q:'うしは　どんな　なきごえ？',choices:['ブーブー','もーもー','わんわん'],ans:1},
+  {q:'ひこうきは　どこをとぶ？',choices:['うみ','じめん','そら'],ans:2},
+  {q:'ほしは　いつ　みえる？',choices:['あさ','ひる','よる'],ans:2},
+  {q:'カメの　せなかには　なにがある？',choices:['つの','こうら','はね'],ans:1},
+  {q:'ぞうの　はなは？',choices:['みじかい','ながい','なにもない'],ans:1},
+  {q:'ちょうちょは　どこをとぶ？',choices:['うみ','そら','じめん'],ans:1},
+  {q:'ねるときは　どこにはいる？',choices:['おふろ','れいぞうこ','ふとん'],ans:2},
+  {q:'でんしゃは　どこをはしる？',choices:['うみ','せんろ','そら'],ans:1},
+  {q:'バナナは　どんな　かたち？',choices:['まる','しかく','みかづき'],ans:2},
+  {q:'あめが　ふると　なにをさす？',choices:['かさ','ぼうし','てぶくろ'],ans:0},
+  {q:'さかなは　どこにいる？',choices:['そら','きのうえ','うみ'],ans:2},
+  {q:'よるは　くらい？　あかるい？',choices:['くらい','あかるい','ふつう'],ans:0},
+];
+
+// ── なかまはずれデータ ──
+const NAKAMASET=[
+  {items:['いぬ','ねこ','りんご'],        odd:2},
+  {items:['りんご','みかん','にんじん'],   odd:2},
+  {items:['バス','でんしゃ','さかな'],     odd:2},
+  {items:['ぞう','さかな','きりん'],       odd:1},
+  {items:['ピアノ','ギター','バナナ'],     odd:2},
+  {items:['ばら','チューリップ','いぬ'],   odd:2},
+  {items:['チョコ','あめ','ぎゅうにゅう'], odd:2},
+  {items:['みかん','レモン','キャベツ'],   odd:2},
+  {items:['くるま','ぞう','じてんしゃ'],   odd:1},
+  {items:['いちご','ぶどう','じゃがいも'], odd:2},
+  {items:['たいこ','ふえ','いす'],         odd:2},
+  {items:['ひこうき','ふね','さかな'],     odd:2},
+  {items:['あか','みどり','ねこ'],         odd:2},
+  {items:['ねこ','とり','にんじん'],       odd:2},
+  {items:['バナナ','もも','コップ'],       odd:2},
+];
+
+// ── いろ当てデータ ──
+const COLORS=[
+  {name:'あか',    hex:'#e53935'},
+  {name:'あお',    hex:'#1e88e5'},
+  {name:'きいろ',  hex:'#fdd835'},
+  {name:'みどり',  hex:'#43a047'},
+  {name:'しろ',    hex:'#f0f0f0',border:true},
+  {name:'くろ',    hex:'#212121'},
+  {name:'オレンジ',hex:'#fb8c00'},
+  {name:'ピンク',  hex:'#e91e93'},
+  {name:'むらさき',hex:'#8e24aa'},
+  {name:'みずいろ',hex:'#29b6f6'},
+  {name:'ちゃいろ',hex:'#8d6e63'},
 ];
 
 function makeStudyQ(wp){
@@ -1202,19 +1310,30 @@ function makeStudyQ(wp){
   };
 }
 
-const MG_TYPES=['quiz','study','rps'];
+const ALL_MG_TYPES=[
+  {id:'quiz',       label:'クイズ',       emoji:'❓'},
+  {id:'study',      label:'べんきょう',   emoji:'💡'},
+  {id:'rps',        label:'じゃんけん',   emoji:'✊'},
+  {id:'silhouette', label:'シルエット',   emoji:'👤'},
+  {id:'nakamazure', label:'なかまはずれ', emoji:'🔍'},
+  {id:'iroate',     label:'いろ当て',     emoji:'🎨'},
+];
+let enabledMG=new Set(JSON.parse(localStorage.getItem('mgEnabled')||'null')||ALL_MG_TYPES.map(t=>t.id));
 let mgCurrentEnemy=null;
 let rpsRound=0;
 
 function startMiniGame(wp){
   mgCurrentEnemy=wp;
-  const ov=document.getElementById('miniGameOverlay');
   document.getElementById('mgSprite').src=artUrl(wp.data.id,false);
-  ov.classList.add('active');
-  const type=MG_TYPES[Math.floor(Math.random()*MG_TYPES.length)];
+  document.getElementById('miniGameOverlay').classList.add('active');
+  const available=ALL_MG_TYPES.map(t=>t.id).filter(id=>enabledMG.has(id));
+  const type=available[Math.floor(Math.random()*available.length)];
   if(type==='quiz') showQuiz();
   else if(type==='study') showStudy(wp);
-  else showRPS();
+  else if(type==='rps') showRPS();
+  else if(type==='silhouette') showSilhouette(wp);
+  else if(type==='nakamazure') showNakamaHazure();
+  else showIroAte();
 }
 
 function showQuiz(){
@@ -1251,6 +1370,59 @@ function showStudy(wp){
     <div class="mg-question">${sq.q}</div>
     <div class="mg-choices">
       ${sq.choices.map((c,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${sq.ans})">${c}</button>`).join('')}
+    </div>
+    <div class="mg-result-msg" id="mgResult"></div>`;
+}
+
+function showSilhouette(wp){
+  const correct=wp.data;
+  const wrongs=[];
+  while(wrongs.length<2){
+    const c=ALL[Math.floor(Math.random()*ALL.length)];
+    if(c.id!==correct.id&&!wrongs.find(w=>w.id===c.id)) wrongs.push(c);
+  }
+  const choices=[correct,...wrongs].sort(()=>Math.random()-.5);
+  const ans=choices.findIndex(c=>c.id===correct.id);
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='シルエット'; lbl.className='mg-type-label mg-type-silhouette';
+  document.getElementById('mgTitle').textContent='このポケモンは　だれ！？';
+  document.getElementById('mgBody').innerHTML=`
+    <div style="text-align:center;margin-bottom:14px">
+      <img src="${artUrl(correct.id,false)}" style="width:90px;height:90px;object-fit:contain;filter:brightness(0)" alt="?">
+    </div>
+    <div class="mg-choices">
+      ${choices.map((c,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${ans})">${c.name}</button>`).join('')}
+    </div>
+    <div class="mg-result-msg" id="mgResult"></div>`;
+}
+
+function showNakamaHazure(){
+  const q=NAKAMASET[Math.floor(Math.random()*NAKAMASET.length)];
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='なかまはずれ'; lbl.className='mg-type-label mg-type-nakamazure';
+  document.getElementById('mgTitle').textContent='なかまはずれは　どれ！？';
+  document.getElementById('mgBody').innerHTML=`
+    <div class="mg-question">３つのうち　１つだけ　ちがうよ！</div>
+    <div class="mg-choices">
+      ${q.items.map((item,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${q.odd})">${item}</button>`).join('')}
+    </div>
+    <div class="mg-result-msg" id="mgResult"></div>`;
+}
+
+function showIroAte(){
+  const correct=COLORS[Math.floor(Math.random()*COLORS.length)];
+  const wrongs=COLORS.filter(c=>c.name!==correct.name).sort(()=>Math.random()-.5).slice(0,2);
+  const choices=[correct,...wrongs].sort(()=>Math.random()-.5);
+  const ans=choices.findIndex(c=>c.name===correct.name);
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='いろ当て'; lbl.className='mg-type-label mg-type-iroate';
+  document.getElementById('mgTitle').textContent='なんいろか　わかるかな？';
+  document.getElementById('mgBody').innerHTML=`
+    <div style="display:flex;justify-content:center;margin-bottom:16px">
+      <div style="width:90px;height:90px;border-radius:50%;background:${correct.hex};${correct.border?'border:3px solid #ccc;':''}box-shadow:0 4px 16px rgba(0,0,0,.2)"></div>
+    </div>
+    <div class="mg-choices">
+      ${choices.map((c,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${ans})">${c.name}</button>`).join('')}
     </div>
     <div class="mg-result-msg" id="mgResult"></div>`;
 }
@@ -1328,6 +1500,7 @@ let battleEnemy = null;
 let batBallX = 0, batBallY = 0;
 
 function startEncounter(wp){
+  document.getElementById('settingsOverlay').classList.remove('open');
   inBattle=true; gameRunning=false; battleEnemy=wp; batWaitingThrow=false;
   // Flash
   const fl=document.getElementById('flashEl');
