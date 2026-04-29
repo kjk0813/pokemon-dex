@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
 <title>イーブイフレンズ図鑑</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 
 /* ── GAME SCREEN ── */
 #gameScreen{position:relative;width:100%;overflow:hidden}
-#gameCanvas{display:block;cursor:none}
+#gameCanvas{display:block;cursor:none;touch-action:none}
 /* Controls hint */
 #gameHint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:.78rem;font-weight:700;padding:8px 18px;border-radius:20px;pointer-events:none;transition:opacity .5s;white-space:nowrap}
 /* Flash overlay */
@@ -270,7 +270,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   <div id="flashEl"></div>
 
   <!-- BATTLE OVERLAY -->
-  <div id="battleOverlay">
+  <div id="battleOverlay" onclick="if(batWaitingThrow)throwBall()">
     <div class="bat-sky" style="position:relative">
       <div class="bat-enemy-info">
         <span class="bat-ename" id="bName">???</span>
@@ -293,7 +293,8 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
     </div>
     <div class="bat-textbox">
       <div id="batText">...</div>
-      <div class="bat-hint" id="batHint" style="display:none">↑ を押してボールを投げよう！</div>
+      <div class="bat-hint" id="batHint" style="display:none">画面をタップ または ↑ キーでボールを投げよう！</div>
+      <button id="mThrowBtn" style="display:none;width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:14px;font-size:1.15rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:10px;box-shadow:0 4px 16px rgba(204,0,0,.4);letter-spacing:.05em" ontouchstart="event.stopPropagation();if(batWaitingThrow)throwBall()">🔴 ボールをなげる！</button>
     </div>
   </div>
 
@@ -1129,6 +1130,7 @@ function showBattle(wp){
     setTimeout(()=>{
       document.getElementById('batText').textContent='ボールを なげよう！';
       document.getElementById('batHint').style.display='block';
+      document.getElementById('mThrowBtn').style.display='block';
       document.getElementById('battleBall').classList.add('idle-anim');
       batWaitingThrow=true;
     },1200);
@@ -1148,6 +1150,7 @@ function throwBall(){
   ball.style.setProperty('--by',`${by}px`);
   ball.classList.add('throwing');
   document.getElementById('batHint').style.display='none';
+  document.getElementById('mThrowBtn').style.display='none';
   document.getElementById('batText').textContent='ボールを なげた！';
   setTimeout(()=>{
     // Pokémon vanishes
@@ -1196,26 +1199,25 @@ function gotcha(){
 // Mobile D-pad (touch)
 function addTouchPad(){
   const pad=document.createElement('div');
-  pad.style.cssText='position:absolute;bottom:70px;left:20px;width:120px;height:120px;z-index:10;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:4px';
+  pad.id='touchPad';
+  pad.style.cssText='position:absolute;bottom:24px;left:16px;width:156px;height:156px;z-index:10;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:3px';
   const dirs=[null,'up',null,'left',null,'right',null,'down',null];
   const keyMap={up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'};
+  const labels={up:'▲',down:'▼',left:'◀',right:'▶'};
   dirs.forEach(d=>{
     const btn=document.createElement('div');
     if(d){
-      btn.style.cssText='background:rgba(255,255,255,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;user-select:none;-webkit-user-select:none';
-      btn.textContent={up:'↑',down:'↓',left:'←',right:'→'}[d];
-      btn.addEventListener('touchstart',e=>{ e.preventDefault(); keys[keyMap[d]]=true; });
-      btn.addEventListener('touchend',e=>{ e.preventDefault(); keys[keyMap[d]]=false; });
+      btn.style.cssText='background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;cursor:pointer;user-select:none;-webkit-user-select:none;text-shadow:0 1px 3px rgba(0,0,0,.5)';
+      btn.textContent=labels[d];
+      btn.addEventListener('touchstart',e=>{ e.preventDefault(); btn.style.background='rgba(255,255,255,.4)'; keys[keyMap[d]]=true; },{passive:false});
+      btn.addEventListener('touchend',e=>{ e.preventDefault(); btn.style.background='rgba(0,0,0,.35)'; keys[keyMap[d]]=false; },{passive:false});
+      btn.addEventListener('touchcancel',e=>{ btn.style.background='rgba(0,0,0,.35)'; keys[keyMap[d]]=false; });
     }
     pad.appendChild(btn);
   });
-  // Throw button
-  const throwB=document.createElement('div');
-  throwB.style.cssText='position:absolute;bottom:70px;right:20px;width:70px;height:70px;background:rgba(204,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:900;cursor:pointer;z-index:10;user-select:none';
-  throwB.textContent='なげる';
-  throwB.addEventListener('touchstart',e=>{ e.preventDefault(); if(batWaitingThrow) throwBall(); });
   document.getElementById('gameScreen').appendChild(pad);
-  document.getElementById('gameScreen').appendChild(throwB);
+  // Update hint for touch
+  document.getElementById('gameHint').textContent='D-パッドで移動 | 野生のポケモンを探そう！';
 }
 if('ontouchstart' in window) addTouchPad();
 
