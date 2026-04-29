@@ -125,25 +125,25 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .sec-desc{color:var(--muted);font-size:.9rem;font-weight:600}
 
 /* Pokémon grid */
-.poke-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:20px}
+.poke-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 
 /* Card */
 .poke-card{border-radius:var(--r-lg);cursor:pointer;box-shadow:var(--sh);overflow:hidden;transition:transform .32s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;opacity:0;animation:fadeUp .5s ease forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 .poke-card:hover{transform:translateY(-9px) scale(1.02);box-shadow:var(--sh2)}
 .poke-card:hover .c-sprite{transform:scale(1.12) rotate(-5deg)}
-.c-top{padding:24px 20px 20px;position:relative;overflow:hidden}
+.c-top{padding:16px 12px 14px;position:relative;overflow:hidden}
 .c-pball{position:absolute;bottom:-28px;right:-28px;width:120px;height:120px;opacity:.07;transition:transform .4s,opacity .3s}
 .poke-card:hover .c-pball{transform:rotate(45deg) scale(1.1);opacity:.12}
 .c-num{position:absolute;top:12px;right:14px;font-size:.78rem;font-weight:900;font-family:monospace;color:rgba(255,255,255,.42)}
 .light .c-num{color:rgba(0,0,0,.28)}
 .caught-badge{position:absolute;top:10px;left:12px;font-size:.65rem;font-weight:900;background:rgba(255,255,255,.3);color:#fff;padding:2px 8px;border-radius:10px}
 .light .caught-badge{background:rgba(0,0,0,.15);color:rgba(0,0,0,.7)}
-.c-ring{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(0,0,0,.14)}
-.c-sprite{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2));transition:transform .32s cubic-bezier(.34,1.56,.64,1)}
-.c-name{text-align:center;color:#fff;font-size:1.28rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,.2);margin-bottom:3px}
+.c-ring{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 4px 16px rgba(0,0,0,.14)}
+.c-sprite{width:66px;height:66px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2));transition:transform .32s cubic-bezier(.34,1.56,.64,1)}
+.c-name{text-align:center;color:#fff;font-size:.95rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,.2);margin-bottom:2px}
 .light .c-name{color:#1a1a1a;text-shadow:none}
-.c-name-en{text-align:center;color:rgba(255,255,255,.62);font-size:.74rem;font-weight:700;letter-spacing:.04em;margin-bottom:10px}
+.c-name-en{text-align:center;color:rgba(255,255,255,.62);font-size:.62rem;font-weight:700;letter-spacing:.04em;margin-bottom:8px}
 .light .c-name-en{color:rgba(0,0,0,.48)}
 .c-types{display:flex;justify-content:center;gap:6px}
 /* Mystery card */
@@ -152,7 +152,7 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .mystery .c-sprite-q{font-size:3rem;color:rgba(255,255,255,.2)}
 .mystery .c-name{color:rgba(255,255,255,.3)}
 /* Card bottom */
-.c-bot{background:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+.c-bot{background:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
 .c-stats{display:flex;gap:16px}
 .sm{text-align:center}
 .sm-l{font-size:.58rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
@@ -233,6 +233,45 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .stat-tot{display:flex;justify-content:flex-end;margin-top:8px;font-size:.8rem;font-weight:800;color:var(--muted);gap:6px;align-items:baseline}
 .stat-tot-v{font-size:1.1rem;font-weight:900;color:var(--red)}
 
+/* ── MODE TOGGLE ── */
+#modeToggle{position:absolute;top:10px;right:10px;z-index:15;border:none;border-radius:20px;padding:6px 14px;font-size:.78rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.3);transition:background .2s,transform .15s;white-space:nowrap}
+#modeToggle:active{transform:scale(.95)}
+#modeToggle.easy{background:rgba(255,255,255,.85);color:#555}
+#modeToggle.challenge{background:var(--red);color:#fff}
+
+/* ── MINI-GAME OVERLAY ── */
+#miniGameOverlay{position:absolute;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:16px}
+#miniGameOverlay.active{display:flex}
+.mg-card{background:#fff;border-radius:24px;max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+.mg-header{display:flex;align-items:center;gap:14px;padding:18px 20px 14px;border-bottom:2px solid var(--bg)}
+.mg-sprite{width:70px;height:70px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
+.mg-header-text{}
+.mg-type-label{font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:4px}
+.mg-type-quiz{background:#fef3c7;color:#92400e}
+.mg-type-study{background:#dbeafe;color:#1e3a8a}
+.mg-type-rps{background:#fce7f3;color:#9d174d}
+.mg-title{font-size:1rem;font-weight:900;color:var(--text);line-height:1.3}
+.mg-body{padding:18px 20px 20px}
+.mg-fact{background:#eff6ff;border-radius:12px;padding:10px 14px;font-size:.88rem;font-weight:700;color:#1e40af;margin-bottom:14px;line-height:1.5}
+.mg-question{font-size:1.05rem;font-weight:900;color:var(--text);margin-bottom:16px;text-align:center;line-height:1.4}
+.mg-choices{display:flex;flex-direction:column;gap:10px}
+.mg-choice{border:2.5px solid #e5e7eb;border-radius:14px;padding:13px 18px;font-size:1rem;font-weight:800;font-family:inherit;cursor:pointer;background:#fff;color:var(--text);text-align:center;transition:border-color .15s,background .15s,transform .1s}
+.mg-choice:active{transform:scale(.97)}
+.mg-choice:hover{border-color:var(--red);background:#fff5f5}
+.mg-choice.correct{border-color:#22c55e;background:#f0fdf4;color:#15803d}
+.mg-choice.wrong{border-color:#ef4444;background:#fef2f2;color:#dc2626}
+.mg-rps-row{display:flex;gap:12px;justify-content:center}
+.mg-rps-btn{border:3px solid #e5e7eb;border-radius:18px;padding:14px 10px;font-size:2.2rem;font-family:inherit;cursor:pointer;background:#fff;transition:border-color .15s,transform .15s;flex:1;line-height:1}
+.mg-rps-btn:hover{border-color:var(--red);transform:scale(1.07)}
+.mg-rps-btn:active{transform:scale(.95)}
+.mg-rps-label{font-size:.72rem;font-weight:900;color:var(--muted);display:block;margin-top:4px}
+.mg-rps-result{text-align:center;padding:12px;font-size:1rem;font-weight:900}
+.mg-score{display:flex;justify-content:center;gap:6px;margin-bottom:12px;font-size:.85rem;font-weight:800;color:var(--muted)}
+.mg-result-msg{text-align:center;padding:10px 0 4px;font-size:1.15rem;font-weight:900}
+.mg-result-ok{color:#16a34a}
+.mg-result-ng{color:#dc2626}
+.mg-next-btn{width:100%;margin-top:14px;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 4px 14px rgba(204,0,0,.3)}
+
 /* Shiny btn */
 .shiny-btn{position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a1a;border:none;border-radius:28px;padding:11px 20px;font-size:.82rem;font-weight:900;cursor:pointer;box-shadow:0 4px 18px rgba(255,165,0,.55);transition:transform .2s,box-shadow .2s;z-index:150;font-family:inherit}
 .shiny-btn:hover{transform:scale(1.07)}
@@ -243,10 +282,19 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 
 @media(max-width:640px){
   .h-title{font-size:1.9rem}
-  .m-head-row{flex-direction:column;align-items:flex-start}
-  .m-sring{width:110px;height:110px}
-  .m-sprite{width:90px;height:90px}
-  .srow{grid-template-columns:72px 36px 1fr}
+  .m-head-row{flex-direction:row;align-items:center;gap:14px}
+  .m-sring{width:80px;height:80px;flex-shrink:0}
+  .m-sprite{width:66px;height:66px}
+  .srow{grid-template-columns:68px 34px 1fr}
+  .m-overlay{padding:8px;align-items:flex-start;padding-top:max(8px,env(safe-area-inset-top))}
+  .modal{max-height:calc(100dvh - 16px);max-height:calc(100vh - 16px)}
+  .m-head{padding:14px 14px 10px}
+  .m-name{font-size:1.4rem}
+  .m-body{padding:14px 14px 16px}
+  .ms{margin-bottom:14px}
+  .m-desc{font-size:.82rem;padding:10px 12px;line-height:1.65}
+  .m-meas{flex-wrap:wrap;gap:6px}
+  .poke-grid{gap:8px}
 }
 </style>
 </head>
@@ -275,7 +323,22 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 <div id="gameScreen">
   <canvas id="gameCanvas"></canvas>
   <div id="gameHint">← → ↑ ↓ で移動 | 野生のポケモンを探そう！</div>
+  <button id="modeToggle" class="easy" onclick="toggleChallengeMode()">かんたん</button>
   <div id="flashEl"></div>
+
+  <!-- MINI-GAME OVERLAY -->
+  <div id="miniGameOverlay">
+    <div class="mg-card">
+      <div class="mg-header">
+        <img class="mg-sprite" id="mgSprite" src="" alt="">
+        <div class="mg-header-text">
+          <span class="mg-type-label" id="mgTypeLabel"></span>
+          <div class="mg-title" id="mgTitle"></div>
+        </div>
+      </div>
+      <div class="mg-body" id="mgBody"></div>
+    </div>
+  </div>
 
   <!-- BATTLE OVERLAY -->
   <div id="battleOverlay" onclick="if(batWaitingThrow)throwBall()">
@@ -1101,6 +1164,172 @@ document.addEventListener('keyup',e=>{ keys[e.key]=false; });
 // ═══════════════════════════════════════════
 //  BATTLE
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  CHALLENGE MODE
+// ═══════════════════════════════════════════
+let challengeMode = localStorage.getItem('cMode')==='1';
+function toggleChallengeMode(){
+  challengeMode=!challengeMode;
+  localStorage.setItem('cMode',challengeMode?'1':'0');
+  const btn=document.getElementById('modeToggle');
+  btn.textContent=challengeMode?'チャレンジ':'かんたん';
+  btn.className=challengeMode?'challenge':'easy';
+}
+// Init toggle state
+(()=>{
+  const btn=document.getElementById('modeToggle');
+  btn.textContent=challengeMode?'チャレンジ':'かんたん';
+  btn.className=challengeMode?'challenge':'easy';
+})();
+
+// ── Quiz data (5歳児向け) ──
+const QUIZZES=[
+  {q:'りんごは　なにいろ？',choices:['あお','きいろ','あか'],ans:2},
+  {q:'1 + 1 は？',choices:['1','2','3'],ans:1},
+  {q:'いぬは　どんな　なきごえ？',choices:['にゃーにゃー','わんわん','もーもー'],ans:1},
+  {q:'おひさまは　なにいろ？',choices:['あお','あか','きいろ'],ans:2},
+  {q:'みかんは　なんのかたち？',choices:['しかく','まる','さんかく'],ans:1},
+  {q:'バナナは　なにいろ？',choices:['あか','きいろ','みどり'],ans:1},
+  {q:'3 + 2 は？',choices:['4','5','6'],ans:1},
+  {q:'ねこは　どんな　なきごえ？',choices:['わんわん','もーもー','にゃーにゃー'],ans:2},
+  {q:'うみで　およぐのは？',choices:['ねこ','いぬ','さかな'],ans:2},
+  {q:'5 - 3 は？',choices:['1','2','3'],ans:1},
+  {q:'そらは　なにいろ？',choices:['あか','あお','みどり'],ans:1},
+  {q:'たまごを　うむのは？',choices:['いぬ','にわとり','ねこ'],ans:1},
+  {q:'りんごは　なにのなかま？',choices:['やさい','さかな','くだもの'],ans:2},
+  {q:'2 × 3 は？',choices:['4','5','6'],ans:2},
+  {q:'かえるは　どこにすむ？',choices:['さばく','うみ','いけ'],ans:2},
+];
+
+function makeStudyQ(wp){
+  const type=wp.data.types[0];
+  const typeName=TNAMES[type];
+  const wrong=Object.keys(TNAMES).filter(t=>t!==type);
+  const w1=TNAMES[wrong[Math.floor(Math.random()*wrong.length)]];
+  const w2=TNAMES[wrong.filter(t=>TNAMES[t]!==w1)[Math.floor(Math.random()*5)]||wrong[0]];
+  const choices=[typeName,w1,w2].sort(()=>Math.random()-.5);
+  return {
+    fact:`${wp.data.name}は「${typeName}タイプ」のポケモンだよ！`,
+    q:`${wp.data.name}は　なん　タイプ？`,
+    choices,
+    ans:choices.indexOf(typeName)
+  };
+}
+
+const MG_TYPES=['quiz','study','rps'];
+let mgCurrentEnemy=null;
+let rpsWins=0, rpsRound=0;
+
+function startMiniGame(wp){
+  mgCurrentEnemy=wp;
+  const ov=document.getElementById('miniGameOverlay');
+  document.getElementById('mgSprite').src=artUrl(wp.data.id,false);
+  ov.classList.add('active');
+  const type=MG_TYPES[Math.floor(Math.random()*MG_TYPES.length)];
+  if(type==='quiz') showQuiz();
+  else if(type==='study') showStudy(wp);
+  else showRPS();
+}
+
+function showQuiz(){
+  const q=QUIZZES[Math.floor(Math.random()*QUIZZES.length)];
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='クイズ'; lbl.className='mg-type-label mg-type-quiz';
+  document.getElementById('mgTitle').textContent='クイズに　こたえよう！';
+  document.getElementById('mgBody').innerHTML=`
+    <div class="mg-question">${q.q}</div>
+    <div class="mg-choices">
+      ${q.choices.map((c,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${q.ans})">${c}</button>`).join('')}
+    </div>
+    <div class="mg-result-msg" id="mgResult"></div>`;
+}
+
+function answerQuiz(btn,idx,ans){
+  document.querySelectorAll('.mg-choice').forEach(b=>b.disabled=true);
+  const ok=idx===ans;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok) document.querySelectorAll('.mg-choice')[ans].classList.add('correct');
+  document.getElementById('mgResult').innerHTML=ok
+    ?'<span class="mg-result-ok">⭕ せいかい！ゲットチャンス！</span>'
+    :'<span class="mg-result-ng">❌ ちがうよ…にげられた！</span>';
+  setTimeout(()=>{ ok?miniGameWin():miniGameFail(); }, ok?900:1400);
+}
+
+function showStudy(wp){
+  const sq=makeStudyQ(wp);
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='べんきょう'; lbl.className='mg-type-label mg-type-study';
+  document.getElementById('mgTitle').textContent='ポケモン　はかせに　なろう！';
+  document.getElementById('mgBody').innerHTML=`
+    <div class="mg-fact">💡 ${sq.fact}</div>
+    <div class="mg-question">${sq.q}</div>
+    <div class="mg-choices">
+      ${sq.choices.map((c,i)=>`<button class="mg-choice" onclick="answerQuiz(this,${i},${sq.ans})">${c}</button>`).join('')}
+    </div>
+    <div class="mg-result-msg" id="mgResult"></div>`;
+}
+
+function showRPS(){
+  rpsWins=0; rpsRound=0;
+  const lbl=document.getElementById('mgTypeLabel');
+  lbl.textContent='じゃんけん'; lbl.className='mg-type-label mg-type-rps';
+  document.getElementById('mgTitle').textContent='じゃんけんで　かてたら　ゲット！';
+  renderRPS();
+}
+
+function renderRPS(){
+  const stars='⭐'.repeat(rpsWins)+'☆'.repeat(2-rpsWins);
+  document.getElementById('mgBody').innerHTML=`
+    <div class="mg-score">のこり ${3-rpsRound} かい ／ ${stars}</div>
+    <div class="mg-rps-row">
+      <button class="mg-rps-btn" onclick="playRPS('グー')">✊<span class="mg-rps-label">グー</span></button>
+      <button class="mg-rps-btn" onclick="playRPS('チョキ')">✌️<span class="mg-rps-label">チョキ</span></button>
+      <button class="mg-rps-btn" onclick="playRPS('パー')">🖐️<span class="mg-rps-label">パー</span></button>
+    </div>
+    <div class="mg-rps-result" id="rpsResult"></div>`;
+}
+
+function playRPS(player){
+  const hands=['グー','チョキ','パー'];
+  const emoji={'グー':'✊','チョキ':'✌️','パー':'🖐️'};
+  const cpu=hands[Math.floor(Math.random()*3)];
+  rpsRound++;
+  let res,won=false;
+  if(player===cpu) res='引き分け！';
+  else if((player==='グー'&&cpu==='チョキ')||(player==='チョキ'&&cpu==='パー')||(player==='パー'&&cpu==='グー')){res='かった！✨';won=true;rpsWins++;}
+  else res='まけた…';
+  document.querySelectorAll('.mg-rps-btn').forEach(b=>b.disabled=true);
+  document.getElementById('rpsResult').innerHTML=`${emoji[player]} vs ${emoji[cpu]}　→ <strong>${res}</strong>`;
+  setTimeout(()=>{
+    if(rpsWins>=2){ miniGameWin(); return; }
+    if(rpsRound>=3){ miniGameFail(); return; }
+    renderRPS();
+  },1200);
+}
+
+function miniGameWin(){
+  document.getElementById('miniGameOverlay').classList.remove('active');
+  document.getElementById('batText').textContent='ボールを なげよう！';
+  document.getElementById('batHint').style.display='none';
+  document.getElementById('mThrowBtn').style.display='block';
+  document.getElementById('battleBall').classList.add('idle-anim');
+  batWaitingThrow=true;
+}
+
+function miniGameFail(){
+  document.getElementById('miniGameOverlay').classList.remove('active');
+  document.getElementById('batText').textContent=`${mgCurrentEnemy.data.name} は　にげてしまった！`;
+  document.getElementById('battleBall').classList.remove('idle-anim');
+  setTimeout(()=>{
+    document.getElementById('battleOverlay').style.display='none';
+    inBattle=false; batWaitingThrow=false;
+    setTimeout(spawnWild,3000);
+    gameRunning=true;
+    if(frameId) cancelAnimationFrame(frameId);
+    frameId=requestAnimationFrame(gameLoop);
+  },1600);
+}
+
 let batWaitingThrow = false;
 let battleEnemy = null;
 let batBallX = 0, batBallY = 0;
@@ -1136,11 +1365,16 @@ function showBattle(wp){
   setTimeout(()=>{
     document.getElementById('batText').textContent=`${wp.data.name} が ちかづいてくる！`;
     setTimeout(()=>{
-      document.getElementById('batText').textContent='ボールを なげよう！';
-      document.getElementById('batHint').style.display='block';
-      document.getElementById('mThrowBtn').style.display='block';
-      document.getElementById('battleBall').classList.add('idle-anim');
-      batWaitingThrow=true;
+      if(challengeMode){
+        document.getElementById('batText').textContent='ミニゲームに　いどもう！';
+        setTimeout(()=>startMiniGame(wp),600);
+      } else {
+        document.getElementById('batText').textContent='ボールを なげよう！';
+        document.getElementById('batHint').style.display='block';
+        document.getElementById('mThrowBtn').style.display='block';
+        document.getElementById('battleBall').classList.add('idle-anim');
+        batWaitingThrow=true;
+      }
     },1200);
   },1500);
 }
