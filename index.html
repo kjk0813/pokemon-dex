@@ -1646,6 +1646,21 @@ setTimeout(()=>{
   h.style.opacity='0';
   setTimeout(()=>h.style.display='none',1000);
 },5000);
+
+// Service Worker — offline support
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').then(()=>{
+      // Pre-cache all artwork + shiny sprites in background after page settles
+      setTimeout(()=>{
+        ALL.forEach(p=>{
+          fetch(artUrl(p.id,false)).catch(()=>{});
+          fetch(artUrl(p.id,true)).catch(()=>{});
+        });
+      },3000);
+    }).catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
