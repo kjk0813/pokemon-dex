@@ -28,12 +28,13 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,.32)}
 .nav-caught{color:rgba(255,255,255,.85);font-size:.8rem;font-weight:800;white-space:nowrap}
 @media(max-width:480px){
-  .top-nav{gap:6px;padding:8px 10px;flex-wrap:nowrap}
-  .nav-logo{font-size:.9rem;gap:5px}
+  .top-nav{flex-wrap:wrap;gap:4px;padding:6px 10px}
+  .nav-logo{font-size:.9rem;gap:5px;flex:1}
   .nav-logo svg{width:24px;height:24px;flex-shrink:0}
   .nav-logo-text{display:none}
-  .nav-tab{padding:5px 10px;font-size:.75rem}
-  .nav-caught{font-size:.72rem}
+  .nav-tabs{order:3;width:100%;justify-content:stretch;gap:4px}
+  .nav-tab{flex:1;padding:5px 4px;font-size:.73rem;text-align:center}
+  .nav-caught{font-size:.72rem;order:2}
 }
 
 /* ── GAME SCREEN ── */
