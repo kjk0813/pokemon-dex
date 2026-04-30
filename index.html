@@ -1141,37 +1141,75 @@ function drawTrees(){
 
 function drawPlayer(){
   const sx=Math.round(player.x-cam.x), sy=Math.round(player.y-cam.y);
-  const leg=Math.sin(player.wf*.2)*4;
+  const ll=Math.round(Math.sin(player.wf*.2)*4);
+  const SKIN='#FDBCB4', HAIR='#bf7326', BOW='#d32f2f',
+        TOP='#e91e63', SKIRT='#fce4ec', TIGHTS='#37474f', BOOT='#f48fb1';
+
   // Shadow
   ctx.fillStyle='rgba(0,0,0,.18)';
   ctx.beginPath(); ctx.ellipse(sx,sy+22,13,5,0,0,Math.PI*2); ctx.fill();
-  // Legs
-  ctx.fillStyle='#1565c0';
-  ctx.fillRect(sx-8,sy+3,7,14+Math.round(leg));
-  ctx.fillRect(sx+1,sy+3,7,14-Math.round(leg));
-  // Shoes
-  ctx.fillStyle='#111';
-  ctx.fillRect(sx-9,sy+14+Math.max(0,Math.round(leg)),8,5);
-  ctx.fillRect(sx+1,sy+14+Math.max(0,-Math.round(leg)),8,5);
-  // Body
-  ctx.fillStyle='#ef5350'; ctx.fillRect(sx-10,sy-10,20,15);
+
+  // Tights
+  ctx.fillStyle=TIGHTS;
+  ctx.fillRect(sx-7,sy+9,6,12+ll);
+  ctx.fillRect(sx+1,sy+9,6,12-ll);
+
+  // Boots
+  ctx.fillStyle=BOOT;
+  ctx.fillRect(sx-8,sy+18+Math.max(0,ll),8,6);
+  ctx.fillRect(sx,  sy+18+Math.max(0,-ll),8,6);
+
+  // Skirt (A-line)
+  ctx.fillStyle=SKIRT;
+  ctx.fillRect(sx-12,sy+1,24,10);
+
+  // Top
+  ctx.fillStyle=TOP;
+  ctx.fillRect(sx-9,sy-11,18,14);
+
   // Arms
-  ctx.fillStyle='#FDBCB4';
-  ctx.fillRect(sx-14,sy-8,5,11); ctx.fillRect(sx+9,sy-8,5,11);
+  ctx.fillStyle=SKIN;
+  ctx.fillRect(sx-14,sy-9,5,11);
+  ctx.fillRect(sx+9,sy-9,5,11);
+
   // Neck
-  ctx.fillStyle='#FDBCB4'; ctx.fillRect(sx-3,sy-13,6,5);
-  // Head
-  ctx.fillStyle='#FDBCB4'; ctx.beginPath(); ctx.arc(sx,sy-20,11,0,Math.PI*2); ctx.fill();
-  // Hat brim
-  ctx.fillStyle='#d32f2f'; ctx.fillRect(sx-14,sy-27,28,6);
-  // Hat crown
-  ctx.fillStyle='#d32f2f'; ctx.fillRect(sx-9,sy-40,18,15);
-  // Hat detail
-  ctx.fillStyle='#fff'; ctx.fillRect(sx-2,sy-28,4,4);
+  ctx.fillStyle=SKIN;
+  ctx.fillRect(sx-3,sy-14,6,5);
+
+  // Hair base (behind head — slightly larger circle)
+  ctx.fillStyle=HAIR;
+  ctx.beginPath(); ctx.arc(sx,sy-21,12,0,Math.PI*2); ctx.fill();
+  ctx.fillRect(sx-14,sy-27,6,18); // left side sweep
+  ctx.fillRect(sx+8, sy-25,6,15); // right side
+  ctx.fillRect(sx-10,sy-14,20,5); // bob bottom
+
+  // Face
+  ctx.fillStyle=SKIN;
+  ctx.beginPath(); ctx.arc(sx,sy-21,10,0,Math.PI*2); ctx.fill();
+
+  // Hair front (top + bangs over face)
+  ctx.fillStyle=HAIR;
+  ctx.fillRect(sx-12,sy-32,24,11); // top band
+  ctx.fillRect(sx-13,sy-26,4,7);   // left bang
+  ctx.fillRect(sx+9, sy-26,4,5);   // right bang
+
+  // Red bow (right side of head)
+  ctx.fillStyle=BOW;
+  ctx.beginPath(); // left wing
+  ctx.moveTo(sx+5,sy-32);
+  ctx.lineTo(sx-2,sy-38); ctx.lineTo(sx,sy-30);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); // right wing
+  ctx.moveTo(sx+5,sy-32);
+  ctx.lineTo(sx+14,sy-37); ctx.lineTo(sx+12,sy-29);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(sx+3,sy-34,4,4); // center knot
+
   // Eyes
   if(player.facing!=='up'){
-    ctx.fillStyle='#111';
-    ctx.fillRect(sx-5,sy-23,3,3); ctx.fillRect(sx+2,sy-23,3,3);
+    ctx.fillStyle='#3e1f00';
+    ctx.fillRect(sx-5,sy-24,3,3);
+    ctx.fillRect(sx+2,sy-24,3,3);
   }
 }
 
