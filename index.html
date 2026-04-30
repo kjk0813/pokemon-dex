@@ -333,6 +333,60 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   .c-cat-text{font-size:.6rem}
   .c-arr{width:20px;height:20px;font-size:.8rem}
 }
+
+/* ═══ CAMP SCREEN ═══ */
+#campScreen{display:none;min-height:100vh;background:#fffbf0;overflow-y:auto;padding-bottom:48px}
+.camp-hero{background:linear-gradient(135deg,#CC0000 0%,#ff6b35 100%);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.camp-hero::after{content:'⛺🌲🌿🌲⛺';position:absolute;bottom:-4px;left:0;right:0;font-size:1.6rem;letter-spacing:4px;opacity:.4;white-space:nowrap}
+.camp-eevee{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.35));margin-bottom:8px}
+.camp-title{font-size:.85rem;color:rgba(255,255,255,.9);font-weight:800;letter-spacing:.5px}
+.camp-title2{font-size:1.5rem;color:#fff;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.3);line-height:1.3;margin:4px 0 14px}
+.camp-meta-badges{display:flex;flex-direction:column;gap:7px;align-items:center}
+.camp-meta-badge{background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);border-radius:22px;padding:7px 18px;color:#fff;font-size:.82rem;font-weight:800}
+.camp-content{max-width:600px;margin:0 auto;padding:16px 12px}
+.camp-card{background:#fff;border-radius:18px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.09)}
+.camp-card-head{background:linear-gradient(135deg,#CC0000,#e53935);color:#fff;padding:12px 18px;font-weight:900;font-size:.93rem;display:flex;align-items:center;gap:8px}
+.camp-card-body{padding:16px}
+.camp-info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed #fde0e0;font-size:.83rem;gap:8px}
+.camp-info-row:last-of-type{border-bottom:none}
+.camp-info-label{color:#888;font-weight:700;white-space:nowrap}
+.camp-info-val{font-weight:800;color:#333;text-align:right}
+.camp-map-btn{display:block;margin-top:14px;background:linear-gradient(135deg,#CC0000,#e53935);color:#fff;text-align:center;border-radius:22px;padding:10px;font-weight:900;font-size:.85rem;text-decoration:none;box-shadow:0 3px 10px rgba(204,0,0,.3)}
+.day-tabs{display:flex;gap:0;border-bottom:2px solid #f5f5f5}
+.day-tab{flex:1;padding:10px 4px;border:none;border-radius:0;font-family:inherit;font-size:.78rem;font-weight:900;cursor:pointer;background:#fafafa;color:#aaa;line-height:1.4;transition:all .2s}
+.day-tab.active{background:#fff;color:#CC0000;border-bottom:3px solid #CC0000;margin-bottom:-2px}
+.day-content{display:none;padding:14px 16px 16px}
+.day-content.active{display:block}
+.day-title{font-weight:900;font-size:.9rem;color:#CC0000;margin-bottom:12px}
+.timeline-item{display:flex;gap:10px;margin-bottom:9px;align-items:flex-start}
+.timeline-time{font-size:.73rem;font-weight:900;color:#CC0000;white-space:nowrap;min-width:40px;padding-top:2px}
+.timeline-dot{width:8px;height:8px;border-radius:50%;background:#CC0000;margin-top:4px;flex-shrink:0}
+.timeline-text{font-size:.82rem;line-height:1.55;color:#333;flex:1}
+.timeline-menu{display:block;font-size:.72rem;color:#888;margin-top:2px;font-weight:700}
+.food-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.food-table th{background:#fde0e0;color:#CC0000;font-weight:900;padding:7px 6px;text-align:center}
+.food-table td{padding:8px 6px;text-align:center;border-bottom:1px solid #fde0e0;vertical-align:middle}
+.food-table tr:last-child td{border-bottom:none}
+.food-day{background:#fff3e0;font-weight:900;font-size:.75rem;color:#e65100;white-space:nowrap}
+.shop-section{margin-bottom:12px}
+.shop-section-head{font-weight:900;font-size:.8rem;color:#CC0000;padding:5px 0 4px;border-bottom:2px solid #fde0e0;margin-bottom:8px}
+.shop-items{display:flex;flex-wrap:wrap;gap:6px}
+.shop-item{background:#fff3e0;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:700;color:#5d3a00}
+.check-progress-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.check-progress-bar{flex:1;height:10px;background:#f0f0f0;border-radius:10px;overflow:hidden}
+.check-progress-fill{height:100%;background:linear-gradient(90deg,#CC0000,#ff6b35);border-radius:10px;transition:width .4s}
+.check-progress-label{font-size:.78rem;font-weight:900;color:#CC0000;white-space:nowrap}
+.check-section{margin-bottom:14px}
+.check-section-head{font-weight:900;font-size:.8rem;color:#CC0000;padding:5px 0 4px;border-bottom:2px solid #fde0e0;margin-bottom:6px}
+.check-item{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #fafafa}
+.check-item input[type=checkbox]{width:18px;height:18px;accent-color:#CC0000;flex-shrink:0;cursor:pointer}
+.check-item label{font-size:.82rem;cursor:pointer;flex:1;line-height:1.4}
+.check-item.starred label{font-weight:900;color:#d32f2f}
+.check-item.starred label::before{content:'★ '}
+.camp-reset-btn{display:block;width:100%;margin-top:14px;background:#f5f5f5;border:none;border-radius:22px;padding:10px;font-family:inherit;font-size:.82rem;font-weight:900;color:#888;cursor:pointer}
+.camp-warn-card .camp-card-head{background:linear-gradient(135deg,#e65100,#ff8f00)}
+.camp-warn-item{font-size:.83rem;line-height:1.7;padding:5px 0;border-bottom:1px dashed #ffe0b2;color:#4a2500}
+.camp-warn-item:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -352,6 +406,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   <div class="nav-tabs">
     <button class="nav-tab active" id="tabGame" onclick="switchTo('game')">🎮 ゲーム</button>
     <button class="nav-tab" id="tabDex" onclick="switchTo('dex')">📖 図鑑</button>
+    <button class="nav-tab" id="tabCamp" onclick="switchTo('camp')">⛺ キャンプ</button>
   </div>
   <span class="nav-caught" id="navCaught">ゲット: 0 / 30</span>
 </nav>
@@ -483,6 +538,165 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
         <div class="stat-tot">合計 <span class="stat-tot-v" id="mTot"></span></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- CAMP SCREEN -->
+<div id="campScreen">
+  <div class="camp-hero">
+    <img class="camp-eevee" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png" alt="イーブイ">
+    <div class="camp-title">ゆいこ と イーブイ の</div>
+    <div class="camp-title2">キャンプぼうけん！</div>
+    <div class="camp-meta-badges">
+      <div class="camp-meta-badge">📅 2026年5月1日（金）〜 3日（日）　2泊3日</div>
+      <div class="camp-meta-badge">📍 PICA富士ぐりんぱ</div>
+    </div>
+  </div>
+
+  <div class="camp-content">
+
+    <!-- 基本情報 -->
+    <div class="camp-card">
+      <div class="camp-card-head">⛺ きほん じょうほう</div>
+      <div class="camp-card-body">
+        <div class="camp-info-row"><span class="camp-info-label">チェックイン</span><span class="camp-info-val">13:00〜</span></div>
+        <div class="camp-info-row"><span class="camp-info-label">チェックアウト</span><span class="camp-info-val">〜12:00 ⚠️厳守！</span></div>
+        <div class="camp-info-row"><span class="camp-info-label">夜の気温</span><span class="camp-info-val">5〜10℃ 🥶 防寒必須</span></div>
+        <div class="camp-info-row"><span class="camp-info-label">駐車場</span><span class="camp-info-val">無料 🚗</span></div>
+        <div class="camp-info-row"><span class="camp-info-label">アクセス</span><span class="camp-info-val">東名「裾野IC」→ 国道469号 約30分</span></div>
+        <div class="camp-info-row"><span class="camp-info-label">自宅〜裾野IC</span><span class="camp-info-val">約90分</span></div>
+        <a class="camp-map-btn" href="https://maps.app.goo.gl/XHgZxsdZcmZ8dkiu9?g_st=ic" target="_blank">🗺️ Google マップで見る</a>
+      </div>
+    </div>
+
+    <!-- スケジュール -->
+    <div class="camp-card">
+      <div class="camp-card-head">📅 スケジュール</div>
+      <div class="day-tabs">
+        <button class="day-tab active" id="dayTab1" onclick="showDay(1)">DAY 1<br>5/1 金</button>
+        <button class="day-tab" id="dayTab2" onclick="showDay(2)">DAY 2<br>5/2 土</button>
+        <button class="day-tab" id="dayTab3" onclick="showDay(3)">DAY 3<br>5/3 日</button>
+      </div>
+      <div class="day-content active" id="dayContent1">
+        <div class="day-title">🚗 出発の日</div>
+        <div class="timeline-item"><span class="timeline-time">09:00</span><div class="timeline-dot"></div><span class="timeline-text">レンタカー引き取り</span></div>
+        <div class="timeline-item"><span class="timeline-time">09:30</span><div class="timeline-dot"></div><span class="timeline-text">荷物の積み込み</span></div>
+        <div class="timeline-item"><span class="timeline-time">10:00</span><div class="timeline-dot"></div><span class="timeline-text">出発！（所要約2時間）</span></div>
+        <div class="timeline-item"><span class="timeline-time">途中</span><div class="timeline-dot"></div><span class="timeline-text">🛖 道の駅でランチ</span></div>
+        <div class="timeline-item"><span class="timeline-time">13:00</span><div class="timeline-dot"></div><span class="timeline-text">チェックイン（PICA富士ぐりんぱ）</span></div>
+        <div class="timeline-item"><span class="timeline-time">14:00</span><div class="timeline-dot"></div><span class="timeline-text">テント設営</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:00</span><div class="timeline-dot"></div><span class="timeline-text">キッチン設営</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:00</span><div class="timeline-dot"></div><span class="timeline-text">ぐりんぱ散策</span></div>
+        <div class="timeline-item"><span class="timeline-time">18:00</span><div class="timeline-dot"></div><span class="timeline-text">🍖 夕食 ── 豪快BBQ ＋ 白米<span class="timeline-menu">タン・ステーキ・鶏もも・いか・えび・とうもろこし・韓国海苔</span></span></div>
+        <div class="timeline-item"><span class="timeline-time">20:00</span><div class="timeline-dot"></div><span class="timeline-text">🔥 焚き火 ＆ 星空観察</span></div>
+        <div class="timeline-item"><span class="timeline-time">22:00</span><div class="timeline-dot"></div><span class="timeline-text">💤 就寝</span></div>
+      </div>
+      <div class="day-content" id="dayContent2">
+        <div class="day-title">🎉 満喫の日</div>
+        <div class="timeline-item"><span class="timeline-time">07:00</span><div class="timeline-dot"></div><span class="timeline-text">起床</span></div>
+        <div class="timeline-item"><span class="timeline-time">07:30</span><div class="timeline-dot"></div><span class="timeline-text">🥪 朝食 ── ホットサンド</span></div>
+        <div class="timeline-item"><span class="timeline-time">09:00</span><div class="timeline-dot"></div><span class="timeline-text">🎢 ぐりんぱで遊ぶ！</span></div>
+        <div class="timeline-item"><span class="timeline-time">12:00</span><div class="timeline-dot"></div><span class="timeline-text">🍜 昼食 ── カップ麺など</span></div>
+        <div class="timeline-item"><span class="timeline-time">14:00</span><div class="timeline-dot"></div><span class="timeline-text">😴 昼寝・まったりタイム</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:00</span><div class="timeline-dot"></div><span class="timeline-text">🍛 カレー仕込み開始</span></div>
+        <div class="timeline-item"><span class="timeline-time">18:00</span><div class="timeline-dot"></div><span class="timeline-text">🍛 夕食 ── キャンプカレー</span></div>
+        <div class="timeline-item"><span class="timeline-time">20:00</span><div class="timeline-dot"></div><span class="timeline-text">🔥 焚き火 ＆ 星空観察</span></div>
+        <div class="timeline-item"><span class="timeline-time">22:00</span><div class="timeline-dot"></div><span class="timeline-text">💤 就寝</span></div>
+      </div>
+      <div class="day-content" id="dayContent3">
+        <div class="day-title">🏠 帰路の日</div>
+        <div class="timeline-item"><span class="timeline-time">07:00</span><div class="timeline-dot"></div><span class="timeline-text">起床</span></div>
+        <div class="timeline-item"><span class="timeline-time">07:30</span><div class="timeline-dot"></div><span class="timeline-text">🍚 朝食 ── 白米</span></div>
+        <div class="timeline-item"><span class="timeline-time">08:30</span><div class="timeline-dot"></div><span class="timeline-text">後片付け・ゴミ分別</span></div>
+        <div class="timeline-item"><span class="timeline-time">09:30</span><div class="timeline-dot"></div><span class="timeline-text">テント・道具の撤収</span></div>
+        <div class="timeline-item"><span class="timeline-time">11:30</span><div class="timeline-dot"></div><span class="timeline-text">サイト清掃</span></div>
+        <div class="timeline-item"><span class="timeline-time">12:00</span><div class="timeline-dot"></div><span class="timeline-text">⚠️ チェックアウト（厳守！）</span></div>
+        <div class="timeline-item"><span class="timeline-time">12:30</span><div class="timeline-dot"></div><span class="timeline-text">🏪 道の駅でお土産</span></div>
+        <div class="timeline-item"><span class="timeline-time">14:00</span><div class="timeline-dot"></div><span class="timeline-text">🚗 帰路へ出発 → 帰宅</span></div>
+      </div>
+    </div>
+
+    <!-- 食事プラン -->
+    <div class="camp-card">
+      <div class="camp-card-head">🍽️ たべものプラン</div>
+      <div class="camp-card-body">
+        <table class="food-table">
+          <tr><th></th><th>朝ごはん</th><th>昼ごはん</th><th>夜ごはん</th></tr>
+          <tr><td class="food-day">5/1<br>金</td><td>−</td><td>道の駅ランチ</td><td>豪快BBQ＋白米</td></tr>
+          <tr><td class="food-day">5/2<br>土</td><td>ホットサンド</td><td>カップ麺など</td><td>キャンプカレー</td></tr>
+          <tr><td class="food-day">5/3<br>日</td><td>白米</td><td>帰路で外食</td><td>−</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 買い出しリスト -->
+    <div class="camp-card">
+      <div class="camp-card-head">🛒 かいだしリスト</div>
+      <div class="camp-card-body">
+        <div class="shop-section">
+          <div class="shop-section-head">🥩 お肉</div>
+          <div class="shop-items">
+            <span class="shop-item">タン（BBQ用）</span><span class="shop-item">ステーキ</span>
+            <span class="shop-item">鶏もも（カチカチ1個）</span><span class="shop-item">鶏もも（切り済み1個）</span>
+            <span class="shop-item">ウィンナー</span>
+          </div>
+        </div>
+        <div class="shop-section">
+          <div class="shop-section-head">🦐 魚介</div>
+          <div class="shop-items">
+            <span class="shop-item">いか</span><span class="shop-item">えび</span>
+          </div>
+        </div>
+        <div class="shop-section">
+          <div class="shop-section-head">🥦 野菜</div>
+          <div class="shop-items">
+            <span class="shop-item">とうもろこし</span><span class="shop-item">ピーマン</span>
+            <span class="shop-item">オクラ</span><span class="shop-item">なす</span>
+            <span class="shop-item">椎茸</span><span class="shop-item">にんにく</span>
+            <span class="shop-item">トマト</span><span class="shop-item">レタス</span><span class="shop-item">きゅうり</span>
+          </div>
+        </div>
+        <div class="shop-section">
+          <div class="shop-section-head">🍞 その他食材</div>
+          <div class="shop-items">
+            <span class="shop-item">パン（ホットサンド用）</span><span class="shop-item">バター</span>
+            <span class="shop-item">チーズ</span><span class="shop-item">焼肉タレ</span>
+            <span class="shop-item">韓国海苔</span>
+          </div>
+        </div>
+        <div class="shop-section">
+          <div class="shop-section-head">🍺 飲み物</div>
+          <div class="shop-items">
+            <span class="shop-item">ビール ロング缶 6缶パック</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 持ち物チェックリスト -->
+    <div class="camp-card">
+      <div class="camp-card-head">🎒 もちものチェック</div>
+      <div class="camp-card-body">
+        <div class="check-progress-wrap">
+          <div class="check-progress-bar"><div class="check-progress-fill" id="checkFill" style="width:0%"></div></div>
+          <div class="check-progress-label" id="checkLabel">0 / 0</div>
+        </div>
+        <div id="checkList"></div>
+        <button class="camp-reset-btn" onclick="resetChecks()">↺ チェックをリセット</button>
+      </div>
+    </div>
+
+    <!-- 注意事項 -->
+    <div class="camp-card camp-warn-card">
+      <div class="camp-card-head">⚠️ ちゅういじこう</div>
+      <div class="camp-card-body">
+        <div class="camp-warn-item">🚗 <strong>GW渋滞</strong>：往路は10:00出発を厳守！帰路は14〜19時を避けること</div>
+        <div class="camp-warn-item">📱 NEXCO中日本の渋滞予測を出発前に確認する</div>
+        <div class="camp-warn-item">🥶 夜間気温5〜10℃ ── 防寒対策は必須！電気毛布・アウターを忘れずに</div>
+        <div class="camp-warn-item">🕛 チェックアウトは12:00厳守！片付けは前日夜から準備を</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -847,13 +1061,95 @@ let currentScreen = 'game';
 function switchTo(s){
   currentScreen = s;
   document.getElementById('gameScreen').style.display = s==='game' ? 'block' : 'none';
-  document.getElementById('dexScreen').style.display = s==='dex' ? 'block' : 'none';
+  document.getElementById('dexScreen').style.display  = s==='dex'  ? 'block' : 'none';
+  document.getElementById('campScreen').style.display = s==='camp' ? 'block' : 'none';
   document.getElementById('shinyBtn').style.display = s==='dex' ? '' : 'none';
   document.getElementById('tabGame').classList.toggle('active', s==='game');
   document.getElementById('tabDex').classList.toggle('active', s==='dex');
+  document.getElementById('tabCamp').classList.toggle('active', s==='camp');
   if(s==='game'){ startGame(); }
-  else { stopGame(); renderDex(); }
+  else if(s==='dex'){ stopGame(); renderDex(); }
+  else { stopGame(); }
 }
+
+// ── Camp: day tab switching ──
+function showDay(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('dayContent'+i).classList.toggle('active', i===n);
+    document.getElementById('dayTab'+i).classList.toggle('active', i===n);
+  });
+}
+
+// ── Camp: checklist ──
+const CHECKLIST=[
+  {head:'🔌 暖房',items:[{t:'電気毛布'},{t:'発電機'}]},
+  {head:'💡 照明・器具',items:[
+    {t:'ガスランタン'},{t:'LEDランタン'},{t:'ロープ用LEDライト'},{t:'懐中電灯・ヘッドランプ'},
+    {t:'ガス燃料・カセットガス'},{t:'チャッカマン'},{t:'タフマル・シングルバーナー'}]},
+  {head:'⛺ テント・寝具',items:[
+    {t:'テント本体'},{t:'ポール・ロープ'},{t:'ペグ ＋ ペグハンマー'},{t:'グランドシート'},
+    {t:'インナーマット'},{t:'すのこ'},{t:'レジャーシート・ビニールシート'},{t:'インフレーターマット'},
+    {t:'寝袋・ブランケット'},{t:'大人枕'},{t:'空気抜き'},
+    {t:'★ゆいこまくら',star:true}]},
+  {head:'🪑 家具',items:[
+    {t:'ランタンスタンド'},{t:'テーブル'},{t:'あぐら椅子'},{t:'クーラーボックス'},
+    {t:'★ゆいこ椅子',star:true}]},
+  {head:'🍳 調理用具',items:[
+    {t:'軍手'},{t:'鍋セット'},{t:'ケトル'},{t:'まな板 ＋ 包丁'},{t:'はさみ'},
+    {t:'食器 ＋ 箸'},{t:'トング ＋ 菜箸'},
+    {t:'ラップ・アルミホイル・タッパー'},{t:'ポリ袋・ビニール袋'},
+    {t:'キッチンクリーナー'},{t:'洗剤 ＋ スポンジ'},{t:'ウォータータンク'}]},
+  {head:'👗 衣類',items:[
+    {t:'着替え（下着・靴下・Tシャツ）'},{t:'帽子'},{t:'アウター（夜は冷える！）'},
+    {t:'雨具'},{t:'サンダル'},{t:'パジャマ'},{t:'防寒小物'}]},
+  {head:'🎒 小物・その他',items:[
+    {t:'ティッシュ・キッチンペーパー'},{t:'ウェットティッシュ'},{t:'タオル'},
+    {t:'虫よけスプレー・蚊取り線香'},{t:'絆創膏'},
+    {t:'モバイルバッテリー ＋ 充電器'},{t:'カメラ ＋ 三脚'},{t:'タブレット'},
+    {t:'おやつ'},{t:'歯磨きセット'},
+    {t:'★ゆいこ 保湿セット ＋ 薬',star:true}]}
+];
+
+let campChecks = JSON.parse(localStorage.getItem('campChecks')||'{}');
+
+function buildChecklist(){
+  const el=document.getElementById('checkList');
+  el.innerHTML='';
+  CHECKLIST.forEach(sec=>{
+    const sd=document.createElement('div'); sd.className='check-section';
+    sd.innerHTML=`<div class="check-section-head">${sec.head}</div>`;
+    sec.items.forEach(item=>{
+      const id='chk_'+btoa(encodeURIComponent(item.t)).slice(0,12);
+      const row=document.createElement('label');
+      row.className='check-item'+(item.star?' starred':'');
+      row.innerHTML=`<input type="checkbox" id="${id}" ${campChecks[id]?'checked':''}><span>${item.t.replace(/^★/,'')}</span>`;
+      row.querySelector('input').addEventListener('change',e=>{
+        campChecks[id]=e.target.checked;
+        localStorage.setItem('campChecks',JSON.stringify(campChecks));
+        updateCheckProgress();
+      });
+      sd.appendChild(row);
+    });
+    el.appendChild(sd);
+  });
+  updateCheckProgress();
+}
+
+function updateCheckProgress(){
+  const all=document.querySelectorAll('#checkList input[type=checkbox]');
+  const done=[...all].filter(c=>c.checked).length;
+  const pct=all.length?Math.round(done/all.length*100):0;
+  document.getElementById('checkFill').style.width=pct+'%';
+  document.getElementById('checkLabel').textContent=done+' / '+all.length;
+}
+
+function resetChecks(){
+  campChecks={};
+  localStorage.removeItem('campChecks');
+  buildChecklist();
+}
+
+window.addEventListener('load',buildChecklist);
 
 // ═══════════════════════════════════════════
 //  SPRITES
