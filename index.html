@@ -1558,17 +1558,17 @@ function drawOneWild(w){
   const bob=Math.sin(w.animT*.07)*2.5;
   const dist=Math.hypot(player.x-w.x,player.y-w.y);
   ctx.fillStyle='rgba(0,0,0,.13)';
-  ctx.beginPath(); ctx.ellipse(sx,sy+20,16,5,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(sx,sy+22,22,7,0,0,Math.PI*2); ctx.fill();
   if(dist<100&&dist>ENC_DIST){
     ctx.fillStyle='#FFD700'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('!',sx,sy-48+bob);
+    ctx.fillText('!',sx,sy-68+bob);
     ctx.textAlign='left';
   }
   if(w.img.complete&&w.img.naturalWidth>0){
     if(w.vx<-.1){
       ctx.save(); ctx.scale(-1,1);
-      ctx.drawImage(w.img,-sx-22,sy-40+bob,44,44); ctx.restore();
-    } else { ctx.drawImage(w.img,sx-22,sy-40+bob,44,44); }
+      ctx.drawImage(w.img,-sx-33,sy-60+bob,66,66); ctx.restore();
+    } else { ctx.drawImage(w.img,sx-33,sy-60+bob,66,66); }
   }
 }
 
@@ -1970,6 +1970,7 @@ function startMiniGame(wp){
 
 function showGenericQuiz(arr,labelText,labelClass,title){
   const q=arr[Math.floor(Math.random()*arr.length)];
+  _mgCorrectAns=q.choices[q.ans];
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent=labelText; lbl.className='mg-type-label '+labelClass;
   document.getElementById('mgTitle').textContent=title;
@@ -1982,19 +1983,22 @@ function showGenericQuiz(arr,labelText,labelClass,title){
 }
 function showQuiz(){ showGenericQuiz(QUIZZES,'クイズ','mg-type-quiz','クイズに　こたえよう！'); }
 
+let _mgCorrectAns='';
+
 function answerQuiz(btn,idx,ans){
   document.querySelectorAll('.mg-choice').forEach(b=>b.disabled=true);
   const ok=idx===ans;
   btn.classList.add(ok?'correct':'wrong');
   if(!ok) document.querySelectorAll('.mg-choice')[ans].classList.add('correct');
   document.getElementById('mgResult').innerHTML=ok
-    ?'<span class="mg-result-ok">⭕ せいかい！ゲットチャンス！</span>'
-    :'<span class="mg-result-ng">❌ ちがうよ…にげられた！</span>';
-  setTimeout(()=>{ ok?miniGameWin():miniGameFail(); }, ok?900:1400);
+    ?`<span class="mg-result-ok">⭕ せいかい！ゲットチャンス！</span>`
+    :`<span class="mg-result-ng">❌ ちがうよ…せいかいは「${_mgCorrectAns}」だよ！</span>`;
+  setTimeout(()=>{ ok?miniGameWin():miniGameFail(); }, ok?900:1600);
 }
 
 function showStudy(wp){
   const sq=makeStudyQ(wp);
+  _mgCorrectAns=sq.choices[sq.ans];
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent='べんきょう'; lbl.className='mg-type-label mg-type-study';
   document.getElementById('mgTitle').textContent='ポケモン　はかせに　なろう！';
@@ -2016,6 +2020,7 @@ function showSilhouette(wp){
   }
   const choices=[correct,...wrongs].sort(()=>Math.random()-.5);
   const ans=choices.findIndex(c=>c.id===correct.id);
+  _mgCorrectAns=correct.name;
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent='シルエット'; lbl.className='mg-type-label mg-type-silhouette';
   document.getElementById('mgTitle').textContent='このポケモンは　だれ！？';
@@ -2031,6 +2036,7 @@ function showSilhouette(wp){
 
 function showNakamaHazure(){
   const q=NAKAMASET[Math.floor(Math.random()*NAKAMASET.length)];
+  _mgCorrectAns=q.items[q.odd];
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent='なかまはずれ'; lbl.className='mg-type-label mg-type-nakamazure';
   document.getElementById('mgTitle').textContent='なかまはずれは　どれ！？';
@@ -2047,6 +2053,7 @@ function showIroAte(){
   const wrongs=COLORS.filter(c=>c.name!==correct.name).sort(()=>Math.random()-.5).slice(0,2);
   const choices=[correct,...wrongs].sort(()=>Math.random()-.5);
   const ans=choices.findIndex(c=>c.name===correct.name);
+  _mgCorrectAns=correct.name;
   const lbl=document.getElementById('mgTypeLabel');
   lbl.textContent='いろ当て'; lbl.className='mg-type-label mg-type-iroate';
   document.getElementById('mgTitle').textContent='なんいろか　わかるかな？';
