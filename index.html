@@ -394,11 +394,11 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 
 /* ═══ VILLAGE SCREEN ═══ */
 #villageScreen{display:none;position:relative;width:100%;overflow:hidden}
-#vCanvas{display:none;touch-action:none}
+#vCanvas{display:none;touch-action:none;vertical-align:top}
 #vChangeBtn{position:absolute;top:10px;left:10px;z-index:15;border:none;border-radius:20px;padding:5px 14px;background:rgba(255,255,255,.88);font-size:.78rem;font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);font-family:inherit;display:none}
 
 /* Village avatar selector */
-#vSelector{position:absolute;inset:0;z-index:10;background:linear-gradient(160deg,#c8e6c9,#a5d6a7);display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px;overflow-y:auto}
+#vSelector{width:100%;min-height:calc(100svh - 56px);z-index:10;background:linear-gradient(160deg,#c8e6c9,#a5d6a7);display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px;overflow-y:auto;box-sizing:border-box}
 .vs-title{font-size:1.3rem;font-weight:900;color:#1b5e20;margin-bottom:4px}
 .vs-sub{font-size:.82rem;color:#388e3c;font-weight:700;margin-bottom:20px;text-align:center}
 .vs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:480px}
