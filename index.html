@@ -251,6 +251,9 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 .mg-type-label{font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:4px}
 .mg-type-quiz{background:#fef3c7;color:#92400e}
 .mg-type-study{background:#dbeafe;color:#1e3a8a}
+.mg-type-hiragana{background:#fce7f3;color:#9d174d}
+.mg-type-eigo{background:#dcfce7;color:#14532d}
+.mg-type-suuji{background:#fff7ed;color:#7c2d12}
 .mg-type-rps{background:#fce7f3;color:#9d174d}
 .mg-title{font-size:1rem;font-weight:900;color:var(--text);line-height:1.3}
 .mg-body{padding:18px 20px 20px}
@@ -1675,6 +1678,213 @@ const QUIZZES=[
   {q:'あめが　ふると　なにをさす？',choices:['かさ','ぼうし','てぶくろ'],ans:0},
   {q:'さかなは　どこにいる？',choices:['そら','きのうえ','うみ'],ans:2},
   {q:'よるは　くらい？　あかるい？',choices:['くらい','あかるい','ふつう'],ans:0},
+  {q:"「あか、あお、あか、あお」のつぎは？",choices:["あか","あお","きいろ"],ans:0},
+  {q:"「○、△、○、△」のつぎは？",choices:["○","△","□"],ans:0},
+  {q:"「1、2、1、2」のつぎは？",choices:["1","2","3"],ans:0},
+  {q:"おとうさんの おとうさんは だれ？",choices:["おじいちゃん","おばあちゃん","おじさん"],ans:0},
+  {q:"おとうさんの おかあさんは だれ？",choices:["おじいちゃん","おばあちゃん","おばさん"],ans:1},
+  {q:"あさがきたら、なんていう？",choices:["おはよう","こんにちは","おやすみ"],ans:0},
+  {q:"おひるになったら、なんていう？",choices:["おはよう","こんにちは","こんばんは"],ans:1},
+  {q:"よるねるとき、なんていう？",choices:["さようなら","おやすみなさい","ありがとう"],ans:1},
+  {q:"ごはんを たべるとき、なんていう？",choices:["いただきます","ごちそうさま","おいしい"],ans:0},
+  {q:"ごはんを たべおわったら、なんていう？",choices:["いただきます","ごちそうさま","さようなら"],ans:1},
+  {q:"プレゼントを もらったら、なんていう？",choices:["ごめんね","ありがとう","どういたしまして"],ans:1},
+  {q:"おもちゃを こわしちゃった。なんていう？",choices:["ありがとう","ごめんなさい","やったー"],ans:1},
+  {q:"はるに さく はなは どれ？",choices:["ひまわり","さくら","コスモス"],ans:1},
+  {q:"なつに さく はなは どれ？",choices:["さくら","ひまわり","チューリップ"],ans:1},
+  {q:"あめが ふったら つかうものは？",choices:["かさ","ぼうし","てぶくろ"],ans:0},
+  {q:"ゆきが ふったら つかうものは？",choices:["みずぎ","てぶくろ","うちわ"],ans:1},
+  {q:"あついときに つかうものは？",choices:["うちわ","マフラー","ストーブ"],ans:0},
+  {q:"てを あらうときに つかうものは？",choices:["せっけん","はみがきこ","のり"],ans:0},
+  {q:"はを みがくときに つかうものは？",choices:["はぶらし","たわし","くし"],ans:0},
+  {q:"かみを とくときに つかうものは？",choices:["はぶらし","くし","はさみ"],ans:1},
+  {q:"おなかが すいたら どうする？",choices:["ねる","たべる","あそぶ"],ans:1},
+  {q:"ねむくなったら どうする？",choices:["ねる","たべる","はしる"],ans:0},
+  {q:"どちらが おもい？ (ぞう vs あり)",choices:["ぞう","あり","おなじ"],ans:0},
+  {q:"どちらが はやい？ (ひと vs しんかんせん)",choices:["ひと","しんかんせん","おなじ"],ans:1},
+  {q:"どちらが たかい？ (おうち vs ビル)",choices:["おうち","ビル","おなじ"],ans:1},
+  {q:"うみの いきものは どれ？",choices:["たこ","うさぎ","きつね"],ans:0},
+  {q:"そらを とぶのは どれ？",choices:["とり","いぬ","かめ"],ans:0},
+  {q:"はしるのが はやいのは どっち？ (かめ vs うさぎ)",choices:["かめ","うさぎ","おなじ"],ans:1},
+  {q:"あかい たべものは どれ？",choices:["トマト","きゅうり","バナナ"],ans:0},
+  {q:"きいろい たべものは どれ？",choices:["トマト","きゅうり","バナナ"],ans:2},
+  {q:"みどりの たべものは どれ？",choices:["トマト","きゅうり","バナナ"],ans:1},
+  {q:"あまいたべものは どれ？",choices:["ケーキ","うめぼし","レモン"],ans:0},
+  {q:"すっぱいたべものは どれ？",choices:["ケーキ","うめぼし","チョコ"],ans:1},
+  {q:"からいたべものは どれ？",choices:["カレー","アイス","プリン"],ans:0},
+  {q:"あおしんごうは、どうする？",choices:["とまる","すすむ","まつ"],ans:1},
+  {q:"あかしんごうは、どうする？",choices:["とまる","すすむ","はしる"],ans:0},
+  {q:"みちを わたるときは、どうする？",choices:["はしる","てをあげる","ねる"],ans:1},
+  {q:"おもちゃで あそんだあとは？",choices:["そのまま","おかたづけ","すてる"],ans:1},
+  {q:"そとは、なにいろ？ (はれたひ)",choices:["あお","くろ","あか"],ans:0},
+  {q:"よるの そらは、なにいろ？",choices:["あお","くろ","しろ"],ans:1},
+  {q:"おひさまは、どこにある？",choices:["うえ","した","よこ"],ans:0},
+  {q:"おちている ゴミは、どうする？",choices:["ひろう","ける","みない"],ans:0},
+  {q:"おともだちと あそぶときは？",choices:["なかよく","けんか","ひとりで"],ans:0},
+  {q:"てあらいの つぎは、なにをする？",choices:["うがい","ごはん","おふろ"],ans:0},
+  {q:"おふろで あらうのは？",choices:["からだ","ふく","おもちゃ"],ans:0},
+  {q:"ランドセルは、いつつかう？",choices:["しょうがっこう","ようちえん","おとな"],ans:0},
+  {q:"おべんとうを いれるものは？",choices:["かばん","ふでばこ","れいぞうこ"],ans:0},
+  {q:"ふくを きるのは、だれ？",choices:["じぶん","せんせい","おともだち"],ans:0},
+  {q:"くつを はくのは、どこ？",choices:["げんかん","おへや","おふろ"],ans:0},
+  {q:"トイレに いくのは、いつ？",choices:["いきたくなったら","ねてるとき","いつでも"],ans:0},
+  {q:"おかしを たべすぎると？",choices:["むしばになる","せがのびる","かしこくなる"],ans:0},
+  {q:"よるは、いつ ねる？",choices:["はやく","おそく","ねない"],ans:0},
+  {q:"おきるのは、いつ？",choices:["あさ","よる","おひる"],ans:0},
+  {q:"おしょうがつに たべるものは？",choices:["おせち","カレー","ケーキ"],ans:0},
+  {q:"クリスマスに くるのは だれ？",choices:["サンタさん","おに","うさぎ"],ans:0},
+  {q:"せつぶんに まくものは？",choices:["まめ","おかし","みず"],ans:0},
+  {q:"たなばたで おねがいごとを かくのは？",choices:["たんざく","ノート","つくえ"],ans:0},
+  {q:"こどものひに かざるものは？",choices:["こいのぼり","ひなびょうぶ","ツリー"],ans:0},
+  {q:"ひなまつりに かざるものは？",choices:["おひなさま","サンタ","かどまつ"],ans:0},
+  {q:"みかんの かわは、どうする？",choices:["むく","そのまま","たべない"],ans:0},
+  {q:"バナナの かわは、どこに すてる？",choices:["ゴミばこ","みち","おへや"],ans:0},
+  {q:"おそとから かえったら？",choices:["てあらい","ねる","あそぶ"],ans:0},
+  {q:"せんせいには、なんていう？",choices:["おはようございます","やあ","バイバイ"],ans:0},
+  {q:"どちらが おおきい？ (おうち vs ビル)",choices:["おうち","ビル","おなじ"],ans:1},
+  {q:"どちらが ちいさい？ (ねずみ vs ぞう)",choices:["ねずみ","ぞう","おなじ"],ans:0},
+  {q:"ふわふわなのは どっち？ (いし vs くも)",choices:["いし","くも","おなじ"],ans:1},
+  {q:"つめたいのは どっち？ (ひ vs ゆき)",choices:["ひ","ゆき","おなじ"],ans:1},
+  {q:"ひるま、そらに あるのは？",choices:["おひさま","おつきさま","ゆきだるま"],ans:0},
+  {q:"よる、そらに あるのは？",choices:["おつきさま","にじ","ひまわり"],ans:0},
+  {q:"おはしを つかうのは？",choices:["ごはん","おえかき","ねるとき"],ans:0},
+  {q:"コップで のむのは？",choices:["みず","ごはん","おもちゃ"],ans:0},
+  {q:"おえかきに つかうのは？",choices:["クレヨン","はし","たわし"],ans:0},
+  {q:"はさみは、どうやって つかう？",choices:["きをつける","ふりまわす","なげる"],ans:0},
+  {q:"だれにでも やさしく する？",choices:["はい","いいえ","わからない"],ans:0}
+];
+
+
+// ── ひらがなクイズ ──
+const HIRAGANA_Q=[
+  {q:"「あ」から始まる言葉は？",choices:["あめ","いぬ","うし"],ans:0},
+  {q:"「い」から始まる言葉は？",choices:["あめ","いちご","えほん"],ans:1},
+  {q:"「う」から始まる言葉は？",choices:["あひる","うさぎ","おに"],ans:1},
+  {q:"「え」から始まる言葉は？",choices:["えんぴつ","かさ","きもの"],ans:0},
+  {q:"「お」から始まる言葉は？",choices:["おにぎり","たこ","とり"],ans:0},
+  {q:"「か」から始まる言葉は？",choices:["かえる","さる","とら"],ans:0},
+  {q:"「き」から始まる言葉は？",choices:["きりん","くま","けむし"],ans:0},
+  {q:"「く」から始まる言葉は？",choices:["くるま","ねこ","はな"],ans:0},
+  {q:"「け」から始まる言葉は？",choices:["けしごむ","えほん","つくえ"],ans:0},
+  {q:"「こ」から始まる言葉は？",choices:["こま","まり","ゆき"],ans:0},
+  {q:"「さ」から始まる言葉は？",choices:["さかな","むし","とり"],ans:0},
+  {q:"「し」から始まる言葉は？",choices:["しか","うま","ぶた"],ans:0},
+  {q:"「す」から始まる言葉は？",choices:["すいか","みかん","なし"],ans:0},
+  {q:"「せ」から始まる言葉は？",choices:["せみ","ちょう","あり"],ans:0},
+  {q:"「そ」から始まる言葉は？",choices:["そら","うみ","やま"],ans:0},
+  {q:"「た」から始まる言葉は？",choices:["たいこ","ふえ","すず"],ans:0},
+  {q:"「ち」から始まる言葉は？",choices:["ちょうちょ","あり","はち"],ans:0},
+  {q:"「つ」から始まる言葉は？",choices:["つくえ","いす","まど"],ans:0},
+  {q:"「て」から始まる言葉は？",choices:["てがみ","ほん","えんぴつ"],ans:0},
+  {q:"「と」から始まる言葉は？",choices:["とけい","かばん","ぼうし"],ans:0},
+  {q:"「な」から始まる言葉は？",choices:["なす","トマト","きゅうり"],ans:0},
+  {q:"「に」から始まる言葉は？",choices:["にんじん","たまねぎ","じゃがいも"],ans:0},
+  {q:"「ぬ」から始まる言葉は？",choices:["ぬいぐるみ","おもちゃ","えほん"],ans:0},
+  {q:"「ね」から始まる言葉は？",choices:["ねこ","いぬ","とり"],ans:0},
+  {q:"「の」から始まる言葉は？",choices:["のり","はさみ","えんぴつ"],ans:0},
+  {q:"「は」から始まる言葉は？",choices:["はさみ","のり","ぺん"],ans:0},
+  {q:"「ひ」から始まる言葉は？",choices:["ひこうき","ふね","くるま"],ans:0},
+  {q:"「ふ」から始まる言葉は？",choices:["ふね","でんしゃ","バス"],ans:0},
+  {q:"「へ」から始まる言葉は？",choices:["へび","とかげ","かえる"],ans:0},
+  {q:"「ほ」から始まる言葉は？",choices:["ほし","つき","たいよう"],ans:0},
+  {q:"「ま」から始まる言葉は？",choices:["まくら","ふとん","もうふ"],ans:0},
+  {q:"「み」から始まる言葉は？",choices:["みかん","りんご","ぶどう"],ans:0},
+  {q:"「む」から始まる言葉は？",choices:["むし","とり","さかな"],ans:0},
+  {q:"「め」から始まる言葉は？",choices:["めがね","ぼうし","くつした"],ans:0},
+  {q:"「も」から始まる言葉は？",choices:["もも","かき","くり"],ans:0},
+  {q:"「や」から始まる言葉は？",choices:["やま","かわ","うみ"],ans:0},
+  {q:"「ゆ」から始まる言葉は？",choices:["ゆき","あめ","かぜ"],ans:0},
+  {q:"「よ」から始まる言葉は？",choices:["ふく","くつ","かばん"],ans:0},
+  {q:"「ら」から始まる言葉は？",choices:["らいおん","とら","ぞう"],ans:0},
+  {q:"「り」から始まる言葉は？",choices:["りんご","みかん","なし"],ans:0}
+];
+
+// ── えいごクイズ ──
+const EIGO_Q=[
+  {q:"Apple はどれ？",choices:["🍎","🍌","🍇"],ans:0},
+  {q:"Banana はどれ？",choices:["🍎","🍌","🍇"],ans:1},
+  {q:"Cat はどれ？",choices:["🐶","🐱","🐰"],ans:1},
+  {q:"Dog はどれ？",choices:["🐶","🐱","🐰"],ans:0},
+  {q:"Elephant はどれ？",choices:["🐘","🦒","🦁"],ans:0},
+  {q:"Fish はどれ？",choices:["🐟","🐦","🐜"],ans:0},
+  {q:"Grape はどれ？",choices:["🍇","🍓","🍒"],ans:0},
+  {q:"Hat はどれ？",choices:["👒","👟","👜"],ans:0},
+  {q:"Ice cream はどれ？",choices:["🍦","🍫","🍩"],ans:0},
+  {q:"Juice はどれ？",choices:["🍹","🍵","🥛"],ans:0},
+  {q:"Kangaroo はどれ？",choices:["🦘","🐨","🐼"],ans:0},
+  {q:"Lion はどれ？",choices:["🦁","🐯","🐺"],ans:0},
+  {q:"Monkey はどれ？",choices:["🐒","🦍","🦧"],ans:0},
+  {q:"Nose はどれ？",choices:["👃","👂","👀"],ans:0},
+  {q:"Orange はどれ？",choices:["🍊","🍋","🍈"],ans:0},
+  {q:"Panda はどれ？",choices:["🐼","🐻","🐨"],ans:0},
+  {q:"Queen はどれ？",choices:["👸","🤴","🧙"],ans:0},
+  {q:"Rabbit はどれ？",choices:["🐰","🐹","🐭"],ans:0},
+  {q:"Sun はどれ？",choices:["☀️","🌙","☁️"],ans:0},
+  {q:"Tiger はどれ？",choices:["🐯","🦁","🐆"],ans:0},
+  {q:"Umbrella はどれ？",choices:["☂️","🕶️","🎒"],ans:0},
+  {q:"Violin はどれ？",choices:["🎻","🎸","🎹"],ans:0},
+  {q:"Water はどれ？",choices:["💧","🔥","💨"],ans:0},
+  {q:"Xylophone はどれ？",choices:["🪗","🥁","🎹"],ans:0},
+  {q:"Yellow はどれ？",choices:["🟡","🔴","🔵"],ans:0},
+  {q:"Zebra はどれ？",choices:["🦓","🐎","🐄"],ans:0},
+  {q:"Red はどれ？",choices:["🔴","🔵","🟢"],ans:0},
+  {q:"Blue はどれ？",choices:["🔵","🟡","🟠"],ans:0},
+  {q:"Green はどれ？",choices:["🟢","🟣","🟤"],ans:0},
+  {q:"One はどれ？",choices:["1","2","3"],ans:0},
+  {q:"Two はどれ？",choices:["2","3","4"],ans:0},
+  {q:"Three はどれ？",choices:["3","4","5"],ans:0},
+  {q:"Four はどれ？",choices:["4","5","6"],ans:0},
+  {q:"Five はどれ？",choices:["5","6","7"],ans:0},
+  {q:"Six はどれ？",choices:["6","7","8"],ans:0},
+  {q:"Seven はどれ？",choices:["7","8","9"],ans:0},
+  {q:"Eight はどれ？",choices:["8","9","10"],ans:0},
+  {q:"Nine はどれ？",choices:["9","10","1"],ans:0},
+  {q:"Ten はどれ？",choices:["10","1","2"],ans:0},
+  {q:"Ear はどれ？",choices:["👂","👃","👄"],ans:0}
+];
+
+// ── すうじクイズ ──
+const SUUJI_Q=[
+  {q:"1のつぎは？",choices:["2","3","4"],ans:0},
+  {q:"2のつぎは？",choices:["1","3","5"],ans:1},
+  {q:"3のつぎは？",choices:["2","4","5"],ans:1},
+  {q:"4のつぎは？",choices:["3","5","6"],ans:1},
+  {q:"5のつぎは？",choices:["4","6","7"],ans:1},
+  {q:"6のつぎは？",choices:["5","7","8"],ans:1},
+  {q:"7のつぎは？",choices:["6","8","9"],ans:1},
+  {q:"8のつぎは？",choices:["7","9","10"],ans:1},
+  {q:"9のつぎは？",choices:["8","10","11"],ans:1},
+  {q:"1 ＋ 1 は？",choices:["1","2","3"],ans:1},
+  {q:"2 ＋ 1 は？",choices:["2","3","4"],ans:1},
+  {q:"3 ＋ 1 は？",choices:["3","4","5"],ans:1},
+  {q:"4 ＋ 1 は？",choices:["4","5","6"],ans:1},
+  {q:"1 ＋ 2 は？",choices:["2","3","4"],ans:1},
+  {q:"2 ＋ 2 は？",choices:["3","4","5"],ans:1},
+  {q:"3 ＋ 2 は？",choices:["4","5","6"],ans:1},
+  {q:"5 ＋ 0 は？",choices:["0","5","10"],ans:1},
+  {q:"2 － 1 は？",choices:["0","1","2"],ans:1},
+  {q:"3 － 1 は？",choices:["1","2","3"],ans:1},
+  {q:"4 － 1 は？",choices:["2","3","4"],ans:1},
+  {q:"5 － 1 は？",choices:["3","4","5"],ans:1},
+  {q:"2 － 2 は？",choices:["0","1","2"],ans:0},
+  {q:"3 － 2 は？",choices:["0","1","2"],ans:1},
+  {q:"4 － 2 は？",choices:["1","2","3"],ans:1},
+  {q:"5 － 2 は？",choices:["2","3","4"],ans:1},
+  {q:"くるまが3だい、あとから1だいきました。ぜんぶでなんだい？",choices:["3","4","5"],ans:1},
+  {q:"あめを2こもっていました。1こたべると、のこりは？",choices:["0","1","2"],ans:1},
+  {q:"どちらが おおい？ (🍎🍎 vs 🍎🍎🍎)",choices:["左","右","おなじ"],ans:1},
+  {q:"どちらが おおい？ (🍌🍌🍌 vs 🍌🍌)",choices:["左","右","おなじ"],ans:0},
+  {q:"どちらが すくない？ (🍬 vs 🍬🍬)",choices:["左","右","おなじ"],ans:0},
+  {q:"10は どれ？",choices:["1","0","10"],ans:2},
+  {q:"0は どれ？",choices:["0","1","10"],ans:0},
+  {q:"5と5で いくつ？",choices:["5","10","15"],ans:1},
+  {q:"3と2で いくつ？",choices:["4","5","6"],ans:1},
+  {q:"いちばん おおきい かずは？",choices:["3","8","5"],ans:1},
+  {q:"いちばん ちいさい かずは？",choices:["2","6","4"],ans:0},
+  {q:"ながいのは どっち？ (📏 vs ✏️)",choices:["ものさし","えんぴつ","おなじ"],ans:0},
+  {q:"まるいのは どれ？",choices:["しかく","まる","さんかく"],ans:1},
+  {q:"しかくいのは どれ？",choices:["さんかく","しかく","まる"],ans:1},
+  {q:"さんかくなのは どれ？",choices:["しかく","さんかく","まる"],ans:1}
 ];
 
 // ── なかまはずれデータ ──
@@ -1733,6 +1943,9 @@ const ALL_MG_TYPES=[
   {id:'silhouette', label:'シルエット',   emoji:'👤'},
   {id:'nakamazure', label:'なかまはずれ', emoji:'🔍'},
   {id:'iroate',     label:'いろ当て',     emoji:'🎨'},
+  {id:'hiragana',   label:'ひらがな',     emoji:'🔤'},
+  {id:'eigo',       label:'えいご',       emoji:'🌍'},
+  {id:'suuji',      label:'すうじ',       emoji:'🔢'},
 ];
 let enabledMG=new Set(JSON.parse(localStorage.getItem('mgEnabled')||'null')||ALL_MG_TYPES.map(t=>t.id));
 let mgCurrentEnemy=null;
@@ -1749,14 +1962,17 @@ function startMiniGame(wp){
   else if(type==='rps') showRPS();
   else if(type==='silhouette') showSilhouette(wp);
   else if(type==='nakamazure') showNakamaHazure();
-  else showIroAte();
+  else if(type==='iroate') showIroAte();
+  else if(type==='hiragana') showGenericQuiz(HIRAGANA_Q,'ひらがな','mg-type-hiragana','ひらがなを　よもう！');
+  else if(type==='eigo') showGenericQuiz(EIGO_Q,'えいご','mg-type-eigo','えいごを　みつけよう！');
+  else showGenericQuiz(SUUJI_Q,'すうじ','mg-type-suuji','すうじを　こたえよう！');
 }
 
-function showQuiz(){
-  const q=QUIZZES[Math.floor(Math.random()*QUIZZES.length)];
+function showGenericQuiz(arr,labelText,labelClass,title){
+  const q=arr[Math.floor(Math.random()*arr.length)];
   const lbl=document.getElementById('mgTypeLabel');
-  lbl.textContent='クイズ'; lbl.className='mg-type-label mg-type-quiz';
-  document.getElementById('mgTitle').textContent='クイズに　こたえよう！';
+  lbl.textContent=labelText; lbl.className='mg-type-label '+labelClass;
+  document.getElementById('mgTitle').textContent=title;
   document.getElementById('mgBody').innerHTML=`
     <div class="mg-question">${q.q}</div>
     <div class="mg-choices">
@@ -1764,6 +1980,7 @@ function showQuiz(){
     </div>
     <div class="mg-result-msg" id="mgResult"></div>`;
 }
+function showQuiz(){ showGenericQuiz(QUIZZES,'クイズ','mg-type-quiz','クイズに　こたえよう！'); }
 
 function answerQuiz(btn,idx,ans){
   document.querySelectorAll('.mg-choice').forEach(b=>b.disabled=true);
