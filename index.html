@@ -395,7 +395,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 /* ═══ VILLAGE SCREEN ═══ */
 #villageScreen{display:none;position:relative;width:100%;overflow:hidden}
 #vCanvas{display:none;touch-action:none;vertical-align:top}
-#vChangeBtn{position:absolute;top:10px;left:10px;z-index:15;border:none;border-radius:20px;padding:5px 14px;background:rgba(255,255,255,.88);font-size:.78rem;font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);font-family:inherit;display:none}
+#vChangeBtn{position:absolute;top:10px;right:10px;z-index:15;border:none;border-radius:20px;padding:7px 16px;background:rgba(255,255,255,.92);font-size:.8rem;font-weight:900;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25);font-family:inherit;display:none;color:#1b5e20}
 
 /* Village avatar selector */
 #vSelector{width:100%;min-height:calc(100svh - 56px);z-index:10;background:linear-gradient(160deg,#c8e6c9,#a5d6a7);display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px;overflow-y:auto;box-sizing:border-box}
@@ -750,7 +750,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
       <div class="vd-next" id="vdNext">▼</div>
     </div>
   </div>
-  <button id="vChangeBtn" onclick="showVSelector()">👤 かえる</button>
+  <button id="vChangeBtn" onclick="showVSelector()">👤 キャラをかえる</button>
 </div>
 <div id="vMoveIn"></div>
 
@@ -2596,12 +2596,16 @@ function showVSelector(){
     grid.innerHTML='<p class="vs-empty">まずポケモンを<br>ゲットしてね！<br><br>🎮 ゲームで　さがしてみよう！</p>';
     return;
   }
-  grid.className='vs-grid';
-  grid.innerHTML=caughtArr.map(p=>`
+  // "このままあそぶ" button if avatar already chosen
+  const resumeBtn = vAvatarId
+    ? `<button onclick="document.getElementById('vSelector').style.display='none';document.getElementById('vCanvas').style.display='block';document.getElementById('vChangeBtn').style.display='';startVillage()" style="margin-bottom:16px;padding:10px 24px;border:none;border-radius:20px;background:#2e7d32;color:#fff;font-size:.9rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.2)">▶ このままあそぶ</button>`
+    : '';
+  grid.className='';
+  grid.innerHTML=resumeBtn+`<div class="vs-grid">`+caughtArr.map(p=>`
     <div class="vs-card" onclick="selectVAvatar(${p.id})">
       <img src="${artUrl(p.id,false)}" alt="${p.name}">
       <span>${p.name}</span>
-    </div>`).join('');
+    </div>`).join('')+`</div>`;
 }
 
 function selectVAvatar(id){
