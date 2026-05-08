@@ -2352,18 +2352,19 @@ const ISO_TW = 96, ISO_TH = 48;    // tile screen size
 const ISO_WALL = 68, ISO_ROOF = 26; // wall/roof height px
 const ISO_SPD = 0.065;              // player speed (tiles/frame)
 const HOUSES_PER_ROW = 4;
-const HOUSE_SPACING = 3.5;          // tiles between house centers
+const HOUSE_SPACING = 5.5;          // tiles between house centers
 
 let vIsoCam = {cx:0, cy:0};
+let vLW = 0, vLH = 0; // logical canvas size (CSS px, DPR-independent)
 
 function isoToScreen(wx,wy){
   return {
-    sx:(wx-wy)*ISO_TW/2 - vIsoCam.cx + vCanvas.width/2,
-    sy:(wx+wy)*ISO_TH/2 - vIsoCam.cy + vCanvas.height/2
+    sx:(wx-wy)*ISO_TW/2 - vIsoCam.cx + vLW/2,
+    sy:(wx+wy)*ISO_TH/2 - vIsoCam.cy + vLH/2
   };
 }
 function screenToIsoWorld(sx,sy){
-  const A=sx-vCanvas.width/2+vIsoCam.cx, B=sy-vCanvas.height/2+vIsoCam.cy;
+  const A=sx-vLW/2+vIsoCam.cx, B=sy-vLH/2+vIsoCam.cy;
   return {wx:A/ISO_TW+B/ISO_TH, wy:B/ISO_TH-A/ISO_TW};
 }
 function hexDarken(hex,f){
@@ -2423,8 +2424,14 @@ function buildVHouses(){
 
 function resizeVCanvas(){
   const nav=document.querySelector('.top-nav');
-  vCanvas.width=window.innerWidth;
-  vCanvas.height=window.innerHeight-nav.offsetHeight;
+  const dpr=window.devicePixelRatio||1;
+  vLW=window.innerWidth;
+  vLH=window.innerHeight-nav.offsetHeight;
+  vCanvas.style.width=vLW+'px';
+  vCanvas.style.height=vLH+'px';
+  vCanvas.width=Math.round(vLW*dpr);
+  vCanvas.height=Math.round(vLH*dpr);
+  vCtx.setTransform(dpr,0,0,dpr,0,0);
   updateVIsoCam();
 }
 
@@ -2460,7 +2467,7 @@ function drawIsoGround(){
   for(let wx=px-rad;wx<=px+rad;wx++){
     for(let wy=py-rad;wy<=py+rad;wy++){
       const {sx,sy}=isoToScreen(wx,wy);
-      if(sx+ISO_TW/2<0||sx-ISO_TW/2>vCanvas.width||sy+ISO_TH<-10||sy>vCanvas.height+10) continue;
+      if(sx+ISO_TW/2<0||sx-ISO_TW/2>vLW||sy+ISO_TH<-10||sy>vLH+10) continue;
       ctx.fillStyle=(wx+wy)%2===0?'#72c172':'#68b868';
       ctx.beginPath();
       ctx.moveTo(sx,sy);
@@ -2515,7 +2522,7 @@ function drawIsoHouse(h){
   const tE=isoToScreen(wx+1,wy);
   const tS=isoToScreen(wx+1,wy+1);
   const tW=isoToScreen(wx,wy+1);
-  if(tS.sy<-200||tN.sy>vCanvas.height+200||tE.sx<-200||tW.sx>vCanvas.width+200) return;
+  if(tS.sy<-200||tN.sy>vLH+200||tE.sx<-200||tW.sx>vLW+200) return;
 
   const W=ISO_WALL, R=ISO_ROOF;
   const nT={sx:tN.sx,sy:tN.sy-W}, eT={sx:tE.sx,sy:tE.sy-W};
@@ -2607,7 +2614,7 @@ function checkVApproach(){
 function villageLoop(){
   if(!vRunning) return;
   updateVPlayer(); checkVApproach();
-  vCtx.clearRect(0,0,vCanvas.width,vCanvas.height);
+  vCtx.clearRect(0,0,vLW,vLH);
   drawIsoGround();
   const objects=[
     ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
