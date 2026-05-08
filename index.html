@@ -2342,16 +2342,34 @@ const vCtx = vCanvas.getContext('2d');
 
 let vRunning = false, vFrameId = null;
 let vAvatarId = null, vAvatarImg = null;
-let vPlayer = {x:0, y:0, wf:0};
-let vCam = {x:0, y:0};
+let vPlayer = {wx:0, wy:0, wf:0};
 let vHouses = [];
 let vDialogueState = null;
 let vActiveQuest = null;
 
+// ── Isometric engine ──
+const ISO_TW = 96, ISO_TH = 48;    // tile screen size
+const ISO_WALL = 68, ISO_ROOF = 26; // wall/roof height px
+const ISO_SPD = 0.065;              // player speed (tiles/frame)
 const HOUSES_PER_ROW = 4;
-const HOUSE_W = 120, HOUSE_H = 140, HOUSE_GAP_X = 50, HOUSE_GAP_Y = 60;
-const HOUSE_STEP_X = HOUSE_W + HOUSE_GAP_X, HOUSE_STEP_Y = HOUSE_H + HOUSE_GAP_Y;
-const V_MARGIN = 80;
+const HOUSE_SPACING = 3.5;          // tiles between house centers
+
+let vIsoCam = {cx:0, cy:0};
+
+function isoToScreen(wx,wy){
+  return {
+    sx:(wx-wy)*ISO_TW/2 - vIsoCam.cx + vCanvas.width/2,
+    sy:(wx+wy)*ISO_TH/2 - vIsoCam.cy + vCanvas.height/2
+  };
+}
+function screenToIsoWorld(sx,sy){
+  const A=sx-vCanvas.width/2+vIsoCam.cx, B=sy-vCanvas.height/2+vIsoCam.cy;
+  return {wx:A/ISO_TW+B/ISO_TH, wy:B/ISO_TH-A/ISO_TW};
+}
+function hexDarken(hex,f){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.round(r*(1-f))},${Math.round(g*(1-f))},${Math.round(b*(1-f))})`;
+}
 
 const HOUSE_COL = {
   fire:     {wall:'#ff8a65',roof:'#bf360c'}, water:    {wall:'#64b5f6',roof:'#0d47a1'},
@@ -2396,138 +2414,176 @@ function buildVHouses(){
   const caughtArr=[...caught].map(id=>ALL.find(p=>p.id===id)).filter(Boolean);
   vHouses=caughtArr.map((p,i)=>{
     const col=i%HOUSES_PER_ROW, row=Math.floor(i/HOUSES_PER_ROW);
-    const x=V_MARGIN+col*HOUSE_STEP_X+HOUSE_W/2;
-    const y=V_MARGIN+80+row*HOUSE_STEP_Y+HOUSE_H/2;
+    const wx=col*HOUSE_SPACING, wy=row*HOUSE_SPACING;
     const img=new Image(); img.src=artUrl(p.id,false);
     const colors=HOUSE_COL[p.types[0]]||HOUSE_COL.normal;
-    return {data:p, x, y, img, colors, near:false};
+    return {data:p, wx, wy, img, colors, near:false};
   });
-}
-
-function vWorldSize(){
-  const n=Math.max(1,vHouses.length), rows=Math.ceil(n/HOUSES_PER_ROW);
-  const w=Math.max(720, V_MARGIN*2+HOUSES_PER_ROW*HOUSE_STEP_X-HOUSE_GAP_X+60);
-  const h=Math.max(500, V_MARGIN*2+80+rows*HOUSE_STEP_Y-HOUSE_GAP_Y+160);
-  return {w, h};
 }
 
 function resizeVCanvas(){
   const nav=document.querySelector('.top-nav');
   vCanvas.width=window.innerWidth;
   vCanvas.height=window.innerHeight-nav.offsetHeight;
-  updateVCam();
+  updateVIsoCam();
 }
 
-function updateVCam(){
-  const {w,h}=vWorldSize();
-  vCam.x=Math.max(0,Math.min(w-vCanvas.width, vPlayer.x-vCanvas.width/2));
-  vCam.y=Math.max(0,Math.min(h-vCanvas.height, vPlayer.y-vCanvas.height/2));
-  if(vCanvas.width>=w) vCam.x=(w-vCanvas.width)/2;
-  if(vCanvas.height>=h) vCam.y=(h-vCanvas.height)/2;
+function updateVIsoCam(){
+  vIsoCam.cx=(vPlayer.wx-vPlayer.wy)*ISO_TW/2;
+  vIsoCam.cy=(vPlayer.wx+vPlayer.wy)*ISO_TH/2;
 }
 
 function updateVPlayer(){
   if(vDialogueState) return;
-  const dx=(keys['ArrowRight']?1:0)-(keys['ArrowLeft']?1:0);
-  const dy=(keys['ArrowDown']?1:0)-(keys['ArrowUp']?1:0);
+  const r=(keys['ArrowRight']?1:0), l=(keys['ArrowLeft']?1:0);
+  const d=(keys['ArrowDown']?1:0),  u=(keys['ArrowUp']?1:0);
+  const dx=r-l, dy=d-u;
   if(dx||dy){
-    const {w,h}=vWorldSize();
-    vPlayer.x=Math.max(20,Math.min(w-20,vPlayer.x+dx*3));
-    vPlayer.y=Math.max(20,Math.min(h-20,vPlayer.y+dy*3));
+    const s=ISO_SPD*(dx&&dy?0.707:1);
+    // screen-right  → iso (+wx,-wy);  screen-down → iso (+wx,+wy)
+    vPlayer.wx+=(dx+dy)*s;
+    vPlayer.wy+=(-dx+dy)*s;
     vPlayer.wf++;
+    const maxWx=(HOUSES_PER_ROW-1)*HOUSE_SPACING+2;
+    const rows=Math.max(1,Math.ceil(vHouses.length/HOUSES_PER_ROW));
+    const maxWy=(rows-1)*HOUSE_SPACING+2;
+    vPlayer.wx=Math.max(-2,Math.min(maxWx,vPlayer.wx));
+    vPlayer.wy=Math.max(-2,Math.min(maxWy,vPlayer.wy));
   }
-  updateVCam();
+  updateVIsoCam();
 }
 
-function drawVBg(){
-  const {w,h}=vWorldSize();
-  const ox=-vCam.x, oy=-vCam.y;
-  vCtx.fillStyle='#66bb6a'; vCtx.fillRect(ox,oy,w,h);
-  const rows=Math.ceil(Math.max(1,vHouses.length)/HOUSES_PER_ROW);
-  for(let r=0;r<rows;r++){
-    const pathY=oy+V_MARGIN+80+r*HOUSE_STEP_Y+HOUSE_H-10;
-    vCtx.fillStyle='#d4a017'; vCtx.fillRect(ox,pathY,w,HOUSE_GAP_Y+10);
-  }
-  const bottomY=oy+V_MARGIN+80+rows*HOUSE_STEP_Y-10;
-  vCtx.fillStyle='#c8961e'; vCtx.fillRect(ox,bottomY,w,160);
-  // Village sign
-  const sx=w/2+ox, sy=V_MARGIN/2+oy;
-  vCtx.fillStyle='#5d4037'; vCtx.fillRect(sx-115,sy-18,230,36);
-  vCtx.strokeStyle='#8d6e63'; vCtx.lineWidth=3; vCtx.strokeRect(sx-115,sy-18,230,36);
-  vCtx.fillStyle='#fff8e1'; vCtx.font='bold 15px "M PLUS Rounded 1c",sans-serif';
-  vCtx.textAlign='center'; vCtx.fillText('🏡 ポケモンむら',sx,sy+6); vCtx.textAlign='left';
-  // Decorative flowers on path
-  const flowerColors=['#ff8a80','#ea80fc','#ffff8d','#b9f6ca','#80d8ff','#ffd180'];
-  flowerColors.forEach((c,i)=>{
-    const fx=ox+100+i*110, fy=oy+V_MARGIN+56;
-    if(fx<vCanvas.width+20){
-      vCtx.fillStyle=c; vCtx.beginPath(); vCtx.arc(fx,fy,7,0,Math.PI*2); vCtx.fill();
+function drawIsoGround(){
+  const ctx=vCtx;
+  const px=Math.round(vPlayer.wx), py=Math.round(vPlayer.wy);
+  const rad=14;
+  for(let wx=px-rad;wx<=px+rad;wx++){
+    for(let wy=py-rad;wy<=py+rad;wy++){
+      const {sx,sy}=isoToScreen(wx,wy);
+      if(sx+ISO_TW/2<0||sx-ISO_TW/2>vCanvas.width||sy+ISO_TH<-10||sy>vCanvas.height+10) continue;
+      ctx.fillStyle=(wx+wy)%2===0?'#72c172':'#68b868';
+      ctx.beginPath();
+      ctx.moveTo(sx,sy);
+      ctx.lineTo(sx+ISO_TW/2,sy+ISO_TH/2);
+      ctx.lineTo(sx,sy+ISO_TH);
+      ctx.lineTo(sx-ISO_TW/2,sy+ISO_TH/2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.05)';
+      ctx.lineWidth=0.5;
+      ctx.stroke();
     }
-  });
+  }
 }
 
-function drawVHouse(h){
-  const sx=Math.round(h.x-vCam.x), sy=Math.round(h.y-vCam.y);
-  if(sx<-200||sx>vCanvas.width+200||sy<-200||sy>vCanvas.height+200) return;
-  const hw=HOUSE_W/2-10, wallH=55, roofH=36, doorH=28, doorW=18;
-  const wallTop=sy-10, wallBottom=wallTop+wallH;
-  const wallLeft=sx-hw, wallRight=sx+hw;
+function drawIsoHouse(h){
+  const ctx=vCtx;
+  const wx=h.wx, wy=h.wy;
+  const tN=isoToScreen(wx,wy);
+  const tE=isoToScreen(wx+1,wy);
+  const tS=isoToScreen(wx+1,wy+1);
+  const tW=isoToScreen(wx,wy+1);
+  if(tS.sy<-200||tN.sy>vCanvas.height+200||tE.sx<-200||tW.sx>vCanvas.width+200) return;
 
-  if(h.near){
-    vCtx.fillStyle='rgba(255,255,150,.2)';
-    vCtx.beginPath(); vCtx.arc(sx,sy+10,70,0,Math.PI*2); vCtx.fill();
-    vCtx.fillStyle='#FFD700'; vCtx.font='bold 18px sans-serif';
-    vCtx.textAlign='center'; vCtx.fillText('💬',sx,wallTop-HOUSE_H/2-12); vCtx.textAlign='left';
-  }
+  const W=ISO_WALL, R=ISO_ROOF;
+  const nT={sx:tN.sx,sy:tN.sy-W}, eT={sx:tE.sx,sy:tE.sy-W};
+  const sT={sx:tS.sx,sy:tS.sy-W}, wT={sx:tW.sx,sy:tW.sy-W};
+  const pkx=tN.sx; // tN.sx === tS.sx (they share same screen-x)
+  const pky=tN.sy+ISO_TH/2-W-R;
 
-  const bob=Math.sin(Date.now()*.002+h.x*.01)*3;
+  // Ground tile
+  ctx.fillStyle='#4a7a4a';
+  ctx.beginPath();
+  ctx.moveTo(tN.sx,tN.sy); ctx.lineTo(tE.sx,tE.sy);
+  ctx.lineTo(tS.sx,tS.sy); ctx.lineTo(tW.sx,tW.sy);
+  ctx.closePath(); ctx.fill();
+
+  // Right wall (E-S face, darker)
+  ctx.fillStyle=hexDarken(h.colors.wall,0.22);
+  ctx.beginPath();
+  ctx.moveTo(tE.sx,tE.sy); ctx.lineTo(tS.sx,tS.sy);
+  ctx.lineTo(sT.sx,sT.sy); ctx.lineTo(eT.sx,eT.sy);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.1)'; ctx.lineWidth=1; ctx.stroke();
+
+  // Left wall (W-S face, brighter)
+  ctx.fillStyle=h.colors.wall;
+  ctx.beginPath();
+  ctx.moveTo(tW.sx,tW.sy); ctx.lineTo(tS.sx,tS.sy);
+  ctx.lineTo(sT.sx,sT.sy); ctx.lineTo(wT.sx,wT.sy);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.07)'; ctx.lineWidth=1; ctx.stroke();
+
+  // Hip roof — 4 triangular faces
+  // front-left (W→S→peak)
+  ctx.fillStyle=h.colors.roof;
+  ctx.beginPath(); ctx.moveTo(wT.sx,wT.sy); ctx.lineTo(sT.sx,sT.sy); ctx.lineTo(pkx,pky); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1; ctx.stroke();
+  // front-right (E→S→peak)
+  ctx.fillStyle=hexDarken(h.colors.roof,0.15);
+  ctx.beginPath(); ctx.moveTo(eT.sx,eT.sy); ctx.lineTo(sT.sx,sT.sy); ctx.lineTo(pkx,pky); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1; ctx.stroke();
+  // back-left (N→W→peak)
+  ctx.fillStyle=hexDarken(h.colors.roof,0.3);
+  ctx.beginPath(); ctx.moveTo(nT.sx,nT.sy); ctx.lineTo(wT.sx,wT.sy); ctx.lineTo(pkx,pky); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1; ctx.stroke();
+  // back-right (N→E→peak)
+  ctx.fillStyle=hexDarken(h.colors.roof,0.38);
+  ctx.beginPath(); ctx.moveTo(nT.sx,nT.sy); ctx.lineTo(eT.sx,eT.sy); ctx.lineTo(pkx,pky); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1; ctx.stroke();
+
+  // Door
+  const dh=Math.round(W*0.55), dw=9;
+  ctx.fillStyle='#5d3a1a'; ctx.fillRect(tS.sx-dw/2,tS.sy-dh,dw,dh);
+  ctx.fillStyle='#ffd700';
+  ctx.beginPath(); ctx.arc(tS.sx+dw/2-2,tS.sy-dh*0.45,2,0,Math.PI*2); ctx.fill();
+
+  // Pokémon sprite above roof peak
+  const bob=Math.sin(Date.now()*.002+wx*.5)*3;
   if(h.img.complete&&h.img.naturalWidth>0){
-    vCtx.drawImage(h.img,sx-26,wallTop-HOUSE_H/2-2+bob,52,52);
+    ctx.drawImage(h.img,pkx-22,pky-46+bob,44,44);
   }
 
-  vCtx.fillStyle=h.colors.wall; vCtx.fillRect(wallLeft,wallTop,hw*2,wallH);
-  vCtx.strokeStyle='rgba(0,0,0,.12)'; vCtx.lineWidth=1.5;
-  vCtx.strokeRect(wallLeft,wallTop,hw*2,wallH);
+  // Chat bubble
+  if(h.near){
+    ctx.font='bold 18px sans-serif';
+    ctx.textAlign='center'; ctx.fillText('💬',pkx,pky-50+bob); ctx.textAlign='left';
+  }
 
-  vCtx.fillStyle=h.colors.roof;
-  vCtx.beginPath(); vCtx.moveTo(wallLeft-8,wallTop);
-  vCtx.lineTo(sx,wallTop-roofH); vCtx.lineTo(wallRight+8,wallTop);
-  vCtx.closePath(); vCtx.fill();
-
-  const doorX=sx-doorW/2;
-  vCtx.fillStyle='#5d3a1a'; vCtx.fillRect(doorX,wallBottom-doorH,doorW,doorH);
-  vCtx.fillStyle='#ffd700';
-  vCtx.beginPath(); vCtx.arc(doorX+doorW-4,wallBottom-doorH/2,2.5,0,Math.PI*2); vCtx.fill();
-
-  vCtx.fillStyle='rgba(0,0,0,.6)';
-  vCtx.font='bold 11px "M PLUS Rounded 1c",sans-serif';
-  vCtx.textAlign='center'; vCtx.fillText(h.data.name,sx,wallBottom+16); vCtx.textAlign='left';
+  // Name label
+  ctx.fillStyle='rgba(0,0,0,.65)';
+  ctx.font='bold 11px "M PLUS Rounded 1c",sans-serif';
+  ctx.textAlign='center'; ctx.fillText(h.data.name,tS.sx,tS.sy+16); ctx.textAlign='left';
 }
 
-function drawVPlayer(){
-  const sx=Math.round(vPlayer.x-vCam.x), sy=Math.round(vPlayer.y-vCam.y);
+function drawIsoPlayer(){
+  const {sx,sy}=isoToScreen(vPlayer.wx,vPlayer.wy);
   vCtx.fillStyle='rgba(0,0,0,.18)';
-  vCtx.beginPath(); vCtx.ellipse(sx,sy+20,24,8,0,0,Math.PI*2); vCtx.fill();
+  vCtx.beginPath(); vCtx.ellipse(sx,sy+6,18,6,0,0,Math.PI*2); vCtx.fill();
   if(vAvatarImg&&vAvatarImg.complete&&vAvatarImg.naturalWidth>0){
     const bob=Math.sin(vPlayer.wf*.15)*2.5;
-    vCtx.drawImage(vAvatarImg,sx-30,sy-62+bob,60,60);
+    vCtx.drawImage(vAvatarImg,sx-24,sy-54+bob,48,48);
   } else {
     vCtx.fillStyle='#CC0000';
-    vCtx.beginPath(); vCtx.arc(sx,sy-20,14,0,Math.PI*2); vCtx.fill();
+    vCtx.beginPath(); vCtx.arc(sx,sy-18,14,0,Math.PI*2); vCtx.fill();
   }
 }
 
 function checkVApproach(){
-  vHouses.forEach(h=>{ h.near=Math.hypot(vPlayer.x-h.x,vPlayer.y-h.y)<90; });
+  vHouses.forEach(h=>{ h.near=Math.hypot(vPlayer.wx-(h.wx+0.5),vPlayer.wy-(h.wy+0.5))<2.2; });
 }
 
 function villageLoop(){
   if(!vRunning) return;
   updateVPlayer(); checkVApproach();
   vCtx.clearRect(0,0,vCanvas.width,vCanvas.height);
-  drawVBg();
-  vHouses.forEach(h=>drawVHouse(h));
-  drawVPlayer();
+  drawIsoGround();
+  const objects=[
+    ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
+    {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
+  ];
+  objects.sort((a,b)=>a.depth-b.depth);
+  objects.forEach(o=>{ if(o.type==='house') drawIsoHouse(o.obj); else drawIsoPlayer(); });
   vFrameId=requestAnimationFrame(villageLoop);
 }
 
@@ -2620,9 +2676,10 @@ function selectVAvatar(id){
 function startVillage(){
   buildVHouses();
   resizeVCanvas();
-  const {w,h}=vWorldSize();
-  vPlayer.x=w/2; vPlayer.y=h-70;
-  updateVCam();
+  const rows=Math.max(1,Math.ceil(vHouses.length/HOUSES_PER_ROW));
+  vPlayer.wx=(HOUSES_PER_ROW-1)*HOUSE_SPACING/2;
+  vPlayer.wy=rows*HOUSE_SPACING+1;
+  updateVIsoCam();
   vRunning=true;
   if(vFrameId) cancelAnimationFrame(vFrameId);
   vFrameId=requestAnimationFrame(villageLoop);
@@ -2667,9 +2724,8 @@ function showVMoveIn(name){
 vCanvas.addEventListener('click', e=>{
   if(vDialogueState){ advanceVDlg(); return; }
   const rect=vCanvas.getBoundingClientRect();
-  const cx=e.clientX-rect.left+vCam.x;
-  const cy=e.clientY-rect.top+vCam.y;
-  const near=vHouses.find(h=>Math.hypot(h.x-cx,h.y-cy)<90);
+  const {wx,wy}=screenToIsoWorld(e.clientX-rect.left, e.clientY-rect.top);
+  const near=vHouses.find(h=>Math.hypot(wx-(h.wx+0.5),wy-(h.wy+0.5))<1.2);
   if(near) openVDialogue(near);
 });
 

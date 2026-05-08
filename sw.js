@@ -1,4 +1,4 @@
-const CACHE = 'pokemon-dex-v2';
+const CACHE = 'pokemon-dex-v3';
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
