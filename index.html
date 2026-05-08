@@ -2344,15 +2344,16 @@ let vRunning = false, vFrameId = null;
 let vAvatarId = null, vAvatarImg = null;
 let vPlayer = {wx:0, wy:0, wf:0};
 let vHouses = [];
+let vAreas  = [];
 let vDialogueState = null;
 let vActiveQuest = null;
 
 // ── Isometric engine ──
-const ISO_TW = 96, ISO_TH = 48;    // tile screen size
-const ISO_WALL = 68, ISO_ROOF = 26; // wall/roof height px
-const ISO_SPD = 0.065;              // player speed (tiles/frame)
-const HOUSES_PER_ROW = 4;
-const HOUSE_SPACING = 5.5;          // tiles between house centers
+const ISO_TW = 96, ISO_TH = 48;
+const ISO_WALL = 68, ISO_ROOF = 26;
+const ISO_SPD = 0.065;
+const AREA_COLS = 3;
+const AREA_W = 10, AREA_H = 10, AREA_GAP = 3;
 
 let vIsoCam = {cx:0, cy:0};
 let vLW = 0, vLH = 0; // logical canvas size (CSS px, DPR-independent)
@@ -2384,6 +2385,27 @@ const HOUSE_COL = {
   normal:   {wall:'#e0e0e0',roof:'#616161'}, flying:   {wall:'#b0bec5',roof:'#263238'},
 };
 
+const AREA_THEMES = {
+  fire:    {name:'かざんの地',  icon:'🌋',g1:'#e64a19',g2:'#bf360c',border:'#ff6d00',deco:'fire'},
+  water:   {name:'みなとまち', icon:'🌊',g1:'#29b6f6',g2:'#0288d1',border:'#01579b',deco:'water'},
+  grass:   {name:'そうげん',   icon:'🌿',g1:'#66bb6a',g2:'#43a047',border:'#1b5e20',deco:'flower'},
+  electric:{name:'でんきの野', icon:'⚡',g1:'#fff176',g2:'#ffee58',border:'#f57f17',deco:'electric'},
+  psychic: {name:'しんぴの地', icon:'✨',g1:'#ce93d8',g2:'#ab47bc',border:'#6a1b9a',deco:'psychic'},
+  ice:     {name:'ゆきげん',   icon:'❄', g1:'#e3f2fd',g2:'#b3e5fc',border:'#0277bd',deco:'snow'},
+  dragon:  {name:'りゅうの峰', icon:'🐉',g1:'#7e57c2',g2:'#5e35b1',border:'#311b92',deco:'rock'},
+  dark:    {name:'くらい森',   icon:'🌑',g1:'#4e342e',g2:'#3e2723',border:'#1a1a2e',deco:'none'},
+  fairy:   {name:'ようせいの庭',icon:'🌸',g1:'#f48fb1',g2:'#f06292',border:'#880e4f',deco:'flower'},
+  poison:  {name:'ぬまち',     icon:'🧪',g1:'#6a1b9a',g2:'#4a148c',border:'#9c27b0',deco:'swamp'},
+  ghost:   {name:'れいはく',   icon:'👻',g1:'#546e7a',g2:'#37474f',border:'#90a4ae',deco:'none'},
+  steel:   {name:'はがねの砦', icon:'⚙', g1:'#90a4ae',g2:'#78909c',border:'#37474f',deco:'rock'},
+  rock:    {name:'いわやま',   icon:'⛰', g1:'#8d6e63',g2:'#795548',border:'#4e342e',deco:'rock'},
+  ground:  {name:'さばく',     icon:'🏜',g1:'#ffa726',g2:'#fb8c00',border:'#e65100',deco:'sand'},
+  bug:     {name:'むしの林',   icon:'🌲',g1:'#8bc34a',g2:'#7cb342',border:'#33691e',deco:'flower'},
+  fighting:{name:'かくとうの地',icon:'🥊',g1:'#ef5350',g2:'#e53935',border:'#b71c1c',deco:'rock'},
+  normal:  {name:'ふつうのまち',icon:'🏘',g1:'#e0e0e0',g2:'#bdbdbd',border:'#616161',deco:'none'},
+  flying:  {name:'たかだい',   icon:'☁', g1:'#81d4fa',g2:'#4fc3f7',border:'#0277bd',deco:'cloud'},
+};
+
 const V_DLG = {
   fire:     [['あったかいでしょ？','ぼくのそばに　いてね！','いっしょに　たきびしようよ！']],
   water:    [['みずで　あそぼう！','かわは　きもちいいよ！','ぷかぷかしようよ！']],
@@ -2413,12 +2435,24 @@ const V_SPECIAL = {
 
 function buildVHouses(){
   const caughtArr=[...caught].map(id=>ALL.find(p=>p.id===id)).filter(Boolean);
-  vHouses=caughtArr.map((p,i)=>{
-    const col=i%HOUSES_PER_ROW, row=Math.floor(i/HOUSES_PER_ROW);
-    const wx=col*HOUSE_SPACING, wy=row*HOUSE_SPACING;
-    const img=new Image(); img.src=artUrl(p.id,false);
-    const colors=HOUSE_COL[p.types[0]]||HOUSE_COL.normal;
-    return {data:p, wx, wy, img, colors, near:false};
+  const byType={};
+  caughtArr.forEach(p=>{ const t=p.types[0]; (byType[t]=byType[t]||[]).push(p); });
+  const types=Object.keys(byType);
+
+  vAreas=[]; vHouses=[];
+  types.forEach((type,ai)=>{
+    const col=ai%AREA_COLS, row=Math.floor(ai/AREA_COLS);
+    const ax=col*(AREA_W+AREA_GAP), ay=row*(AREA_H+AREA_GAP);
+    const theme=AREA_THEMES[type]||AREA_THEMES.normal;
+    vAreas.push({type,theme,wx0:ax,wy0:ay,ww:AREA_W,wh:AREA_H});
+
+    byType[type].forEach((p,i)=>{
+      const hc=i%2, hr=Math.floor(i/2);
+      const wx=ax+1.5+hc*4.0, wy=ay+2.5+hr*4.0;
+      const img=new Image(); img.src=artUrl(p.id,false);
+      const colors=HOUSE_COL[type]||HOUSE_COL.normal;
+      vHouses.push({data:p,wx,wy,img,colors,near:false});
+    });
   });
 }
 
@@ -2451,24 +2485,43 @@ function updateVPlayer(){
     vPlayer.wx+=(dx+dy)*s;
     vPlayer.wy+=(-dx+dy)*s;
     vPlayer.wf++;
-    const maxWx=(HOUSES_PER_ROW-1)*HOUSE_SPACING+2;
-    const rows=Math.max(1,Math.ceil(vHouses.length/HOUSES_PER_ROW));
-    const maxWy=(rows-1)*HOUSE_SPACING+2;
-    vPlayer.wx=Math.max(-2,Math.min(maxWx,vPlayer.wx));
-    vPlayer.wy=Math.max(-2,Math.min(maxWy,vPlayer.wy));
+    const maxWx=vAreas.reduce((m,a)=>Math.max(m,a.wx0+a.ww),AREA_W)+2;
+    const maxWy=vAreas.reduce((m,a)=>Math.max(m,a.wy0+a.wh),AREA_H)+2;
+    vPlayer.wx=Math.max(-3,Math.min(maxWx,vPlayer.wx));
+    vPlayer.wy=Math.max(-3,Math.min(maxWy,vPlayer.wy));
   }
   updateVIsoCam();
+}
+
+function getAreaAt(wx,wy){
+  for(let i=0;i<vAreas.length;i++){
+    const a=vAreas[i];
+    if(wx>=a.wx0&&wx<a.wx0+a.ww&&wy>=a.wy0&&wy<a.wy0+a.wh) return a;
+  }
+  return null;
 }
 
 function drawIsoGround(){
   const ctx=vCtx;
   const px=Math.round(vPlayer.wx), py=Math.round(vPlayer.wy);
-  const rad=14;
+  const rad=16;
   for(let wx=px-rad;wx<=px+rad;wx++){
     for(let wy=py-rad;wy<=py+rad;wy++){
       const {sx,sy}=isoToScreen(wx,wy);
       if(sx+ISO_TW/2<0||sx-ISO_TW/2>vLW||sy+ISO_TH<-10||sy>vLH+10) continue;
-      ctx.fillStyle=(wx+wy)%2===0?'#72c172':'#68b868';
+
+      const area=getAreaAt(wx,wy);
+      let col, borderCol=null;
+      if(area){
+        col=(wx+wy)%2===0?area.theme.g1:area.theme.g2;
+        const onEdge=wx===Math.floor(area.wx0)||wx===Math.ceil(area.wx0+area.ww)-1||
+                     wy===Math.floor(area.wy0)||wy===Math.ceil(area.wy0+area.wh)-1;
+        if(onEdge) borderCol=area.theme.border;
+      } else {
+        col=(wx+wy)%2===0?'#c2a46a':'#b59356';
+      }
+
+      ctx.fillStyle=col;
       ctx.beginPath();
       ctx.moveTo(sx,sy);
       ctx.lineTo(sx+ISO_TW/2,sy+ISO_TH/2);
@@ -2476,11 +2529,77 @@ function drawIsoGround(){
       ctx.lineTo(sx-ISO_TW/2,sy+ISO_TH/2);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle='rgba(0,0,0,.05)';
-      ctx.lineWidth=0.5;
-      ctx.stroke();
+      if(borderCol){
+        ctx.strokeStyle=borderCol; ctx.lineWidth=2; ctx.stroke();
+      } else {
+        ctx.strokeStyle='rgba(0,0,0,.05)'; ctx.lineWidth=0.5; ctx.stroke();
+      }
+
+      // Biome decoration (stable per tile, ~25% of area tiles)
+      if(area&&area.theme.deco!=='none'&&(wx*13+wy*7)%12<3){
+        const tx=sx, ty=sy+ISO_TH/2;
+        ctx.save(); ctx.globalAlpha=0.45;
+        switch(area.theme.deco){
+          case 'fire':
+            ctx.fillStyle='#ff6d00';
+            ctx.beginPath(); ctx.arc(tx,ty,2.5,0,Math.PI*2); ctx.fill(); break;
+          case 'water':
+            ctx.strokeStyle='rgba(255,255,255,.65)'; ctx.lineWidth=1.5;
+            ctx.beginPath(); ctx.arc(tx,ty,4,Math.PI*1.15,Math.PI*1.85); ctx.stroke(); break;
+          case 'flower':
+            ctx.fillStyle=(wx+wy)%3===0?'#fff176':(wx+wy)%3===1?'#ff8a80':'#ea80fc';
+            ctx.beginPath(); ctx.arc(tx,ty,3,0,Math.PI*2); ctx.fill(); break;
+          case 'snow':
+            ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=1;
+            for(let d=0;d<3;d++){
+              const a=d*Math.PI/3;
+              ctx.beginPath();
+              ctx.moveTo(tx+Math.cos(a)*5,ty+Math.sin(a)*5);
+              ctx.lineTo(tx-Math.cos(a)*5,ty-Math.sin(a)*5);
+              ctx.stroke();
+            }
+            break;
+          case 'rock':
+            ctx.fillStyle='rgba(0,0,0,.22)';
+            ctx.beginPath(); ctx.ellipse(tx,ty,4,3,0.4,0,Math.PI*2); ctx.fill(); break;
+          case 'sand':
+            ctx.fillStyle='rgba(255,255,255,.3)';
+            ctx.beginPath(); ctx.arc(tx,ty,2,0,Math.PI*2); ctx.fill(); break;
+          case 'electric':
+            ctx.strokeStyle='rgba(255,255,100,.8)'; ctx.lineWidth=1.5;
+            ctx.beginPath(); ctx.moveTo(tx-4,ty-4); ctx.lineTo(tx+1,ty); ctx.lineTo(tx-2,ty+4); ctx.stroke(); break;
+          case 'swamp':
+            ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.ellipse(tx,ty,5,3,0,0,Math.PI*2); ctx.stroke(); break;
+          case 'psychic':
+            ctx.fillStyle='rgba(255,255,255,.35)';
+            ctx.beginPath(); ctx.arc(tx,ty,3,0,Math.PI*2); ctx.fill(); break;
+          case 'cloud':
+            ctx.fillStyle='rgba(255,255,255,.5)';
+            ctx.beginPath(); ctx.arc(tx,ty,3.5,0,Math.PI*2); ctx.fill(); break;
+        }
+        ctx.restore();
+      }
     }
   }
+
+  // Area name plates (drawn after tiles so they appear on top)
+  vAreas.forEach(a=>{
+    const {sx,sy}=isoToScreen(a.wx0,a.wy0);
+    if(sx<-180||sx>vLW+180||sy<-80||sy>vLH+50) return;
+    const label=a.theme.icon+' '+a.theme.name;
+    ctx.font='bold 13px "M PLUS Rounded 1c",sans-serif';
+    const tw=ctx.measureText(label).width;
+    const bw=tw+22, bh=26, bx=sx-bw/2, by=sy-bh-10;
+    ctx.fillStyle=a.theme.border;
+    ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle='rgba(255,255,255,.2)';
+    ctx.fillRect(bx,by,bw,bh/2);
+    ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1.5;
+    ctx.strokeRect(bx,by,bw,bh);
+    ctx.fillStyle='#fff';
+    ctx.textAlign='center'; ctx.fillText(label,sx,by+bh-6); ctx.textAlign='left';
+  });
 }
 
 // chibi-style sprite: squish + glow + blush
@@ -2714,9 +2833,9 @@ function selectVAvatar(id){
 function startVillage(){
   buildVHouses();
   resizeVCanvas();
-  const rows=Math.max(1,Math.ceil(vHouses.length/HOUSES_PER_ROW));
-  vPlayer.wx=(HOUSES_PER_ROW-1)*HOUSE_SPACING/2;
-  vPlayer.wy=rows*HOUSE_SPACING+1;
+  const areaRows=Math.ceil(Math.max(1,vAreas.length)/AREA_COLS);
+  vPlayer.wx=AREA_COLS*(AREA_W+AREA_GAP)/2;
+  vPlayer.wy=areaRows>1 ? AREA_H+AREA_GAP/2 : AREA_H+1;
   updateVIsoCam();
   vRunning=true;
   if(vFrameId) cancelAnimationFrame(vFrameId);
