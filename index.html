@@ -2476,6 +2476,38 @@ function drawIsoGround(){
   }
 }
 
+// chibi-style sprite: squish + glow + blush
+function drawChibiSprite(ctx, img, cx, footY, size, bob){
+  if(!img||!img.complete||!img.naturalWidth) return;
+  const by=footY+bob;
+  const midY=by-size*0.5;
+
+  // soft radial glow
+  ctx.save();
+  const grd=ctx.createRadialGradient(cx,midY,0,cx,midY,size*0.62);
+  grd.addColorStop(0,'rgba(255,255,255,0.68)');
+  grd.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=grd;
+  ctx.beginPath(); ctx.arc(cx,midY,size*0.62,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // sprite: wider head, squished body (chibi deform)
+  ctx.save();
+  ctx.translate(cx,by);
+  ctx.scale(1.12,0.86);
+  ctx.drawImage(img,-size/2,-size,size,size);
+  ctx.restore();
+
+  // blush marks
+  ctx.save();
+  ctx.globalAlpha=0.36;
+  ctx.fillStyle='#ff8898';
+  const blushY=by-size*0.38;
+  ctx.beginPath(); ctx.ellipse(cx-size*0.26,blushY,size*0.12,size*0.065,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx+size*0.26,blushY,size*0.12,size*0.065,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
 function drawIsoHouse(h){
   const ctx=vCtx;
   const wx=h.wx, wy=h.wy;
@@ -2538,16 +2570,14 @@ function drawIsoHouse(h){
   ctx.fillStyle='#ffd700';
   ctx.beginPath(); ctx.arc(tS.sx+dw/2-2,tS.sy-dh*0.45,2,0,Math.PI*2); ctx.fill();
 
-  // Pokémon sprite above roof peak
+  // Pokémon sprite above roof peak (chibi)
   const bob=Math.sin(Date.now()*.002+wx*.5)*3;
-  if(h.img.complete&&h.img.naturalWidth>0){
-    ctx.drawImage(h.img,pkx-22,pky-46+bob,44,44);
-  }
+  drawChibiSprite(ctx,h.img,pkx,pky-6,54,bob);
 
   // Chat bubble
   if(h.near){
     ctx.font='bold 18px sans-serif';
-    ctx.textAlign='center'; ctx.fillText('💬',pkx,pky-50+bob); ctx.textAlign='left';
+    ctx.textAlign='center'; ctx.fillText('💬',pkx,pky-64+bob); ctx.textAlign='left';
   }
 
   // Name label
@@ -2558,11 +2588,12 @@ function drawIsoHouse(h){
 
 function drawIsoPlayer(){
   const {sx,sy}=isoToScreen(vPlayer.wx,vPlayer.wy);
+  // ground shadow
   vCtx.fillStyle='rgba(0,0,0,.18)';
-  vCtx.beginPath(); vCtx.ellipse(sx,sy+6,18,6,0,0,Math.PI*2); vCtx.fill();
+  vCtx.beginPath(); vCtx.ellipse(sx,sy+6,20,6,0,0,Math.PI*2); vCtx.fill();
+  const bob=Math.sin(vPlayer.wf*.15)*2.5;
   if(vAvatarImg&&vAvatarImg.complete&&vAvatarImg.naturalWidth>0){
-    const bob=Math.sin(vPlayer.wf*.15)*2.5;
-    vCtx.drawImage(vAvatarImg,sx-24,sy-54+bob,48,48);
+    drawChibiSprite(vCtx,vAvatarImg,sx,sy-2,56,bob);
   } else {
     vCtx.fillStyle='#CC0000';
     vCtx.beginPath(); vCtx.arc(sx,sy-18,14,0,Math.PI*2); vCtx.fill();
