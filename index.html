@@ -1360,7 +1360,7 @@ const COLS = Math.ceil(WORLD_W/TILE), ROWS = Math.ceil(WORLD_H/TILE);
 const PLAYER_SPD = 3.5;
 const WILD_SPD = 0.75;
 const ENC_DIST = 30;
-const MAX_WILD = 25;
+const MAX_WILD = 60;
 
 // Pre-seed tile map
 const tileMap = [];
@@ -1588,7 +1588,7 @@ function gameLoop(){
   if(!gameRunning) return;
   updatePlayer(); updateCam(); updateWild(); checkEncounters();
   spawnTimer++;
-  if(spawnTimer>90){ spawnWild(); spawnTimer=0; }
+  if(spawnTimer>40){ spawnWild(); spawnTimer=0; }
   ctx.clearRect(0,0,canvas.width,canvas.height);
   drawBg(); drawTrees(); drawWilids_and_player();
   drawMinimap();
