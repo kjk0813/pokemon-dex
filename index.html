@@ -1081,6 +1081,25 @@ function makeEntry(r){
 // Build ALL: compact entries + Eeveelutions
 const ALL = COMPACT.map(makeEntry);
 
+// Pokémon Horizons (リコ編) featured Pokémon — weighted spawn pool
+const LIKO_POOL = ALL.filter(p => new Set([
+  6,   // リザードン (フリード)
+  25,  // ピカチュウ (キャプテンピカチュウ)
+  131, // ラプラス (チリ)
+  172, // ピチュー
+  282, // サーナイト
+  447, 448, // リオル/ルカリオ (ドット)
+  445, // ガブリアス
+  570, 571, // ゾロア/ゾロアーク
+  704, 705, 706, // ヌメラ/ヌメイル/ヌメルゴン
+  714, 715, // オンバット/オンバーン
+  745, // ルガルガン (コニア)
+  248, // バンギラス
+  658, // ゲッコウガ
+  722, 725, 728, // アローラスターター
+  802, // マーシャドー
+]).has(p.id));
+
 // Eeveelutions — always shown (isE:true)
 const EEVES=[
   {id:133,name:'イーブイ',  nameEn:'Eevee',    cat:'しんかポケモン',  types:['normal'],   h:'0.3m',w:'6.5kg', abil:['にげあし','てきおうりょく'],ha:'きけんよち',  desc:'体の中には高い適応力を秘めた特別な遺伝子が組み込まれている。さまざまな進化の可能性を秘めた不思議なポケモン。',stats:{hp:55,attack:55,defense:50,spAtk:45,spDef:65,speed:55},isE:true},
@@ -1360,7 +1379,7 @@ const COLS = Math.ceil(WORLD_W/TILE), ROWS = Math.ceil(WORLD_H/TILE);
 const PLAYER_SPD = 3.5;
 const WILD_SPD = 0.75;
 const ENC_DIST = 30;
-const MAX_WILD = 60;
+const MAX_WILD = 120;
 
 // Pre-seed tile map
 const tileMap = [];
@@ -1393,7 +1412,8 @@ let spawnTimer = 0;
 // Build wild pool: spawn from ALL, weighted
 function spawnWild(){
   if(wildPokes.length >= MAX_WILD) return;
-  const p = ALL[Math.floor(Math.random()*ALL.length)];
+  const pool = (LIKO_POOL.length && Math.random()<0.7) ? LIKO_POOL : ALL;
+  const p = pool[Math.floor(Math.random()*pool.length)];
   const lv = 3 + Math.floor(Math.random()*14);
   // Random edge-ish position, not near player
   let x,y;
