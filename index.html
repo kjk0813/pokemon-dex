@@ -3070,18 +3070,19 @@ function drawIsoHouse(h){
   const bob=Math.sin(Date.now()*.002+wx*.5)*3;
   drawChibiSprite(ctx,h.img,pkx,pky-6,54,bob);
 
-  // Near indicator: pulsing ring + sparkle
+  // Near indicator: pulsing ring + sparkle (heart if high friendship)
   if(h.near){
     const pulse=0.7+Math.sin(Date.now()*.005)*0.3;
-    ctx.save();
-    ctx.globalAlpha=pulse;
-    ctx.strokeStyle='#ffd700'; ctx.lineWidth=2.5;
+    let frLv=0;
+    try{ frLv=JSON.parse(localStorage.getItem('pkmFriendship')||'{}')[h.data.id]||0; }catch(e){}
+    ctx.save(); ctx.globalAlpha=pulse;
+    ctx.strokeStyle=frLv>=3?'#ff88cc':'#ffd700'; ctx.lineWidth=2.5;
     ctx.setLineDash([5,4]);
     ctx.beginPath(); ctx.arc(pkx,pky-38+bob,24,0,Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.font='bold 16px sans-serif';
-    ctx.textAlign='center'; ctx.fillText('✨',pkx,pky-66+bob);
-    ctx.restore();
+    ctx.font='bold 16px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(frLv>=3?'💖':'✨',pkx,pky-66+bob);
+    ctx.restore(); ctx.textAlign='left';
   }
 
   // Name label — pill style
@@ -3295,6 +3296,13 @@ function openVDialogue(house){
     const opts=V_DLG[house.data.types[0]]||V_DLG.normal;
     lines=[...opts[Math.floor(Math.random()*opts.length)]];
   }
+  // ── Friendship bonus dialogue ──
+  try{
+    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const lv=fr[house.data.id]||0;
+    if(lv>=3) lines.push('（きのみ、ありがとう！　だいすきだよ！🌟）');
+    else if(lv>=1) lines.push('（きのみを　もらったこと、おぼえてるよ！）');
+  }catch(e){}
   const qData=JSON.parse(localStorage.getItem('villageQuests')||'{}');
   if(vActiveQuest&&vActiveQuest.targetId===house.data.id){
     lines.push('（なかよしに　なったね！🌟）');
@@ -3317,7 +3325,14 @@ function openVDialogue(house){
 function renderVDlg(){
   if(!vDialogueState) return;
   const {house,lines,step}=vDialogueState;
-  document.getElementById('vdName').textContent=house.data.name;
+  // Friendship hearts
+  let hearts='';
+  try{
+    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const lv=Math.min(fr[house.data.id]||0,5);
+    if(lv>0) hearts=' '+'♥'.repeat(lv);
+  }catch(e){}
+  document.getElementById('vdName').textContent=house.data.name+hearts;
   document.getElementById('vdText').textContent=lines[step];
   const last=step>=lines.length-1;
   document.getElementById('vdNext').style.display=last?'none':'';
