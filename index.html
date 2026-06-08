@@ -1452,8 +1452,9 @@ const MAX_WILD = 120;
 const tileMap = [];
 let seed = 42;
 function rng(){ seed=(seed*1664525+1013904223)&0xffffffff; return (seed>>>0)/4294967296; }
-for(let r=0;r<ROWS;r++){ tileMap[r]=[]; for(let c=0;c<COLS;c++) tileMap[r][c]=rng()<.65?0:rng()<.7?1:2; }
-const TCOLS=['#5cb85c','#4cae4c','#78cc78'];
+for(let r=0;r<ROWS;r++){ tileMap[r]=[]; for(let c=0;c<COLS;c++) tileMap[r][c]=rng()<.6?0:rng()<.65?1:rng()<.5?2:3; }
+// CT-style SNES grass palette (4 shades for varied terrain)
+const TCOLS=['#267020','#1e5818','#2e7828','#1a4e14'];
 
 // Trees
 const TREES=[];
@@ -1546,35 +1547,79 @@ function drawBg(){
   const er=Math.min(ROWS-1,sr+Math.ceil(canvas.height/TILE)+1);
   for(let r=Math.max(0,sr);r<=er;r++){
     for(let c=Math.max(0,sc);c<=ec;c++){
-      ctx.fillStyle=TCOLS[tileMap[r][c]];
-      ctx.fillRect(c*TILE-cam.x, r*TILE-cam.y, TILE+1, TILE+1);
+      const tx=c*TILE-cam.x, ty=r*TILE-cam.y;
+      const ti=tileMap[r][c];
+      // Base tile
+      ctx.fillStyle=TCOLS[ti]; ctx.fillRect(tx,ty,TILE+1,TILE+1);
+      // Subtle checkerboard shading for SNES texture feel
+      if((r+c)%2===0){
+        ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(tx,ty,TILE+1,TILE+1);
+      }
+      // Grass detail (lighter blade marks on some tiles)
+      const h=(c*17+r*11)&0xff;
+      if(h%7===0){
+        ctx.save(); ctx.globalAlpha=0.25;
+        ctx.strokeStyle='rgba(100,220,80,.5)'; ctx.lineWidth=1;
+        [[tx+8,ty+10],[tx+18,ty+24],[tx+32,ty+14],[tx+40,ty+30]].forEach(([gx,gy])=>{
+          ctx.beginPath(); ctx.moveTo(gx,gy); ctx.quadraticCurveTo(gx+2,gy-7,gx+4,gy); ctx.stroke();
+        });
+        ctx.restore();
+      }
+      // Tiny flower dots on some tiles
+      if(h%23===0){
+        ctx.fillStyle=h%3===0?'#f0d070':h%3===1?'#f09080':'#d0a0ff';
+        ctx.fillRect(tx+(h%38)+4,ty+(h%28)+4,3,3);
+      }
+      // Tile border (subtle grid) at every 3rd tile for SNES zone feel
+      if((r%3===0||c%3===0)&&(r%3===0&&c%3===0)){
+        ctx.fillStyle='rgba(0,0,0,.04)'; ctx.fillRect(tx,ty,1,TILE); ctx.fillRect(tx,ty,TILE,1);
+      }
     }
   }
+  // Time-of-day atmospheric tint
+  const hr=new Date().getHours();
+  let tint=null;
+  if(hr>=6&&hr<8)   tint='rgba(255,180,80,0.08)';  // dawn: warm orange
+  else if(hr>=18&&hr<20) tint='rgba(255,100,40,0.1)'; // dusk: orange-red
+  else if(hr>=20||hr<6)  tint='rgba(0,0,60,0.22)';   // night: dark blue
+  if(tint){ ctx.fillStyle=tint; ctx.fillRect(0,0,canvas.width,canvas.height); }
+  // Vignette (darkens edges for depth)
+  const vg=ctx.createRadialGradient(canvas.width/2,canvas.height/2,canvas.width*.28,canvas.width/2,canvas.height/2,canvas.width*.72);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.28)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
 function drawTrees(){
-  // Sort by y for depth
   const vis=TREES.filter(t=>{
     const sx=t.x-cam.x, sy=t.y-cam.y;
-    return sx>-80&&sx<canvas.width+80&&sy>-100&&sy<canvas.height+60;
+    return sx>-80&&sx<canvas.width+80&&sy>-110&&sy<canvas.height+60;
   }).sort((a,b)=>a.y-b.y);
   vis.forEach(t=>{
     const sx=Math.round(t.x-cam.x), sy=Math.round(t.y-cam.y);
-    // Shadow
-    ctx.fillStyle='rgba(0,0,0,.12)';
-    ctx.beginPath(); ctx.ellipse(sx,sy+6,22,7,0,0,Math.PI*2); ctx.fill();
-    // Trunk
-    ctx.fillStyle='#795548';
-    ctx.fillRect(sx-5,sy-18,10,24);
-    // Foliage
-    ctx.fillStyle='#2e7d32';
-    ctx.beginPath(); ctx.arc(sx,sy-34,24,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#388e3c';
-    ctx.beginPath(); ctx.arc(sx-9,sy-27,18,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#43a047';
-    ctx.beginPath(); ctx.arc(sx+9,sy-27,18,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#66bb6a';
-    ctx.beginPath(); ctx.arc(sx,sy-46,14,0,Math.PI*2); ctx.fill();
+    // Ground shadow (CT-style elongated)
+    ctx.fillStyle='rgba(0,0,0,.22)';
+    ctx.beginPath(); ctx.ellipse(sx+4,sy+8,26,8,0,0,Math.PI*2); ctx.fill();
+    // Trunk (CT chunky rectangular)
+    ctx.fillStyle='#4a3018';
+    ctx.fillRect(sx-6,sy-16,12,24);
+    ctx.fillStyle='rgba(0,0,0,.3)';
+    ctx.fillRect(sx+3,sy-16,3,24); // shadow side
+    // Main canopy (CT flat rectangular top)
+    ctx.fillStyle='#0c3c0c';
+    ctx.fillRect(sx-28,sy-60,56,44);
+    // Canopy mid layer (brighter)
+    ctx.fillStyle='#145014';
+    ctx.fillRect(sx-24,sy-64,48,40);
+    // Canopy top highlight
+    ctx.fillStyle='#1c6020';
+    ctx.fillRect(sx-20,sy-68,40,24);
+    // Bright top specular
+    ctx.fillStyle='rgba(100,200,80,.28)';
+    ctx.fillRect(sx-14,sy-72,20,12);
+    // Right-side shading (dark edge)
+    ctx.fillStyle='rgba(0,0,0,.25)';
+    ctx.fillRect(sx+18,sy-64,10,44);
+    ctx.fillRect(sx-28,sy-20,56,4);
   });
 }
 
@@ -1654,20 +1699,34 @@ function drawPlayer(){
 }
 
 function drawMinimap(){
-  const mw=120,mh=90,mx=canvas.width-mw-10,my=10;
-  ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fillRect(mx,my,mw,mh);
-  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1; ctx.strokeRect(mx,my,mw,mh);
-  // Wild dots
+  const mw=110,mh=82,mx=canvas.width-mw-8,my=8;
+  // CT dark box
+  ctx.fillStyle='rgba(4,4,12,.9)'; ctx.fillRect(mx,my,mw,mh);
+  ctx.strokeStyle='#4a5ab0'; ctx.lineWidth=1.5; ctx.strokeRect(mx,my,mw,mh);
+  // Header stripe
+  ctx.fillStyle='rgba(74,90,176,.18)'; ctx.fillRect(mx+1,my+1,mw-2,10);
+  ctx.fillStyle='#6878c8'; ctx.font='bold 8px monospace'; ctx.textAlign='center';
+  ctx.fillText('MAP',mx+mw/2,my+9); ctx.textAlign='left';
+  const mapY=my+12, mapH=mh-14;
+  // Terrain background
+  ctx.fillStyle='#1a4018'; ctx.fillRect(mx+1,mapY,mw-2,mapH);
+  // Wild type dots
   wildPokes.forEach(w=>{
-    const dx=(w.x/WORLD_W)*mw, dy=(w.y/WORLD_H)*mh;
+    const dx=(w.x/WORLD_W)*(mw-2)+mx+1;
+    const dy=(w.y/WORLD_H)*mapH+mapY;
     const t0=w.data.types[0];
-    const col={fire:'#f08030',water:'#6890f0',electric:'#f8d030',grass:'#78c850',ice:'#98d8d8',psychic:'#f85888',dark:'#705848',fairy:'#ee99ac',normal:'#a8a878',poison:'#a040a0',ghost:'#705898',steel:'#b8b8d0'}[t0]||'#fff';
-    ctx.fillStyle=col; ctx.fillRect(mx+dx-2,my+dy-2,4,4);
+    const col={fire:'#c84000',water:'#1848a0',electric:'#b89800',grass:'#287820',ice:'#4898b0',psychic:'#5a1888',dark:'#140c22',fairy:'#b03888',normal:'#505868',poison:'#501878',ghost:'#283c4a',steel:'#3c4c58',rock:'#5c3c28',ground:'#b07020',bug:'#406018',fighting:'#941018',flying:'#1268b0'}[t0]||'#8090d8';
+    ctx.fillStyle=col; ctx.fillRect(dx-1.5,dy-1.5,4,4);
   });
+  // Camera viewport rect
+  ctx.strokeStyle='rgba(200,210,255,.4)'; ctx.lineWidth=0.8;
+  const vx=(cam.x/WORLD_W)*(mw-2)+mx+1, vy=(cam.y/WORLD_H)*mapH+mapY;
+  const vw=(canvas.width/WORLD_W)*(mw-2), vh=(canvas.height/WORLD_H)*mapH;
+  ctx.strokeRect(vx,vy,vw,vh);
   // Player dot
-  const px=(player.x/WORLD_W)*mw, py=(player.y/WORLD_H)*mh;
-  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(mx+px,my+py,4,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle=var_red; ctx.beginPath(); ctx.arc(mx+px,my+py,3,0,Math.PI*2); ctx.fill();
+  const px=(player.x/WORLD_W)*(mw-2)+mx+1, py=(player.y/WORLD_H)*mapH+mapY;
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ff4040'; ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.fill();
 }
 const var_red='#CC0000';
 
