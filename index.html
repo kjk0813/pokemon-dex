@@ -162,12 +162,13 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:#06060e;color:var(--t
 .h-evo span{color:rgba(255,255,255,.75);font-size:.6rem;font-weight:700}
 
 /* Dex main */
-.dex-main{max-width:1280px;margin:0 auto;padding:48px 24px 60px}
-.sec-header{text-align:center;margin-bottom:36px}
-.sec-lbl{display:inline-block;background:var(--red);color:#fff;font-size:.68rem;font-weight:900;padding:3px 14px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
-.sec-title{font-size:1.9rem;font-weight:900;margin-bottom:6px}
-.sec-title .red{color:var(--red)}
-.sec-desc{color:var(--muted);font-size:.9rem;font-weight:600}
+#dexScreen{background:#06060e}
+.dex-main{max-width:1280px;margin:0 auto;padding:36px 20px 60px;background:#06060e}
+.sec-header{text-align:center;margin-bottom:32px}
+.sec-lbl{display:inline-block;background:transparent;border:1.5px solid #4a5ab0;color:#8898d8;font-size:.68rem;font-weight:900;padding:3px 14px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:1.8rem;font-weight:900;margin-bottom:6px;color:#e8eeff;text-shadow:0 0 20px rgba(120,160,255,.3)}
+.sec-title .red{color:#f0d040}
+.sec-desc{color:#5870b8;font-size:.88rem;font-weight:700}
 
 /* Pokémon grid */
 .poke-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -196,15 +197,15 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:#06060e;color:var(--t
 .mystery .c-ring{background:rgba(255,255,255,.08)}
 .mystery .c-sprite-q{font-size:3rem;color:rgba(255,255,255,.2)}
 .mystery .c-name{color:rgba(255,255,255,.3)}
-/* Card bottom */
-.c-bot{background:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
+/* Card bottom — CT dark */
+.c-bot{background:#08080e;border-top:1px solid rgba(74,90,176,.3);padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
 .c-stats{display:flex;gap:16px}
 .sm{text-align:center}
-.sm-l{font-size:.58rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.sm-v{font-size:.95rem;font-weight:900;color:var(--text)}
-.c-cat-text{font-size:.68rem;font-weight:800;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.c-arr{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;transition:background .2s;flex-shrink:0}
-.poke-card:hover .c-arr{background:var(--red);color:#fff}
+.sm-l{font-size:.56rem;font-weight:900;color:#4a5ab0;text-transform:uppercase;letter-spacing:.08em;font-family:monospace}
+.sm-v{font-size:.9rem;font-weight:900;color:#dde2fa}
+.c-cat-text{font-size:.65rem;font-weight:800;color:#5870b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-arr{width:26px;height:26px;background:rgba(74,90,176,.12);border:1px solid rgba(74,90,176,.3);display:flex;align-items:center;justify-content:center;color:#5870b8;font-size:.9rem;transition:background .2s,color .2s;flex-shrink:0}
+.poke-card:hover .c-arr{background:#4a5ab0;color:#fff}
 
 /* Type badges */
 .tbadge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.7rem;font-weight:800;color:#fff;letter-spacing:.04em}
@@ -383,57 +384,60 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 }
 
 /* ═══ CAMP SCREEN ═══ */
-#campScreen{display:none;min-height:100vh;background:#fffbf0;overflow-y:auto;padding-bottom:48px}
-.camp-hero{background:linear-gradient(135deg,#CC0000 0%,#ff6b35 100%);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
-.camp-hero::after{content:'⛺🌲🌿🌲⛺';position:absolute;bottom:-4px;left:0;right:0;font-size:1.6rem;letter-spacing:4px;opacity:.4;white-space:nowrap}
-.camp-eevee{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.35));margin-bottom:8px}
-.camp-title{font-size:.85rem;color:rgba(255,255,255,.9);font-weight:800;letter-spacing:.5px}
-.camp-title2{font-size:1.5rem;color:#fff;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.3);line-height:1.3;margin:4px 0 14px}
+/* ── CAMP — CT dark style ── */
+#campScreen{display:none;min-height:100vh;background:#06060e;overflow-y:auto;padding-bottom:48px}
+.camp-hero{background:linear-gradient(180deg,#0c0820 0%,#14102c 100%);border-bottom:2px solid #4a5ab0;padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.camp-hero::after{content:'⛺🌲🌿🌲⛺';position:absolute;bottom:-4px;left:0;right:0;font-size:1.6rem;letter-spacing:4px;opacity:.25;white-space:nowrap}
+.camp-eevee{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(120,160,255,.45));margin-bottom:8px}
+.camp-title{font-size:.82rem;color:#6878c8;font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-family:monospace}
+.camp-title2{font-size:1.5rem;color:#e8eeff;font-weight:900;text-shadow:0 0 20px rgba(120,160,255,.4);line-height:1.3;margin:4px 0 14px}
 .camp-meta-badges{display:flex;flex-direction:column;gap:7px;align-items:center}
-.camp-meta-badge{background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);border-radius:22px;padding:7px 18px;color:#fff;font-size:.82rem;font-weight:800}
+.camp-meta-badge{background:rgba(74,90,176,.12);border:1.5px solid #4a5ab0;padding:7px 18px;color:#a0b8ff;font-size:.82rem;font-weight:800}
 .camp-content{max-width:600px;margin:0 auto;padding:16px 12px}
-.camp-card{background:#fff;border-radius:18px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.09)}
-.camp-card-head{background:linear-gradient(135deg,#CC0000,#e53935);color:#fff;padding:12px 18px;font-weight:900;font-size:.93rem;display:flex;align-items:center;gap:8px}
-.camp-card-body{padding:16px}
-.camp-info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed #fde0e0;font-size:.83rem;gap:8px}
+.camp-card{background:#0a0a18;border:1.5px solid #252850;margin-bottom:14px;overflow:hidden}
+.camp-card-head{background:#0c0c22;border-bottom:2px solid #4a5ab0;color:#c0d4ff;padding:10px 16px;font-weight:900;font-size:.9rem;display:flex;align-items:center;gap:8px;letter-spacing:.05em}
+.camp-card-body{padding:14px}
+.camp-info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #1a1a30;font-size:.82rem;gap:8px}
 .camp-info-row:last-of-type{border-bottom:none}
-.camp-info-label{color:#888;font-weight:700;white-space:nowrap}
-.camp-info-val{font-weight:800;color:#333;text-align:right}
-.camp-map-btn{display:block;margin-top:14px;background:linear-gradient(135deg,#CC0000,#e53935);color:#fff;text-align:center;border-radius:22px;padding:10px;font-weight:900;font-size:.85rem;text-decoration:none;box-shadow:0 3px 10px rgba(204,0,0,.3)}
-.day-tabs{display:flex;gap:0;border-bottom:2px solid #f5f5f5}
-.day-tab{flex:1;padding:10px 4px;border:none;border-radius:0;font-family:inherit;font-size:.78rem;font-weight:900;cursor:pointer;background:#fafafa;color:#aaa;line-height:1.4;transition:all .2s}
-.day-tab.active{background:#fff;color:#CC0000;border-bottom:3px solid #CC0000;margin-bottom:-2px}
-.day-content{display:none;padding:14px 16px 16px}
+.camp-info-label{color:#5870b8;font-weight:700;white-space:nowrap}
+.camp-info-val{font-weight:800;color:#dde2fa;text-align:right}
+.camp-map-btn{display:block;margin-top:12px;background:#0c1438;border:1.5px solid #4a5ab0;color:#a0b8ff;text-align:center;padding:10px;font-weight:900;font-size:.85rem;text-decoration:none;letter-spacing:.06em;transition:background .15s}
+.camp-map-btn:hover{background:#18244e}
+.day-tabs{display:flex;gap:0;border-bottom:2px solid #1a1a30}
+.day-tab{flex:1;padding:9px 4px;border:none;border-bottom:2px solid transparent;font-family:inherit;font-size:.76rem;font-weight:900;cursor:pointer;background:transparent;color:#4a5ab0;line-height:1.4;transition:color .2s,border-color .2s;margin-bottom:-2px}
+.day-tab.active{color:#c0d4ff;border-bottom-color:#4a5ab0}
+.day-content{display:none;padding:12px 14px 14px}
 .day-content.active{display:block}
-.day-title{font-weight:900;font-size:.9rem;color:#CC0000;margin-bottom:12px}
+.day-title{font-weight:900;font-size:.88rem;color:#8898d8;margin-bottom:12px;letter-spacing:.06em}
 .timeline-item{display:flex;gap:10px;margin-bottom:9px;align-items:flex-start}
-.timeline-time{font-size:.73rem;font-weight:900;color:#CC0000;white-space:nowrap;min-width:40px;padding-top:2px}
-.timeline-dot{width:8px;height:8px;border-radius:50%;background:#CC0000;margin-top:4px;flex-shrink:0}
-.timeline-text{font-size:.82rem;line-height:1.55;color:#333;flex:1}
-.timeline-menu{display:block;font-size:.72rem;color:#888;margin-top:2px;font-weight:700}
-.food-table{width:100%;border-collapse:collapse;font-size:.78rem}
-.food-table th{background:#fde0e0;color:#CC0000;font-weight:900;padding:7px 6px;text-align:center}
-.food-table td{padding:8px 6px;text-align:center;border-bottom:1px solid #fde0e0;vertical-align:middle}
+.timeline-time{font-size:.7rem;font-weight:900;color:#6878c8;white-space:nowrap;min-width:40px;padding-top:2px;font-family:monospace}
+.timeline-dot{width:7px;height:7px;background:#4a5ab0;margin-top:4px;flex-shrink:0}
+.timeline-text{font-size:.82rem;line-height:1.55;color:#c0c8e8;flex:1}
+.timeline-menu{display:block;font-size:.7rem;color:#5870b8;margin-top:2px;font-weight:700}
+.food-table{width:100%;border-collapse:collapse;font-size:.76rem}
+.food-table th{background:#0c0c22;border-bottom:2px solid #4a5ab0;color:#8898d8;font-weight:900;padding:7px 6px;text-align:center;font-family:monospace}
+.food-table td{padding:7px 6px;text-align:center;border-bottom:1px solid #1a1a30;vertical-align:middle;color:#c0c8e8}
 .food-table tr:last-child td{border-bottom:none}
-.food-day{background:#fff3e0;font-weight:900;font-size:.75rem;color:#e65100;white-space:nowrap}
+.food-day{background:#101028;font-weight:900;font-size:.72rem;color:#8898d8;white-space:nowrap}
 .shop-section{margin-bottom:12px}
-.shop-section-head{font-weight:900;font-size:.8rem;color:#CC0000;padding:5px 0 4px;border-bottom:2px solid #fde0e0;margin-bottom:8px}
+.shop-section-head{font-weight:900;font-size:.78rem;color:#8898d8;padding:4px 0;border-bottom:1px solid #252850;margin-bottom:8px;letter-spacing:.08em}
 .shop-items{display:flex;flex-wrap:wrap;gap:6px}
-.shop-item{background:#fff3e0;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:700;color:#5d3a00}
+.shop-item{background:#0c1030;border:1px solid #252850;padding:4px 12px;font-size:.76rem;font-weight:700;color:#a0b8ff}
 .check-progress-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.check-progress-bar{flex:1;height:10px;background:#f0f0f0;border-radius:10px;overflow:hidden}
-.check-progress-fill{height:100%;background:linear-gradient(90deg,#CC0000,#ff6b35);border-radius:10px;transition:width .4s}
-.check-progress-label{font-size:.78rem;font-weight:900;color:#CC0000;white-space:nowrap}
+.check-progress-bar{flex:1;height:8px;background:#0c0c22;overflow:hidden}
+.check-progress-fill{height:100%;background:linear-gradient(90deg,#3858d0,#6878ff);transition:width .4s}
+.check-progress-label{font-size:.75rem;font-weight:900;color:#6878c8;white-space:nowrap;font-family:monospace}
 .check-section{margin-bottom:14px}
-.check-section-head{font-weight:900;font-size:.8rem;color:#CC0000;padding:5px 0 4px;border-bottom:2px solid #fde0e0;margin-bottom:6px}
-.check-item{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #fafafa}
-.check-item input[type=checkbox]{width:18px;height:18px;accent-color:#CC0000;flex-shrink:0;cursor:pointer}
-.check-item label{font-size:.82rem;cursor:pointer;flex:1;line-height:1.4}
-.check-item.starred label{font-weight:900;color:#d32f2f}
+.check-section-head{font-weight:900;font-size:.78rem;color:#8898d8;padding:4px 0;border-bottom:1px solid #252850;margin-bottom:6px;letter-spacing:.08em}
+.check-item{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #0e0e20}
+.check-item input[type=checkbox]{width:16px;height:16px;accent-color:#4a5ab0;flex-shrink:0;cursor:pointer}
+.check-item label{font-size:.8rem;cursor:pointer;flex:1;line-height:1.4;color:#c0c8e8}
+.check-item.starred label{font-weight:900;color:#f0d040}
 .check-item.starred label::before{content:'★ '}
-.camp-reset-btn{display:block;width:100%;margin-top:14px;background:#f5f5f5;border:none;border-radius:22px;padding:10px;font-family:inherit;font-size:.82rem;font-weight:900;color:#888;cursor:pointer}
-.camp-warn-card .camp-card-head{background:linear-gradient(135deg,#e65100,#ff8f00)}
-.camp-warn-item{font-size:.83rem;line-height:1.7;padding:5px 0;border-bottom:1px dashed #ffe0b2;color:#4a2500}
+.camp-reset-btn{display:block;width:100%;margin-top:12px;background:transparent;border:1px solid #252850;padding:10px;font-family:inherit;font-size:.8rem;font-weight:900;color:#4a5ab0;cursor:pointer;transition:border-color .15s}
+.camp-reset-btn:hover{border-color:#4a5ab0;color:#8898d8}
+.camp-warn-card .camp-card-head{border-bottom-color:#c07020;color:#f0a040}
+.camp-warn-item{font-size:.82rem;line-height:1.7;padding:5px 0;border-bottom:1px solid #201808;color:#c09050}
 .camp-warn-item:last-child{border-bottom:none}
 
 /* ═══ VILLAGE SCREEN ═══ */
