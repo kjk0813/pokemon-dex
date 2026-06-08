@@ -46,19 +46,38 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 #flashEl{position:absolute;inset:0;background:#fff;pointer-events:none;opacity:0;z-index:50}
 
 /* ── BATTLE OVERLAY ── */
+/* ── BATTLE — CT dark JRPG style ── */
 #battleOverlay{position:absolute;inset:0;z-index:60;display:none;flex-direction:column;overflow:hidden}
-.bat-sky{flex:1;background:linear-gradient(180deg,#87CEEB 0%,#B0E0FF 100%);position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:20px 40px 0}
-.bat-ground{height:38%;background:linear-gradient(180deg,#7EC850 0%,#5A9E30 100%);position:relative}
-.bat-enemy-platform{position:absolute;top:-18px;right:60px;width:180px;height:36px;background:radial-gradient(ellipse,rgba(0,0,0,.22) 60%,transparent 100%);border-radius:50%}
+.bat-sky{
+  flex:1;
+  background:linear-gradient(180deg,#06061e 0%,#0c1040 30%,#1a3878 70%,#2a6040 100%);
+  position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:20px 40px 0
+}
+/* Diagonal stripe pattern for CT battle BG */
+.bat-sky::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 2px,transparent 2px,transparent 20px);
+  pointer-events:none
+}
+.bat-ground{
+  height:36%;
+  background:linear-gradient(180deg,#1a4c18 0%,#103010 60%,#0c2408 100%);
+  position:relative;border-top:3px solid #2a6828
+}
+.bat-enemy-platform{position:absolute;top:-14px;right:60px;width:180px;height:28px;background:radial-gradient(ellipse,rgba(0,0,0,.45) 60%,transparent 100%);border-radius:50%}
 
-
-/* Enemy info box */
-.bat-enemy-info{position:absolute;top:24px;left:32px;background:#fff;border-radius:12px;padding:10px 16px;box-shadow:0 3px 12px rgba(0,0,0,.2);min-width:160px}
-.bat-ename{display:block;font-size:1rem;font-weight:900;color:var(--text)}
-.bat-elv{font-size:.8rem;font-weight:700;color:var(--muted)}
+/* Enemy info box — CT dark */
+.bat-enemy-info{
+  position:absolute;top:20px;left:24px;
+  background:rgba(4,4,12,.88);border:1.5px solid #4a5ab0;
+  padding:10px 16px;min-width:160px
+}
+.bat-enemy-info::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#4a5ab0}
+.bat-ename{display:block;font-size:.95rem;font-weight:900;color:#e8eeff;font-family:'M PLUS Rounded 1c',sans-serif}
+.bat-elv{font-size:.75rem;font-weight:700;color:#6878c8;font-family:monospace}
 
 /* Enemy sprite */
-.bat-enemy-sprite{position:absolute;bottom:0;right:50px;width:160px;height:160px;object-fit:contain;transition:opacity .3s,transform .4s}
+.bat-enemy-sprite{position:absolute;bottom:0;right:50px;width:160px;height:160px;object-fit:contain;transition:opacity .3s,transform .4s;image-rendering:pixelated}
 .bat-enemy-sprite.vanish{opacity:0;transform:scale(0.1)}
 
 /* Player pokeball */
@@ -79,20 +98,29 @@ body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(-
 }
 #battleBall.caught{transform:translate(var(--bx),var(--by)) rotate(0deg)}
 
-/* Bat textbox */
-.bat-textbox{background:var(--bg);border-top:3px solid #ccc;padding:18px 24px;min-height:90px;display:flex;flex-direction:column;justify-content:center;gap:8px}
-#batText{font-size:1rem;font-weight:800;color:var(--text);line-height:1.6}
-.bat-hint{font-size:.82rem;font-weight:700;color:var(--muted);animation:blink 1s step-end infinite}
+/* Bat textbox — CT dark dialog */
+.bat-textbox{
+  background:#05050f;border-top:2px solid #4a5ab0;
+  padding:16px 20px 20px;min-height:88px;
+  display:flex;flex-direction:column;justify-content:center;gap:8px
+}
+#batText{font-size:1rem;font-weight:800;color:#dde2fa;line-height:1.7;letter-spacing:.02em}
+.bat-hint{font-size:.8rem;font-weight:700;color:#4a5ab0;animation:blink 1s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* Catch success overlay */
-#catchSuccess{position:absolute;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:70}
-.catch-card{background:#fff;border-radius:24px;padding:32px 40px;text-align:center;box-shadow:0 16px 60px rgba(0,0,0,.4);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+/* Catch success overlay — CT sparkle */
+#catchSuccess{position:absolute;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;z-index:70}
+.catch-card{
+  background:#06060f;border:2px solid #4a5ab0;
+  padding:28px 36px;text-align:center;
+  box-shadow:0 0 0 1px #0c1028,0 16px 60px rgba(50,70,200,.4);
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1)
+}
 @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.catch-card img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.2))}
-.catch-got{font-size:1.5rem;font-weight:900;color:var(--red);margin-top:12px}
-.catch-name{font-size:2rem;font-weight:900;color:var(--text);margin:4px 0}
-.catch-sub{font-size:.85rem;font-weight:700;color:var(--muted)}
+.catch-card img{width:120px;height:120px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 16px rgba(100,150,255,.4))}
+.catch-got{font-size:1.4rem;font-weight:900;color:#f0d040;margin-top:12px;letter-spacing:.08em;text-shadow:0 0 12px rgba(240,208,64,.5)}
+.catch-name{font-size:1.9rem;font-weight:900;color:#e8eeff;margin:4px 0;text-shadow:0 0 16px rgba(120,160,255,.4)}
+.catch-sub{font-size:.82rem;font-weight:700;color:#6878c8;letter-spacing:.06em}
 
 /* ── POKÉDEX SCREEN ── */
 #dexScreen{display:none}
@@ -540,7 +568,8 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
     <div class="bat-textbox">
       <div id="batText">...</div>
       <div class="bat-hint" id="batHint" style="display:none">画面をタップ または ↑ キーでボールを投げよう！</div>
-      <button id="mThrowBtn" style="display:none;width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:14px;font-size:1.15rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:10px;box-shadow:0 4px 16px rgba(204,0,0,.4);letter-spacing:.05em" ontouchstart="event.stopPropagation();if(batWaitingThrow)throwBall()">🔴 ボールをなげる！</button>
+      <button id="mThrowBtn" style="display:none;width:100%;padding:14px;background:#0c0c28;border:2px solid #cc2020;color:#ff8080;font-size:1.1rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:10px;box-shadow:0 0 20px rgba(200,32,32,.35);letter-spacing:.06em;animation:throwBtnPulse 1.2s ease-in-out infinite alternate" ontouchstart="event.stopPropagation();if(batWaitingThrow)throwBall()">🔴 ボールをなげる！</button>
+      <style>@keyframes throwBtnPulse{from{border-color:#cc2020;box-shadow:0 0 16px rgba(200,32,32,.3)}to{border-color:#ff4040;box-shadow:0 0 28px rgba(255,64,64,.55)}}</style>
     </div>
   </div>
 
