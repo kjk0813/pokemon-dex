@@ -15,33 +15,49 @@
   --sh:0 4px 24px rgba(0,0,0,.10);--sh2:0 14px 44px rgba(0,0,0,.22);
 }
 html{scroll-behavior:smooth}
-body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'M PLUS Rounded 1c',sans-serif;background:#06060e;color:var(--text);min-height:100vh;overflow-x:hidden}
 
-/* ── TOP NAV ── */
-.top-nav{background:linear-gradient(135deg,var(--red),var(--red2));display:flex;align-items:center;gap:12px;padding:10px 20px;position:sticky;top:0;z-index:300;box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.nav-logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:1.1rem;font-weight:900;text-shadow:1px 2px 4px rgba(0,0,0,.3)}
-.nav-logo svg{width:32px;height:32px;animation:spin 8s linear infinite}
+/* ── TOP NAV — CT dark style ── */
+.top-nav{
+  background:linear-gradient(180deg,#0a0820 0%,#06061a 100%);
+  border-bottom:2px solid #4a5ab0;
+  display:flex;align-items:center;gap:12px;padding:9px 16px;
+  position:sticky;top:0;z-index:300;
+  box-shadow:0 2px 24px rgba(50,70,200,.3)
+}
+.nav-logo{display:flex;align-items:center;gap:8px;color:#c0d4ff;font-size:1rem;font-weight:900;letter-spacing:.04em}
+.nav-logo svg{width:28px;height:28px;animation:spin 10s linear infinite;filter:drop-shadow(0 0 6px rgba(120,160,255,.5))}
 @keyframes spin{to{transform:rotate(360deg)}}
-.nav-logo .acc{color:var(--yellow)}
-.nav-tabs{display:flex;gap:6px;margin-left:auto}
-.nav-tab{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:6px 16px;border-radius:20px;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit;transition:background .2s}
-.nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,.32)}
-.nav-caught{color:rgba(255,255,255,.85);font-size:.8rem;font-weight:800;white-space:nowrap}
+.nav-logo .acc{color:#f0d040;text-shadow:0 0 8px rgba(240,208,64,.5)}
+.nav-tabs{display:flex;gap:0;margin-left:auto}
+.nav-tab{
+  background:transparent;border:none;border-bottom:2px solid transparent;
+  color:#5870b8;padding:6px 14px;font-size:.78rem;font-weight:900;
+  cursor:pointer;font-family:inherit;transition:color .2s,border-color .2s;
+  letter-spacing:.04em
+}
+.nav-tab:hover{color:#a0b4e8}
+.nav-tab.active{color:#c0d4ff;border-bottom-color:#4a5ab0}
+.nav-caught{
+  color:#f0d040;font-size:.75rem;font-weight:900;white-space:nowrap;
+  background:rgba(240,208,64,.1);border:1px solid rgba(240,208,64,.3);
+  padding:3px 10px;letter-spacing:.04em
+}
 @media(max-width:480px){
   .top-nav{flex-wrap:wrap;gap:4px;padding:6px 10px}
-  .nav-logo{font-size:.9rem;gap:5px;flex:1}
-  .nav-logo svg{width:24px;height:24px;flex-shrink:0}
+  .nav-logo{font-size:.85rem;gap:5px;flex:1}
+  .nav-logo svg{width:22px;height:22px;flex-shrink:0}
   .nav-logo-text{display:none}
-  .nav-tabs{order:3;width:100%;justify-content:stretch;gap:4px}
-  .nav-tab{flex:1;padding:5px 4px;font-size:.73rem;text-align:center}
-  .nav-caught{font-size:.72rem;order:2}
+  .nav-tabs{order:3;width:100%;justify-content:stretch;gap:0}
+  .nav-tab{flex:1;padding:5px 4px;font-size:.7rem;text-align:center}
+  .nav-caught{font-size:.7rem;order:2}
 }
 
 /* ── GAME SCREEN ── */
 #gameScreen{position:relative;width:100%;overflow:hidden}
 #gameCanvas{display:block;cursor:none;touch-action:none}
-/* Controls hint */
-#gameHint{position:absolute;bottom:200px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:.78rem;font-weight:700;padding:8px 18px;border-radius:20px;pointer-events:none;transition:opacity .5s;white-space:nowrap}
+/* Controls hint — CT style */
+#gameHint{position:absolute;bottom:200px;left:50%;transform:translateX(-50%);background:rgba(4,4,12,.88);border:1px solid #4a5ab0;color:#8898d8;font-size:.75rem;font-weight:900;padding:7px 16px;pointer-events:none;transition:opacity .5s;white-space:nowrap;letter-spacing:.06em;font-family:monospace}
 /* Flash overlay */
 #flashEl{position:absolute;inset:0;background:#fff;pointer-events:none;opacity:0;z-index:50}
 
