@@ -398,42 +398,42 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 #vChangeBtn{position:absolute;top:12px;right:12px;z-index:15;border:none;border-radius:24px;padding:8px 18px;background:rgba(255,255,255,.96);font-size:.8rem;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.18);font-family:inherit;display:none;color:#2e7d32;transition:transform .15s,box-shadow .15s}
 #vChangeBtn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 
-/* Village avatar selector */
-#vSelector{width:100%;min-height:calc(100svh - 56px);z-index:10;background:linear-gradient(180deg,#e3f2fd 0%,#e8f5e9 35%,#c8e6c9 70%,#a5d6a7 100%);display:flex;flex-direction:column;align-items:center;padding:0 0 60px;overflow-y:auto;box-sizing:border-box;position:relative}
-.vs-hero{width:100%;padding:28px 20px 36px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(180deg,#e3f2fd 0%,#e8f5e9 100%);position:relative;overflow:hidden}
-.vs-clouds{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:space-around;pointer-events:none;font-size:1.7rem;opacity:.45;animation:cloudDrift 9s ease-in-out infinite alternate}
+/* Village avatar selector — CT dark JRPG theme */
+#vSelector{width:100%;min-height:calc(100svh - 56px);z-index:10;background:linear-gradient(180deg,#080818 0%,#0a0c1e 50%,#06080e 100%);display:flex;flex-direction:column;align-items:center;padding:0 0 60px;overflow-y:auto;box-sizing:border-box;position:relative}
+.vs-hero{width:100%;padding:28px 20px 36px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(180deg,#0c0820 0%,#090818 100%);position:relative;overflow:hidden;border-bottom:2px solid #252850}
+.vs-clouds{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:space-around;pointer-events:none;font-size:1.7rem;opacity:.25;animation:cloudDrift 9s ease-in-out infinite alternate}
 @keyframes cloudDrift{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
-.vs-badge{background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-size:.72rem;font-weight:900;padding:4px 18px;border-radius:20px;letter-spacing:.08em;box-shadow:0 2px 10px rgba(67,160,71,.35);margin-bottom:2px}
-.vs-title{font-size:2rem;font-weight:900;color:#1b5e20;margin:0;line-height:1.2;text-align:center;text-shadow:0 2px 0 rgba(255,255,255,.8)}
-.vs-sub{font-size:.86rem;color:#388e3c;font-weight:700;text-align:center;margin:0;opacity:.9}
-.vs-deco{font-size:1.2rem;letter-spacing:6px;margin-top:6px;opacity:.6;animation:decoBob 3s ease-in-out infinite alternate}
+.vs-badge{background:#101840;border:1.5px solid #4a5ab0;color:#8aa8f0;font-size:.72rem;font-weight:900;padding:4px 18px;border-radius:2px;letter-spacing:.12em;margin-bottom:2px}
+.vs-title{font-size:2rem;font-weight:900;color:#e8eeff;margin:0;line-height:1.2;text-align:center;text-shadow:0 0 24px rgba(120,160,255,.55),0 2px 0 rgba(0,0,0,.7)}
+.vs-sub{font-size:.86rem;color:#5870b8;font-weight:700;text-align:center;margin:0;opacity:.95}
+.vs-deco{font-size:1.2rem;letter-spacing:6px;margin-top:6px;opacity:.65;animation:decoBob 3s ease-in-out infinite alternate}
 @keyframes decoBob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
 .vs-section{width:100%;max-width:520px;padding:0 16px;margin-top:4px}
-.vs-section-head{font-size:.72rem;font-weight:900;color:#2e7d32;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;padding-left:2px;opacity:.7}
-.vs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
-.vs-card{background:#fff;border-radius:20px;padding:16px 8px 12px;text-align:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.10);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;border:2.5px solid transparent;position:relative;overflow:hidden}
-.vs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--tc,#4caf50);border-radius:20px 20px 0 0}
-.vs-card:hover,.vs-card:active{transform:scale(1.09) translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.18);border-color:var(--tc,#4caf50)}
+.vs-section-head{font-size:.72rem;font-weight:900;color:#5870b8;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;padding-left:2px}
+.vs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.vs-card{background:#0c1022;border:2px solid rgba(74,90,176,.25);padding:14px 8px 12px;text-align:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,border-color .2s;position:relative;overflow:hidden}
+.vs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--tc,#4a5ab0)}
+.vs-card:hover,.vs-card:active{transform:scale(1.08) translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:var(--tc,#4a5ab0)}
 .vs-card img{width:68px;height:68px;object-fit:contain;display:block;margin:0 auto 8px}
-.vs-card .vs-name{display:block;font-size:.72rem;font-weight:900;color:#1a1a2e;line-height:1.3}
-.vs-card .vs-type{display:inline-block;font-size:.58rem;font-weight:900;color:#fff;background:var(--tc,#4caf50);padding:2px 10px;border-radius:10px;margin-top:5px}
-.vs-empty{background:#fff;border-radius:20px;padding:40px 24px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.08);font-size:.9rem;color:#555;font-weight:700;line-height:2.5}
-.vs-empty-icon{font-size:3.2rem;display:block;margin-bottom:10px}
-.vs-resume-btn{display:block;width:100%;margin-bottom:16px;padding:14px 24px;border:none;border-radius:24px;background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(46,125,50,.35);transition:transform .15s,box-shadow .15s;letter-spacing:.04em}
-.vs-resume-btn:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(46,125,50,.45)}
+.vs-card .vs-name{display:block;font-size:.72rem;font-weight:900;color:#dde2fa;line-height:1.3}
+.vs-card .vs-type{display:inline-block;font-size:.58rem;font-weight:900;color:#fff;background:var(--tc,#4a5ab0);padding:2px 10px;border-radius:1px;margin-top:5px;opacity:.9}
+.vs-empty{background:#0c1022;border:1.5px solid #252850;padding:40px 24px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.4);font-size:.9rem;color:#5870b8;font-weight:700;line-height:2.5}
+.vs-empty-icon{font-size:3.2rem;display:block;margin-bottom:10px;opacity:.7}
+.vs-resume-btn{display:block;width:100%;margin-bottom:16px;padding:13px 24px;border:1.5px solid #4a5ab0;background:linear-gradient(180deg,#18265a,#0e1840);color:#c0d4ff;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(30,50,180,.3);transition:background .15s,box-shadow .15s;letter-spacing:.08em}
+.vs-resume-btn:hover{background:linear-gradient(180deg,#243070,#162050);box-shadow:0 6px 24px rgba(40,70,200,.45)}
 
-/* Village dialogue */
+/* Village dialogue — CT dark style */
 #vDialogue{position:absolute;bottom:0;left:0;right:0;z-index:20;display:none;flex-direction:column}
-.vd-box{background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.13);padding:18px 20px 22px;position:relative;min-height:100px}
-.vd-name{display:inline-block;background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-size:.72rem;font-weight:900;padding:4px 16px;border-radius:14px;margin-bottom:9px;box-shadow:0 2px 8px rgba(67,160,71,.3)}
-.vd-text{font-size:1rem;font-weight:800;color:#1a1a2e;line-height:1.75;margin-bottom:12px}
+.vd-box{background:#06060f;border:2px solid #4a5ab0;border-bottom:none;border-radius:8px 8px 0 0;box-shadow:0 -4px 36px rgba(50,70,200,.28),inset 0 0 50px rgba(0,0,20,.7);padding:16px 20px 22px;position:relative;min-height:100px}
+.vd-name{display:inline-block;background:#101840;border:1.5px solid #4a5ab0;color:#90b0ff;font-size:.72rem;font-weight:900;padding:4px 16px;border-radius:2px;margin-bottom:10px;letter-spacing:.06em}
+.vd-text{font-size:1rem;font-weight:800;color:#dde2fa;line-height:1.85;margin-bottom:12px;letter-spacing:.02em}
 .vd-choices{display:flex;gap:8px;flex-wrap:wrap}
-.vd-choice{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:2px solid #a5d6a7;border-radius:24px;padding:9px 20px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#1b5e20;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.07)}
-.vd-choice:hover,.vd-choice:active{background:linear-gradient(135deg,#c8e6c9,#a5d6a7);transform:scale(1.04)}
-.vd-next{position:absolute;bottom:14px;right:18px;color:#ccc;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
+.vd-choice{background:#0c1438;border:1.5px solid #4a5ab0;border-radius:2px;padding:9px 20px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#90b0ff;transition:background .15s,border-color .15s}
+.vd-choice:hover,.vd-choice:active{background:#1a2850;border-color:#7090e0;color:#c0d4ff}
+.vd-next{position:absolute;bottom:14px;right:18px;color:#4a5ab0;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
 
-/* Village move-in toast */
-#vMoveIn{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;font-size:.85rem;font-weight:900;padding:12px 26px;border-radius:24px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap;z-index:500;box-shadow:0 4px 18px rgba(46,125,50,.4)}
+/* Village move-in toast — CT style */
+#vMoveIn{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#06060f;border:2px solid #4a5ab0;color:#c0d4ff;font-size:.85rem;font-weight:900;padding:12px 26px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap;z-index:500;box-shadow:0 4px 28px rgba(50,70,200,.35)}
 </style>
 </head>
 <body>
@@ -2425,36 +2425,36 @@ function hexDarken(hex,f){
 }
 
 const HOUSE_COL = {
-  fire:     {wall:'#ff8a65',roof:'#bf360c'}, water:    {wall:'#64b5f6',roof:'#0d47a1'},
-  grass:    {wall:'#81c784',roof:'#1b5e20'}, electric: {wall:'#fff176',roof:'#f57f17'},
-  psychic:  {wall:'#f48fb1',roof:'#880e4f'}, ice:      {wall:'#80deea',roof:'#006064'},
-  dragon:   {wall:'#9575cd',roof:'#311b92'}, dark:     {wall:'#a1887f',roof:'#3e2723'},
-  fairy:    {wall:'#f8bbd0',roof:'#880e4f'}, poison:   {wall:'#ce93d8',roof:'#4a148c'},
-  ghost:    {wall:'#b39ddb',roof:'#311b92'}, steel:    {wall:'#cfd8dc',roof:'#37474f'},
-  rock:     {wall:'#bcaaa4',roof:'#4e342e'}, ground:   {wall:'#ffcc80',roof:'#e65100'},
-  bug:      {wall:'#aed581',roof:'#33691e'}, fighting: {wall:'#ef9a9a',roof:'#b71c1c'},
-  normal:   {wall:'#e0e0e0',roof:'#616161'}, flying:   {wall:'#b0bec5',roof:'#263238'},
+  fire:     {wall:'#c86040',roof:'#903020'}, water:    {wall:'#4878c0',roof:'#0c3080'},
+  grass:    {wall:'#509048',roof:'#205820'}, electric: {wall:'#d0b828',roof:'#907800'},
+  psychic:  {wall:'#a048a0',roof:'#580870'}, ice:      {wall:'#60b8d0',roof:'#206880'},
+  dragon:   {wall:'#6858c0',roof:'#201878'}, dark:     {wall:'#504858',roof:'#282030'},
+  fairy:    {wall:'#d060a8',roof:'#882068'}, poison:   {wall:'#8840b8',roof:'#3c0870'},
+  ghost:    {wall:'#688090',roof:'#283848'}, steel:    {wall:'#7090a8',roof:'#304050'},
+  rock:     {wall:'#887060',roof:'#4c3828'}, ground:   {wall:'#d09040',roof:'#905818'},
+  bug:      {wall:'#6a9838',roof:'#305018'}, fighting: {wall:'#b84040',roof:'#701020'},
+  normal:   {wall:'#788898',roof:'#384050'}, flying:   {wall:'#4888c0',roof:'#184878'},
 };
 
 const AREA_THEMES = {
-  fire:    {name:'かざんの地',   icon:'🌋',g1:'#ff5722',g2:'#d84315',border:'#ff9800',deco:'fire',    tx:'lava'},
-  water:   {name:'みなとまち',  icon:'🌊',g1:'#1565c0',g2:'#0d47a1',border:'#40c4ff',deco:'water',   tx:'wave'},
-  grass:   {name:'みどりのそうげん',icon:'🌿',g1:'#33691e',g2:'#27600e',border:'#8bc34a',deco:'flower',  tx:'grass'},
-  electric:{name:'でんきのの',  icon:'⚡',g1:'#f9a825',g2:'#e65100',border:'#ffff00',deco:'electric',tx:'spark'},
-  psychic: {name:'しんぴの地',  icon:'✨',g1:'#6a1b9a',g2:'#4a148c',border:'#ea80fc',deco:'psychic', tx:'star'},
-  ice:     {name:'こおりのげん', icon:'❄',g1:'#b3e5fc',g2:'#81d4fa',border:'#e3f2fd',deco:'snow',    tx:'snow'},
-  dragon:  {name:'りゅうの峰',  icon:'🐉',g1:'#283593',g2:'#1a237e',border:'#7c4dff',deco:'rock',    tx:'rock'},
-  dark:    {name:'くらいもり',   icon:'🌑',g1:'#1c1c2e',g2:'#12121f',border:'#455a64',deco:'none',    tx:'dark'},
-  fairy:   {name:'ようせいのにわ',icon:'🌸',g1:'#ad1457',g2:'#880e4f',border:'#f8bbd0',deco:'flower',  tx:'petal'},
-  poison:  {name:'ぬまのち',    icon:'🧪',g1:'#4a148c',g2:'#38006b',border:'#ce93d8',deco:'swamp',   tx:'swamp'},
-  ghost:   {name:'れいはくのもり',icon:'👻',g1:'#37474f',g2:'#263238',border:'#78909c',deco:'none',    tx:'dark'},
-  steel:   {name:'はがねのとりで',icon:'⚙',g1:'#546e7a',g2:'#37474f',border:'#b0bec5',deco:'rock',    tx:'rock'},
-  rock:    {name:'いわやま',    icon:'⛰',g1:'#5d4037',g2:'#4e342e',border:'#a1887f',deco:'rock',    tx:'rock'},
-  ground:  {name:'さばくのち',  icon:'🏜',g1:'#e65100',g2:'#bf360c',border:'#ffcc80',deco:'sand',    tx:'sand'},
-  bug:     {name:'むしのはやし', icon:'🌲',g1:'#558b2f',g2:'#33691e',border:'#ccff90',deco:'flower',  tx:'grass'},
-  fighting:{name:'かくとうのち', icon:'🥊',g1:'#b71c1c',g2:'#7f0000',border:'#ff5252',deco:'rock',    tx:'rock'},
-  normal:  {name:'のどかなまち', icon:'🏘',g1:'#78909c',g2:'#546e7a',border:'#cfd8dc',deco:'none',    tx:'grass'},
-  flying:  {name:'たかだい',    icon:'☁', g1:'#0288d1',g2:'#0277bd',border:'#e1f5fe',deco:'cloud',   tx:'cloud'},
+  fire:    {name:'かざんの地',   icon:'🌋',g1:'#c84000',g2:'#a03000',border:'#ff7800',deco:'fire',    tx:'lava'},
+  water:   {name:'みなとまち',  icon:'🌊',g1:'#0e3c9c',g2:'#0a2878',border:'#38a0ff',deco:'water',   tx:'wave'},
+  grass:   {name:'みどりのそうげん',icon:'🌿',g1:'#257820',g2:'#1a5814',border:'#60d030',deco:'flower',  tx:'grass'},
+  electric:{name:'でんきのの',  icon:'⚡',g1:'#b89800',g2:'#907800',border:'#ffdf00',deco:'electric',tx:'spark'},
+  psychic: {name:'しんぴの地',  icon:'✨',g1:'#5a1888',g2:'#3a0c68',border:'#d038ff',deco:'psychic', tx:'star'},
+  ice:     {name:'こおりのげん', icon:'❄',g1:'#4890b0',g2:'#347898',border:'#b0ecff',deco:'snow',    tx:'snow'},
+  dragon:  {name:'りゅうの峰',  icon:'🐉',g1:'#1a1880',g2:'#100c60',border:'#5040ff',deco:'rock',    tx:'rock'},
+  dark:    {name:'くらいもり',   icon:'🌑',g1:'#140c22',g2:'#0c0818',border:'#503870',deco:'none',    tx:'dark'},
+  fairy:   {name:'ようせいのにわ',icon:'🌸',g1:'#b03888',g2:'#882060',border:'#ffaad8',deco:'flower',  tx:'petal'},
+  poison:  {name:'ぬまのち',    icon:'🧪',g1:'#501878',g2:'#380c58',border:'#b050ff',deco:'swamp',   tx:'swamp'},
+  ghost:   {name:'れいはくのもり',icon:'👻',g1:'#283c4a',g2:'#18282e',border:'#7080a0',deco:'none',    tx:'dark'},
+  steel:   {name:'はがねのとりで',icon:'⚙',g1:'#3c4c58',g2:'#2c3848',border:'#a8bccc',deco:'rock',    tx:'rock'},
+  rock:    {name:'いわやま',    icon:'⛰',g1:'#5c3c28',g2:'#482e1c',border:'#c08858',deco:'rock',    tx:'rock'},
+  ground:  {name:'さばくのち',  icon:'🏜',g1:'#b07020',g2:'#905810',border:'#ffc030',deco:'sand',    tx:'sand'},
+  bug:     {name:'むしのはやし', icon:'🌲',g1:'#406018',g2:'#2c4c0c',border:'#88d030',deco:'flower',  tx:'grass'},
+  fighting:{name:'かくとうのち', icon:'🥊',g1:'#941018',g2:'#6c0808',border:'#ff3030',deco:'rock',    tx:'rock'},
+  normal:  {name:'のどかなまち', icon:'🏘',g1:'#505868',g2:'#3c4450',border:'#a8b4c0',deco:'none',    tx:'grass'},
+  flying:  {name:'たかだい',    icon:'☁', g1:'#1268b0',g2:'#0c5090',border:'#78ccff',deco:'cloud',   tx:'cloud'},
 };
 
 const V_DLG = {
@@ -2708,8 +2708,8 @@ function drawIsoGround(){
           wx>=a.wx0-1&&wx<=a.wx0+a.ww&&wy>=a.wy0-1&&wy<=a.wy0+a.wh
         );
         col=nearAny
-          ?((wx+wy)%2===0?'#c9a96e':'#b8936a')   // cobblestone path
-          :((wx+wy)%2===0?'#5cb85c':'#4aa44a');   // outer meadow
+          ?((wx+wy)%2===0?'#907050':'#705838')   // CT stone path
+          :((wx+wy)%2===0?'#2a6826':'#1c5018');  // CT outer forest
       }
 
       ctx.fillStyle=col;
@@ -2872,51 +2872,30 @@ function drawIsoGround(){
     }
   }
 
-  // Area name plates — rounded pill style
+  // Area name plates — CT dark box style
   vAreas.forEach(a=>{
     const {sx,sy}=isoToScreen(a.wx0,a.wy0);
     if(sx<-200||sx>vLW+200||sy<-100||sy>vLH+60) return;
     const label=a.theme.icon+' '+a.theme.name;
-    ctx.font='bold 13px "M PLUS Rounded 1c",sans-serif';
+    ctx.font='bold 12px monospace';
     const tw=ctx.measureText(label).width;
-    const bw=tw+28, bh=28, r=14;
-    const bx=sx-bw/2, by=sy-bh-14;
+    const bw=tw+22, bh=24;
+    const bx=sx-bw/2, by=sy-bh-12;
 
-    // pill shadow
-    ctx.save();
-    ctx.shadowColor='rgba(0,0,0,.25)';
-    ctx.shadowBlur=8;
-    ctx.shadowOffsetY=3;
+    // dark box bg
+    ctx.fillStyle='rgba(5,5,14,.9)';
+    ctx.fillRect(bx,by,bw,bh);
+    // border in biome color
+    ctx.strokeStyle=a.theme.border; ctx.lineWidth=1.5;
+    ctx.strokeRect(bx,by,bw,bh);
+    // top color stripe
+    ctx.fillStyle=a.theme.border; ctx.fillRect(bx,by,bw,3);
+    // inner top highlight
+    ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fillRect(bx+1,by+3,bw-2,7);
 
-    // pill bg
-    ctx.fillStyle=a.theme.border;
-    ctx.beginPath();
-    ctx.moveTo(bx+r,by); ctx.lineTo(bx+bw-r,by);
-    ctx.arcTo(bx+bw,by,bx+bw,by+r,r);
-    ctx.lineTo(bx+bw,by+bh-r);
-    ctx.arcTo(bx+bw,by+bh,bx+bw-r,by+bh,r);
-    ctx.lineTo(bx+r,by+bh);
-    ctx.arcTo(bx,by+bh,bx,by+bh-r,r);
-    ctx.lineTo(bx,by+r);
-    ctx.arcTo(bx,by,bx+r,by,r);
-    ctx.closePath(); ctx.fill();
-
-    // highlight
-    ctx.shadowColor='transparent';
-    ctx.fillStyle='rgba(255,255,255,.18)';
-    ctx.beginPath();
-    ctx.moveTo(bx+r,by); ctx.lineTo(bx+bw-r,by);
-    ctx.arcTo(bx+bw,by,bx+bw,by+r,r);
-    ctx.lineTo(bx+bw,by+bh/2);
-    ctx.lineTo(bx,by+bh/2); ctx.lineTo(bx,by+r);
-    ctx.arcTo(bx,by,bx+r,by,r);
-    ctx.closePath(); ctx.fill();
-
-    ctx.restore();
-    ctx.fillStyle='#fff';
-    ctx.textAlign='center';
-    ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=3;
-    ctx.fillText(label,sx,by+bh-7);
+    ctx.fillStyle='#e8eeff'; ctx.textAlign='center';
+    ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=3;
+    ctx.fillText(label,sx,by+bh-5);
     ctx.shadowColor='transparent'; ctx.shadowBlur=0;
     ctx.textAlign='left';
   });
@@ -2971,8 +2950,8 @@ function drawIsoHouse(h){
 
   // Ground tile (yard with gradient)
   const yardGrd=ctx.createLinearGradient(tN.sx,tN.sy,tS.sx,tS.sy);
-  yardGrd.addColorStop(0,'#5a9e5a');
-  yardGrd.addColorStop(1,'#3d7a3d');
+  yardGrd.addColorStop(0,'#3a7838');
+  yardGrd.addColorStop(1,'#285a26');
   ctx.fillStyle=yardGrd;
   ctx.beginPath();
   ctx.moveTo(tN.sx,tN.sy); ctx.lineTo(tE.sx,tE.sy);
@@ -3132,26 +3111,34 @@ function drawIsoPlayer(){
 
 function drawVHUD(){
   const ctx=vCtx;
-  // Caught count badge
+  // CT-style Party counter — top right dark box
   const cnt=[...caught].length;
-  const txt=`🎯 ${cnt}/30`;
-  ctx.font='bold 13px "M PLUS Rounded 1c",sans-serif';
-  const tw=ctx.measureText(txt).width+20;
-  ctx.fillStyle='rgba(0,0,0,.45)';
-  ctx.beginPath(); ctx.roundRect(vLW-tw-12,10,tw,32,16); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.textAlign='right';
-  ctx.fillText(txt,vLW-22,31); ctx.textAlign='left';
+  ctx.font='bold 11px monospace';
+  const numW=ctx.measureText(`${cnt}/30`).width;
+  const bw=numW+56, bh=30;
+  const bx=vLW-bw-8, by=8;
+  ctx.fillStyle='rgba(5,5,15,.9)';
+  ctx.fillRect(bx,by,bw,bh);
+  ctx.strokeStyle='#4a5ab0'; ctx.lineWidth=1.5;
+  ctx.strokeRect(bx,by,bw,bh);
+  // header stripe
+  ctx.fillStyle='rgba(74,90,176,.18)'; ctx.fillRect(bx+1,by+1,bw-2,9);
+  ctx.fillStyle='#5870b8'; ctx.font='bold 9px monospace'; ctx.textAlign='right';
+  ctx.fillText('PARTY',bx+bw-6,by+9);
+  ctx.fillStyle='#e8eeff'; ctx.font='bold 13px monospace';
+  ctx.fillText(`${cnt}/30`,bx+bw-6,by+24); ctx.textAlign='left';
 
-  // Mini compass
-  ctx.save();
-  ctx.translate(38,38);
-  ctx.fillStyle='rgba(0,0,0,.35)';
-  ctx.beginPath(); ctx.arc(0,0,18,0,Math.PI*2); ctx.fill();
-  const cDir=[{l:'N',a:-Math.PI/2,c:'#ff6b6b'},{l:'S',a:Math.PI/2,c:'#fff'},{l:'W',a:Math.PI,c:'#fff'},{l:'E',a:0,c:'#fff'}];
-  ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  // CT-style compass — top left dark box
+  const cbx=8, cby=8, csz=42;
+  ctx.fillStyle='rgba(5,5,15,.9)'; ctx.fillRect(cbx,cby,csz,csz);
+  ctx.strokeStyle='#4a5ab0'; ctx.lineWidth=1.5; ctx.strokeRect(cbx,cby,csz,csz);
+  ctx.fillStyle='rgba(74,90,176,.18)'; ctx.fillRect(cbx+1,cby+1,csz-2,9);
+  ctx.save(); ctx.translate(cbx+csz/2,cby+csz/2+3);
+  const cDir=[{l:'N',a:-Math.PI/2,c:'#ff5858'},{l:'S',a:Math.PI/2,c:'#8898d8'},{l:'W',a:Math.PI,c:'#8898d8'},{l:'E',a:0,c:'#8898d8'}];
+  ctx.font='bold 8px monospace'; ctx.textAlign='center';
   cDir.forEach(d=>{
     ctx.fillStyle=d.c;
-    ctx.fillText(d.l,Math.cos(d.a)*11,Math.sin(d.a)*11+3.5);
+    ctx.fillText(d.l,Math.cos(d.a)*11,Math.sin(d.a)*11+3);
   });
   ctx.restore();
 }
@@ -3162,45 +3149,74 @@ function checkVApproach(){
 
 function drawVSky(){
   const ctx=vCtx;
-  const grd=ctx.createLinearGradient(0,0,0,vLH*0.55);
-  grd.addColorStop(0,'#87ceeb');
-  grd.addColorStop(0.5,'#b3e5fc');
-  grd.addColorStop(1,'#e8f5e9');
+  // CT-style atmospheric sky: deep indigo → mid blue → horizon glow
+  const grd=ctx.createLinearGradient(0,0,0,vLH*0.62);
+  grd.addColorStop(0,'#08092a');
+  grd.addColorStop(0.28,'#141860');
+  grd.addColorStop(0.6,'#1a5898');
+  grd.addColorStop(1,'#4a9050');
   ctx.fillStyle=grd;
   ctx.fillRect(0,0,vLW,vLH);
 
-  // animated clouds
-  const t=Date.now()*.00007;
+  // Horizon warm glow band
+  const hgrd=ctx.createLinearGradient(0,vLH*0.4,0,vLH*0.64);
+  hgrd.addColorStop(0,'rgba(255,190,60,0)');
+  hgrd.addColorStop(0.5,'rgba(255,170,30,0.2)');
+  hgrd.addColorStop(1,'rgba(255,140,0,0)');
+  ctx.fillStyle=hgrd; ctx.fillRect(0,vLH*0.4,vLW,vLH*0.24);
+
+  // Stars (CT night-ish sky tone)
+  const t0=Date.now();
+  ctx.save();
+  const starSeed=[[.06,.05],[.15,.11],[.26,.03],[.38,.08],[.50,.05],[.64,.09],[.76,.03],[.90,.06],[.12,.18],[.33,.14],[.57,.17],[.80,.12],[.44,.2],[.70,.19]];
+  starSeed.forEach(([fx,fy],i)=>{
+    const pulse=0.4+Math.sin(t0*.002+(i*1.3))*.35;
+    ctx.globalAlpha=pulse*0.7;
+    ctx.fillStyle='#e8eeff';
+    ctx.beginPath(); ctx.arc(fx*vLW,fy*vLH*0.55,0.8+fx,0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+
+  // Sun — warm CT golden disc with corona rays
+  const sx=vLW*0.87, sy=vLH*0.09;
+  // corona glow
+  const sGrd=ctx.createRadialGradient(sx,sy,0,sx,sy,60);
+  sGrd.addColorStop(0,'rgba(255,240,150,0.9)');
+  sGrd.addColorStop(0.28,'rgba(255,210,60,0.65)');
+  sGrd.addColorStop(0.65,'rgba(255,170,0,0.22)');
+  sGrd.addColorStop(1,'rgba(255,140,0,0)');
+  ctx.fillStyle=sGrd; ctx.beginPath(); ctx.arc(sx,sy,60,0,Math.PI*2); ctx.fill();
+  // disc
+  ctx.fillStyle='rgba(255,240,170,0.97)'; ctx.beginPath(); ctx.arc(sx,sy,15,0,Math.PI*2); ctx.fill();
+  // rays
+  ctx.save(); ctx.globalAlpha=0.14; ctx.strokeStyle='#ffe090'; ctx.lineWidth=2;
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI/4+t0*.0002;
+    ctx.beginPath();
+    ctx.moveTo(sx+Math.cos(a)*17,sy+Math.sin(a)*17);
+    ctx.lineTo(sx+Math.cos(a)*46,sy+Math.sin(a)*46);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // CT-style chunky clouds — white with slight blue tint
+  const ct=Date.now()*.00006;
   const clouds=[
-    {x:0.15,y:0.06,r:28,a:0.55},
-    {x:0.38,y:0.03,r:22,a:0.45},
-    {x:0.62,y:0.07,r:32,a:0.50},
-    {x:0.82,y:0.04,r:20,a:0.40},
+    {x:.10,y:.065,w:58,h:24,a:.62,s:.9},{x:.34,y:.035,w:42,h:18,a:.52,s:.55},
+    {x:.59,y:.075,w:66,h:28,a:.58,s:.75},{x:.80,y:.045,w:38,h:16,a:.48,s:.65},
   ];
-  clouds.forEach((c,i)=>{
-    const cx=((c.x+(t*(i%2===0?1:-1)*0.3))%1)*vLW;
-    const cy=c.y*vLH;
+  clouds.forEach((cl,i)=>{
+    const cx=((cl.x+(ct*cl.s*(i%2===0?1:-1)*0.5))%1.25-0.1)*vLW;
+    const cy=cl.y*vLH;
     ctx.save();
-    ctx.globalAlpha=c.a;
-    ctx.fillStyle='#fff';
-    [0,c.r*0.6,c.r*1.1,-c.r*0.7].forEach((dx,j)=>{
-      ctx.beginPath();
-      ctx.arc(cx+dx,cy+[0,-c.r*0.3,-c.r*0.15,c.r*0.1][j],c.r*(0.7-j*0.08),0,Math.PI*2);
-      ctx.fill();
-    });
+    ctx.fillStyle='#d8e4f8'; ctx.globalAlpha=cl.a;
+    ctx.beginPath(); ctx.ellipse(cx,cy,cl.w*.6,cl.h*.7,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+cl.w*.38,cy+4,cl.w*.44,cl.h*.6,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx-cl.w*.32,cy+5,cl.w*.38,cl.h*.55,0,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=cl.a*.38; ctx.fillStyle='#ffffff';
+    ctx.beginPath(); ctx.ellipse(cx-cl.w*.12,cy-3,cl.w*.28,cl.h*.3,0,0,Math.PI*2); ctx.fill();
     ctx.restore();
   });
-
-  // sun
-  const sx=vLW*0.88, sy=vLH*0.08;
-  const sgrd=ctx.createRadialGradient(sx,sy,0,sx,sy,42);
-  sgrd.addColorStop(0,'rgba(255,236,120,0.9)');
-  sgrd.addColorStop(0.6,'rgba(255,214,0,0.55)');
-  sgrd.addColorStop(1,'rgba(255,200,0,0)');
-  ctx.fillStyle=sgrd;
-  ctx.beginPath(); ctx.arc(sx,sy,42,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(255,230,60,0.92)';
-  ctx.beginPath(); ctx.arc(sx,sy,18,0,Math.PI*2); ctx.fill();
 }
 
 function villageLoop(){
