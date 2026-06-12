@@ -416,9 +416,7 @@
 
   <!-- ポケモン -->
   <div class="pokemon-wrap" id="pokeWrap">
-    <img class="pokemon-img" id="pokeImg"
-      src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png"
-      alt="イーブイ">
+    <canvas id="pokeCanvas" class="pokemon-img" width="120" height="120"></canvas>
   </div>
 
   <!-- 吹き出し（動的） -->
@@ -585,7 +583,141 @@ function spawnHeart() {
   setTimeout(() => h.remove(), 1900);
 }
 
+// ── イーブイ風キャラをCanvasで描画 ──
+function drawEevee() {
+  const canvas = document.getElementById('pokeCanvas');
+  const c = canvas.getContext('2d');
+  const W = 120, H = 120;
+  c.clearRect(0, 0, W, H);
+
+  // 体（丸みのある楕円）
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.ellipse(60, 80, 32, 26, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 頭
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.ellipse(60, 52, 28, 25, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 首元の白いふわふわ
+  c.fillStyle = '#F5ECD7';
+  c.beginPath();
+  c.ellipse(60, 74, 18, 14, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 耳（左）
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.moveTo(36, 42);
+  c.lineTo(28, 18);
+  c.lineTo(46, 34);
+  c.closePath();
+  c.fill();
+  // 耳内側（左）
+  c.fillStyle = '#E8B89A';
+  c.beginPath();
+  c.moveTo(37, 40);
+  c.lineTo(31, 22);
+  c.lineTo(44, 35);
+  c.closePath();
+  c.fill();
+
+  // 耳（右）
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.moveTo(84, 42);
+  c.lineTo(92, 18);
+  c.lineTo(74, 34);
+  c.closePath();
+  c.fill();
+  // 耳内側（右）
+  c.fillStyle = '#E8B89A';
+  c.beginPath();
+  c.moveTo(83, 40);
+  c.lineTo(89, 22);
+  c.lineTo(76, 35);
+  c.closePath();
+  c.fill();
+
+  // 目（左）
+  c.fillStyle = '#2A1A0A';
+  c.beginPath();
+  c.ellipse(50, 50, 5, 6, -0.1, 0, Math.PI * 2);
+  c.fill();
+  // 目ハイライト（左）
+  c.fillStyle = 'white';
+  c.beginPath();
+  c.ellipse(52, 47, 2, 2, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 目（右）
+  c.fillStyle = '#2A1A0A';
+  c.beginPath();
+  c.ellipse(70, 50, 5, 6, 0.1, 0, Math.PI * 2);
+  c.fill();
+  // 目ハイライト（右）
+  c.fillStyle = 'white';
+  c.beginPath();
+  c.ellipse(72, 47, 2, 2, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 鼻
+  c.fillStyle = '#8B5A3A';
+  c.beginPath();
+  c.ellipse(60, 59, 3, 2, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // 口
+  c.strokeStyle = '#8B5A3A';
+  c.lineWidth = 1.5;
+  c.beginPath();
+  c.moveTo(55, 63);
+  c.quadraticCurveTo(60, 67, 65, 63);
+  c.stroke();
+
+  // しっぽ（ふわふわ）
+  c.fillStyle = '#B8845A';
+  c.beginPath();
+  c.moveTo(80, 90);
+  c.quadraticCurveTo(110, 75, 105, 100);
+  c.quadraticCurveTo(95, 115, 78, 100);
+  c.closePath();
+  c.fill();
+  // しっぽ先の明るい部分
+  c.fillStyle = '#E8C89A';
+  c.beginPath();
+  c.ellipse(100, 98, 10, 8, 0.5, 0, Math.PI * 2);
+  c.fill();
+
+  // 前足（左）
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.ellipse(44, 100, 9, 12, -0.2, 0, Math.PI * 2);
+  c.fill();
+
+  // 前足（右）
+  c.fillStyle = '#C8986A';
+  c.beginPath();
+  c.ellipse(62, 102, 9, 12, 0.2, 0, Math.PI * 2);
+  c.fill();
+
+  // ほっぺ（左）
+  c.fillStyle = 'rgba(220, 120, 100, 0.35)';
+  c.beginPath();
+  c.ellipse(44, 57, 7, 5, 0, 0, Math.PI * 2);
+  c.fill();
+
+  // ほっぺ（右）
+  c.beginPath();
+  c.ellipse(76, 57, 7, 5, 0, 0, Math.PI * 2);
+  c.fill();
+}
+
 // 初期化
+drawEevee();
 setPhase(2);
 </script>
 </body>
