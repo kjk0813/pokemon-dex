@@ -111,23 +111,22 @@
   /* ── ポケモンスプライト ── */
   .pokemon-wrap {
     position: absolute;
-    bottom: 50px;
+    bottom: 210px;
     left: 50%;
     transform: translateX(-50%);
     animation: floatPoke 2.8s ease-in-out infinite;
-    z-index: 10;
+    z-index: 35;
   }
   .pokemon-img {
-    width: 120px;
-    height: 120px;
-    image-rendering: pixelated;
+    width: 140px;
+    height: 140px;
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
   }
 
   /* ポケモン下の楕円影 */
   .pokemon-shadow {
     position: absolute;
-    bottom: 30px;
+    bottom: 195px;
     left: 50%;
     transform: translateX(-50%);
     width: 80px;
@@ -416,7 +415,7 @@
 
   <!-- ポケモン -->
   <div class="pokemon-wrap" id="pokeWrap">
-    <canvas id="pokeCanvas" class="pokemon-img" width="120" height="120"></canvas>
+    <canvas id="pokeCanvas" class="pokemon-img" width="140" height="140"></canvas>
   </div>
 
   <!-- 吹き出し（動的） -->
@@ -587,8 +586,11 @@ function spawnHeart() {
 function drawEevee() {
   const canvas = document.getElementById('pokeCanvas');
   const c = canvas.getContext('2d');
-  const W = 120, H = 120;
+  const W = 140, H = 140;
   c.clearRect(0, 0, W, H);
+  // 120→140 にスケール
+  c.save();
+  c.scale(140/120, 140/120);
 
   // 体（丸みのある楕円）
   c.fillStyle = '#C8986A';
@@ -714,6 +716,8 @@ function drawEevee() {
   c.beginPath();
   c.ellipse(76, 57, 7, 5, 0, 0, Math.PI * 2);
   c.fill();
+
+  c.restore();
 }
 
 // 初期化
