@@ -444,33 +444,10 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vd-bag{font-size:.72rem;color:#999;margin-bottom:6px;min-height:1em}
 .vd-fav{font-size:.75rem;color:#4A9E2F;font-weight:700;background:#F0FAE8;border:1.5px solid #B8E89A;border-radius:10px;padding:4px 10px;margin-bottom:8px;min-height:1em;display:inline-block}
 
-/* ── Pokemon nurture screen (full-screen transition) ── */
-#vNurtureScreen{position:absolute;inset:0;z-index:15;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#87CEEB 0%,#B0E2FF 45%,#D4F5D4 68%,#7EC850 68%,#5BB033 100%);
-  transform:translateY(100%);transition:transform .38s cubic-bezier(.4,0,.2,1)}
-#vNurtureScreen.open{display:flex;transform:translateY(0)}
-.vn-cloud{position:absolute;background:white;border-radius:50px;opacity:.85;filter:blur(1px)}
-.vn-cloud::before,.vn-cloud::after{content:'';position:absolute;background:white;border-radius:50%}
-.vn-c1{width:80px;height:28px;top:70px;left:10%;animation:cloudDrift 18s ease-in-out infinite}
-.vn-c1::before{width:40px;height:40px;top:-20px;left:10px}
-.vn-c1::after{width:30px;height:30px;top:-14px;left:38px}
-.vn-c2{width:60px;height:20px;top:100px;right:14%;animation:cloudDrift 24s ease-in-out infinite;animation-delay:-8s}
-.vn-c2::before{width:30px;height:30px;top:-15px;left:8px}
-.vn-c2::after{width:22px;height:22px;top:-10px;left:28px}
-@keyframes cloudDrift{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
-.vn-ground{position:absolute;bottom:205px;left:50%;transform:translateX(-50%);width:84%;max-width:300px;height:80px;
-  background:radial-gradient(ellipse at center,#8FD45A 0%,#6BBF3A 60%,#5AAA2E 100%);border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,.15)}
-.vn-deco{position:absolute;font-size:22px;bottom:232px;animation:decoSway 3s ease-in-out infinite}
-#vnDeco1{left:calc(50% - 120px)}#vnDeco2{right:calc(50% - 120px);animation-delay:.5s}
-@keyframes decoSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-.vn-poke-shadow{position:absolute;bottom:215px;left:50%;transform:translateX(-50%);
-  width:80px;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.2) 0%,transparent 70%);
-  border-radius:50%;animation:vnShadow 2.8s ease-in-out infinite}
-@keyframes vnShadow{0%,100%{transform:translateX(-50%) scale(1);opacity:.5}50%{transform:translateX(-50%) scale(.75);opacity:.25}}
-.vn-poke-wrap{position:absolute;bottom:230px;left:50%;transform:translateX(-50%);animation:vnFloat 2.8s ease-in-out infinite;z-index:16}
-@keyframes vnFloat{0%,100%{transform:translateX(-50%) translateY(0) scale(1)}50%{transform:translateX(-50%) translateY(-12px) scale(1.03)}}
-.vn-poke-img{width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,.22))}
-.vn-topbar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;z-index:18}
+/* ── Pokemon nurture screen — canvas draws behind, only topbar is HTML ── */
+#vNurtureScreen{position:absolute;inset:0;z-index:15;display:none;flex-direction:column;background:transparent;pointer-events:none}
+#vNurtureScreen.open{display:flex}
+.vn-topbar{pointer-events:all;position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;z-index:18}
 .vn-back{background:rgba(255,255,255,.72);backdrop-filter:blur(8px);border:none;border-radius:20px;
   padding:8px 18px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#444;
   box-shadow:0 2px 8px rgba(0,0,0,.1)}
@@ -837,20 +814,11 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   </div>
   <canvas id="vCanvas"></canvas>
 
-  <!-- Pokemon nurture full-screen -->
+  <!-- Pokemon nurture full-screen — bg/pokemon drawn on vCanvas -->
   <div id="vNurtureScreen">
     <div class="vn-topbar">
       <button class="vn-back" onclick="closeVNurture()">← もどる</button>
       <div class="vn-poke-label" id="vnPokeLabel"></div>
-    </div>
-    <div class="vn-cloud vn-c1"></div>
-    <div class="vn-cloud vn-c2"></div>
-    <div class="vn-ground"></div>
-    <span class="vn-deco" id="vnDeco1">🌸</span>
-    <span class="vn-deco" id="vnDeco2">🌼</span>
-    <div class="vn-poke-shadow" id="vnShadow"></div>
-    <div class="vn-poke-wrap" id="vnPokeWrap">
-      <img id="vnPokeImg" class="vn-poke-img" src="" alt="">
     </div>
   </div>
 
@@ -3564,28 +3532,86 @@ function drawVSky(){
   });
 }
 
+// ── Nurture scene canvas state ──
+let vNurtureMode=false;
+let vNurtureHouseImg=null;
+
+function drawNurtureScene(){
+  const W=vLW, H=vLH;
+  const t=Date.now()/1000;
+  // Sky — same gradient as bat-sky
+  const gSky=vCtx.createLinearGradient(0,0,0,H*.65);
+  gSky.addColorStop(0,'#87CEEB'); gSky.addColorStop(1,'#B0E0FF');
+  vCtx.fillStyle=gSky; vCtx.fillRect(0,0,W,H);
+  // Clouds
+  [[.12,.14,90,28],[.70,.11,70,22],[.42,.22,50,18]].forEach(([rx,ry,cw,ch],i)=>{
+    const dx=Math.sin(t*.5+i*2.1)*12;
+    const cx=W*rx+dx, cy=H*ry;
+    vCtx.globalAlpha=.82; vCtx.fillStyle='#fff';
+    vCtx.beginPath(); vCtx.ellipse(cx,cy,cw,ch*.8,0,0,Math.PI*2); vCtx.fill();
+    vCtx.beginPath(); vCtx.ellipse(cx+cw*.3,cy-ch*.5,cw*.55,ch,0,0,Math.PI*2); vCtx.fill();
+    vCtx.beginPath(); vCtx.ellipse(cx-cw*.25,cy-ch*.35,cw*.45,ch*.85,0,0,Math.PI*2); vCtx.fill();
+    vCtx.globalAlpha=1;
+  });
+  // Ground — same gradient as bat-ground
+  const gGnd=vCtx.createLinearGradient(0,H*.65,0,H);
+  gGnd.addColorStop(0,'#7EC850'); gGnd.addColorStop(1,'#5A9E30');
+  vCtx.fillStyle=gGnd; vCtx.fillRect(0,H*.65,W,H*.35);
+  // Ground ellipse platform
+  vCtx.fillStyle='#8FD45A';
+  vCtx.beginPath(); vCtx.ellipse(W/2,H*.68,W*.36,44,0,0,Math.PI*2); vCtx.fill();
+  // Grass detail lines on platform
+  vCtx.strokeStyle='#6BBF3A'; vCtx.lineWidth=1.5;
+  for(let i=-2;i<=2;i++){
+    const gx=W/2+i*28, gy=H*.665;
+    vCtx.beginPath(); vCtx.moveTo(gx,gy); vCtx.lineTo(gx-4,gy-10); vCtx.stroke();
+    vCtx.beginPath(); vCtx.moveTo(gx+6,gy+4); vCtx.lineTo(gx+2,gy-8); vCtx.stroke();
+  }
+  // Decorative flowers (left and right of platform)
+  const sway=Math.sin(t*1.5)*6;
+  vCtx.font=`22px serif`;
+  vCtx.save(); vCtx.translate(W/2-100,H*.65); vCtx.rotate(sway*Math.PI/180); vCtx.fillText('🌸',0,0); vCtx.restore();
+  vCtx.save(); vCtx.translate(W/2+82,H*.65); vCtx.rotate(-sway*Math.PI/180); vCtx.fillText('🌼',0,0); vCtx.restore();
+  // Shadow
+  const bob=Math.sin(t*2)*10;
+  vCtx.save();
+  vCtx.globalAlpha=.22-Math.sin(t*2)*.07;
+  vCtx.fillStyle='#000';
+  const sr=(1-Math.sin(t*2)*.18);
+  vCtx.beginPath(); vCtx.ellipse(W/2,H*.67,42*sr,10*sr,0,0,Math.PI*2); vCtx.fill();
+  vCtx.restore();
+  // Pokémon sprite
+  if(vNurtureHouseImg&&vNurtureHouseImg.complete&&vNurtureHouseImg.naturalWidth>0){
+    const sz=Math.min(W,H)*.4;
+    vCtx.drawImage(vNurtureHouseImg,W/2-sz/2,H*.46-sz+bob,sz,sz);
+  }
+}
+
 function villageLoop(){
   if(!vRunning) return;
-  updateVPlayer(); checkVApproach();
   vCtx.clearRect(0,0,vLW,vLH);
-  drawVSky();
-  drawIsoGround();
-  // Garden plots drawn in iso-depth with objects
-  const gardenObjs=vGardenPos.map((p,i)=>({type:'garden',idx:i,depth:p.wx+p.wy+0.5}));
-  const objects=[
-    ...gardenObjs,
-    ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
-    {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
-  ];
-  objects.sort((a,b)=>a.depth-b.depth);
-  let gardenBatchDone=false;
-  objects.forEach(o=>{
-    if(o.type==='garden'&&!gardenBatchDone){
-      drawGardenSpots(vCtx); gardenBatchDone=true;
-    } else if(o.type==='house') drawIsoHouse(o.obj);
-    else if(o.type==='player') drawIsoPlayer();
-  });
-  drawVHUD();
+  if(vNurtureMode){
+    drawNurtureScene();
+  } else {
+    updateVPlayer(); checkVApproach();
+    drawVSky();
+    drawIsoGround();
+    const gardenObjs=vGardenPos.map((p,i)=>({type:'garden',idx:i,depth:p.wx+p.wy+0.5}));
+    const objects=[
+      ...gardenObjs,
+      ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
+      {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
+    ];
+    objects.sort((a,b)=>a.depth-b.depth);
+    let gardenBatchDone=false;
+    objects.forEach(o=>{
+      if(o.type==='garden'&&!gardenBatchDone){
+        drawGardenSpots(vCtx); gardenBatchDone=true;
+      } else if(o.type==='house') drawIsoHouse(o.obj);
+      else if(o.type==='player') drawIsoPlayer();
+    });
+    drawVHUD();
+  }
   vFrameId=requestAnimationFrame(villageLoop);
 }
 
@@ -3621,12 +3647,12 @@ function openVDialogue(house){
   }
   vDialogueState={house,lines,step:0};
 
-  // 育成画面に遷移
-  const ns=document.getElementById('vNurtureScreen');
-  document.getElementById('vnPokeImg').src=artUrl(house.data.id);
+  // 育成画面に遷移 — canvasで描画
+  vNurtureMode=true;
+  vNurtureHouseImg=new Image(); vNurtureHouseImg.src=artUrl(house.data.id,false);
   document.getElementById('vnPokeLabel').textContent=`No.${String(house.data.id).padStart(3,'0')} ${house.data.name}`;
-  ns.style.display='flex';
-  requestAnimationFrame(()=>{ ns.classList.add('open'); });
+  const ns=document.getElementById('vNurtureScreen');
+  ns.classList.add('open'); ns.style.display='flex';
 
   renderVDlg();
   document.getElementById('vDialogue').style.display='flex';
@@ -3694,9 +3720,10 @@ function closeVDlg(){
 
 function closeVNurture(){
   closeVDlg();
+  vNurtureMode=false;
   const ns=document.getElementById('vNurtureScreen');
   ns.classList.remove('open');
-  setTimeout(()=>{ ns.style.display='none'; },400);
+  ns.style.display='none';
 }
 
 function giveVBerry(house,berryName){
@@ -3722,7 +3749,7 @@ function giveVBerry(house,berryName){
   renderVDlg();
 
   // ハートパーティクル
-  const wrap=document.getElementById('vnPokeWrap');
+  const wrap=document.getElementById('vNurtureScreen');
   const icons=isFav?['💕','💖','✨','🌟']:['💕','💗','✨'];
   for(let i=0;i<(isFav?5:3);i++){
     setTimeout(()=>{
