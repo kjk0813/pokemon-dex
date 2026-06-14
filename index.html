@@ -429,7 +429,14 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vd-choices{display:flex;gap:8px;flex-wrap:wrap}
 .vd-choice{background:#0c1438;border:1.5px solid #4a5ab0;border-radius:2px;padding:9px 20px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#90b0ff;transition:background .15s,border-color .15s}
 .vd-choice:hover,.vd-choice:active{background:#1a2850;border-color:#7090e0;color:#c0d4ff}
+.vd-choice:disabled{opacity:.35;cursor:not-allowed}
 .vd-next{position:absolute;bottom:14px;right:18px;color:#4a5ab0;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
+.vd-gauge-row{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
+.vd-gauge-bg{flex:1;height:5px;background:#1a2050;border-radius:3px;overflow:hidden}
+.vd-gauge-fill{height:100%;background:linear-gradient(90deg,#a03060,#ff6090);border-radius:3px;transition:width .6s}
+.vd-gauge-txt{font-size:.68rem;color:#6070c0;min-width:48px;text-align:right;white-space:nowrap}
+.vd-bag{font-size:.72rem;color:#607080;margin-bottom:8px;min-height:1em}
+.vd-fav{font-size:.72rem;color:#c0a030;margin-bottom:6px;min-height:1em}
 
 /* Village move-in toast — CT style */
 #vMoveIn{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#06060f;border:2px solid #4a5ab0;color:#c0d4ff;font-size:.85rem;font-weight:900;padding:12px 26px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap;z-index:500;box-shadow:0 4px 28px rgba(50,70,200,.35)}
@@ -791,6 +798,12 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
   <div id="vDialogue">
     <div class="vd-box">
       <div class="vd-name" id="vdName"></div>
+      <div class="vd-gauge-row">
+        <div class="vd-gauge-bg"><div class="vd-gauge-fill" id="vdGaugeFill" style="width:0%"></div></div>
+        <div class="vd-gauge-txt" id="vdGaugeTxt"></div>
+      </div>
+      <div class="vd-fav" id="vdFav"></div>
+      <div class="vd-bag" id="vdBag"></div>
       <div class="vd-text" id="vdText"></div>
       <div class="vd-choices" id="vdChoices"></div>
       <div class="vd-next" id="vdNext">▼</div>
@@ -2692,6 +2705,26 @@ const V_SPECIAL = {
   150: [['…。','きさまは　なにものだ？','…（じっとみてくる）']],
 };
 
+// ── きのみ育成システム ──
+const BERRY_NAMES = ['オレンのみ','ラムのみ','ヤチェのみ'];
+const BERRY_GAIN  = {'オレンのみ':10,'ラムのみ':15,'ヤチェのみ':20};
+const BERRY_ICON  = {'オレンのみ':'🍊','ラムのみ':'🍋','ヤチェのみ':'🫐'};
+const BERRY_FAV_OVR = {25:'ラムのみ',133:'ヤチェのみ',143:'オレンのみ',150:'ラムのみ',151:'ヤチェのみ'};
+function getFavBerry(id){ return BERRY_FAV_OVR[id]||BERRY_NAMES[id%3]; }
+
+function loadFr(){ return JSON.parse(localStorage.getItem('pkmFriendship')||'{}'); }
+function saveFr(fr){ localStorage.setItem('pkmFriendship',JSON.stringify(fr)); }
+function loadBag(){
+  const def={'オレンのみ':3,'ラムのみ':1,'ヤチェのみ':0};
+  const b=JSON.parse(localStorage.getItem('pkmBag')||'null');
+  if(!b){ localStorage.setItem('pkmBag',JSON.stringify(def)); return def; }
+  BERRY_NAMES.forEach(n=>{if(b[n]==null)b[n]=0;});
+  return b;
+}
+function saveBag(b){ localStorage.setItem('pkmBag',JSON.stringify(b)); }
+function loadKnown(){ return JSON.parse(localStorage.getItem('pkmBerryKnown')||'{}'); }
+function saveKnown(k){ localStorage.setItem('pkmBerryKnown',JSON.stringify(k)); }
+
 function buildVHouses(){
   const caughtArr=[...caught].map(id=>ALL.find(p=>p.id===id)).filter(Boolean);
   const byType={};
@@ -3244,9 +3277,9 @@ function drawIsoHouse(h){
   if(h.near){
     const pulse=0.7+Math.sin(Date.now()*.005)*0.3;
     let frLv=0;
-    try{ frLv=JSON.parse(localStorage.getItem('pkmFriendship')||'{}')[h.data.id]||0; }catch(e){}
+    try{ frLv=loadFr()[h.data.id]||0; }catch(e){}
     ctx.save(); ctx.globalAlpha=pulse;
-    ctx.strokeStyle=frLv>=3?'#ff88cc':'#ffd700'; ctx.lineWidth=2.5;
+    ctx.strokeStyle=frLv>=60?'#ff88cc':'#ffd700'; ctx.lineWidth=2.5;
     ctx.setLineDash([5,4]);
     ctx.beginPath(); ctx.arc(pkx,pky-38+bob,24,0,Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
@@ -3468,10 +3501,10 @@ function openVDialogue(house){
   }
   // ── Friendship bonus dialogue ──
   try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const fr=loadFr();
     const lv=fr[house.data.id]||0;
-    if(lv>=3) lines.push('（きのみ、ありがとう！　だいすきだよ！🌟）');
-    else if(lv>=1) lines.push('（きのみを　もらったこと、おぼえてるよ！）');
+    if(lv>=60) lines.push('（きのみ、ありがとう！　だいすきだよ！🌟）');
+    else if(lv>=20) lines.push('（きのみを　もらったこと、おぼえてるよ！）');
   }catch(e){}
   const qData=JSON.parse(localStorage.getItem('villageQuests')||'{}');
   if(vActiveQuest&&vActiveQuest.targetId===house.data.id){
@@ -3495,20 +3528,48 @@ function openVDialogue(house){
 function renderVDlg(){
   if(!vDialogueState) return;
   const {house,lines,step}=vDialogueState;
-  // Friendship hearts
-  let hearts='';
-  try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
-    const lv=Math.min(fr[house.data.id]||0,5);
-    if(lv>0) hearts=' '+'♥'.repeat(lv);
-  }catch(e){}
+  const id=house.data.id;
+
+  // なつき度ゲージ
+  const fr=loadFr();
+  const lv=fr[id]||0;
+  const heartCount=Math.min(Math.floor(lv/20),5);
+  const hearts=heartCount>0?' '+'♥'.repeat(heartCount):'';
   document.getElementById('vdName').textContent=house.data.name+hearts;
+  document.getElementById('vdGaugeFill').style.width=lv+'%';
+  document.getElementById('vdGaugeTxt').textContent='なつき度 '+lv+'/100';
+
+  // 好みのきのみ表示
+  const known=loadKnown();
+  const fav=getFavBerry(id);
+  document.getElementById('vdFav').textContent=
+    known[id] ? BERRY_ICON[fav]+'　好きなきのみ: '+fav : lv>=30 ? '💭　好みを　聞いてみよう…' : '';
+
+  // バッグ
+  const bag=loadBag();
+  const bagStr=BERRY_NAMES.filter(n=>bag[n]>0).map(n=>BERRY_ICON[n]+'×'+bag[n]).join('  ');
+  document.getElementById('vdBag').textContent=bagStr?'バッグ: '+bagStr:'';
+
   document.getElementById('vdText').textContent=lines[step];
   const last=step>=lines.length-1;
   document.getElementById('vdNext').style.display=last?'none':'';
-  document.getElementById('vdChoices').innerHTML=last
-    ?`<button class="vd-choice" onclick="closeVDlg()">おわり 👋</button>`
-    :`<button class="vd-choice" onclick="advanceVDlg()">つぎへ ▶</button>`;
+
+  if(last){
+    const canAsk=lv>=30&&!known[id];
+    let btns=BERRY_NAMES.map(n=>{
+      const cnt=bag[n]||0;
+      const isFav=known[id]&&n===fav;
+      const label=BERRY_ICON[n]+(isFav?'★':'')+'　'+(cnt>0?'×'+cnt:'なし');
+      return `<button class="vd-choice" onclick="giveVBerry(vDialogueState.house,'${n}')" ${cnt===0?'disabled':''}>
+        ${label}</button>`;
+    }).join('');
+    if(canAsk) btns+=`<button class="vd-choice" onclick="askVFavorite(vDialogueState.house)">🌸　好みを聞く</button>`;
+    btns+=`<button class="vd-choice" onclick="closeVDlg()">👋　もどる</button>`;
+    document.getElementById('vdChoices').innerHTML=btns;
+  } else {
+    document.getElementById('vdChoices').innerHTML=
+      `<button class="vd-choice" onclick="advanceVDlg()">つぎへ ▶</button>`;
+  }
 }
 
 function advanceVDlg(){
@@ -3521,6 +3582,46 @@ function advanceVDlg(){
 function closeVDlg(){
   vDialogueState=null;
   document.getElementById('vDialogue').style.display='none';
+}
+
+function giveVBerry(house,berryName){
+  const id=house.data.id;
+  const bag=loadBag();
+  if(!bag[berryName]||bag[berryName]<=0) return;
+  bag[berryName]--;
+  saveBag(bag);
+
+  const fr=loadFr();
+  const known=loadKnown();
+  const fav=getFavBerry(id);
+  const isFav=known[id]&&berryName===fav;
+  const gain=isFav?BERRY_GAIN[berryName]+10:BERRY_GAIN[berryName];
+  fr[id]=Math.min(100,(fr[id]||0)+gain);
+  saveFr(fr);
+
+  const reaction=isFav
+    ?[BERRY_ICON[berryName]+'「やった！だいすき！！」','（なつき度　+'+gain+'　💕）']
+    :[BERRY_ICON[berryName]+'「ありがとう！」','（なつき度　+'+gain+'）'];
+  vDialogueState.lines=reaction;
+  vDialogueState.step=0;
+  renderVDlg();
+}
+
+function askVFavorite(house){
+  const id=house.data.id;
+  const fav=getFavBerry(id);
+  const known=loadKnown();
+  known[id]=true;
+  saveKnown(known);
+  const fr=loadFr();
+  fr[id]=Math.min(100,(fr[id]||0)+3);
+  saveFr(fr);
+  vDialogueState.lines=[
+    '「…'+fav+'、かな。」',
+    '（好みのきのみが　わかった！'+BERRY_ICON[fav]+'）'
+  ];
+  vDialogueState.step=0;
+  renderVDlg();
 }
 
 function showVSelector(){
@@ -3699,13 +3800,21 @@ function harvestSlot(i){
   if(slot.state!=='grown') return;
   const th=AREA_THEMES[slot.type]||AREA_THEMES.normal;
   const msg=`${th.icon}${TNAMES[slot.type]||''}の　きのみを　しゅうかくした！`;
-  // Boost friendship for matching-type Pokémon
+  // Boost friendship for matching-type Pokémon + add berry to bag
   try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const fr=loadFr();
     vHouses.filter(h=>h.data.types[0]===slot.type).forEach(h=>{
-      fr[h.data.id]=(fr[h.data.id]||0)+1;
+      fr[h.data.id]=Math.min(100,(fr[h.data.id]||0)+5);
     });
-    localStorage.setItem('pkmFriendship',JSON.stringify(fr));
+    saveFr(fr);
+    // タイプによってきのみをバッグに追加
+    const typeToberry={'grass':'オレンのみ','water':'オレンのみ','normal':'オレンのみ',
+      'flying':'オレンのみ','ice':'オレンのみ','fire':'ラムのみ','electric':'ラムのみ',
+      'psychic':'ラムのみ','fairy':'ラムのみ','bug':'ラムのみ'};
+    const harvestedBerry=typeToberry[slot.type]||'ヤチェのみ';
+    const bag=loadBag();
+    bag[harvestedBerry]=(bag[harvestedBerry]||0)+2;
+    saveBag(bag);
   }catch(e){}
   // Re-plant for next cycle
   slot.state='planted'; slot.wateredAt=0;
