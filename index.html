@@ -1567,6 +1567,16 @@ let inBattle = false;
 let wildPokes = [];
 let spawnTimer = 0;
 
+// ── ゲームワールドのNPC ──
+const GAME_NPCS = [
+  { id:'hikoki',  name:'ひこうき',    src:'assets/npcs/hikoki.png',  x:400,  y:300,  dlg:'はやいでしょ！かぜにのれば　どこまでも！' },
+  { id:'heart',   name:'ハートちゃん', src:'assets/npcs/heart.png',   x:1200, y:380,  dlg:'ふわふわ　してるでしょ！　♥' },
+  { id:'moja',    name:'モジャ',      src:'assets/npcs/moja.png',    x:2050, y:900,  dlg:'…もじゃ…（ビンのなかから　みてる）' },
+  { id:'potato',  name:'ポテトさん',   src:'assets/npcs/potato.png',  x:550,  y:1450, dlg:'はなが　とれた！　みつけたら　かえしてね！' },
+  { id:'soldier', name:'ヘイタイ',    src:'assets/npcs/soldier.png', x:1850, y:1520, dlg:'きをつけ！　このエリアを　まもっているぞ！' },
+];
+GAME_NPCS.forEach(n=>{ n.img=new Image(); n.img.src=n.src; n.animT=0; });
+
 // Build wild pool: spawn from ALL, weighted
 function spawnWild(){
   if(wildPokes.length >= MAX_WILD) return;
@@ -1887,13 +1897,64 @@ function gameLoop(){
   spawnTimer++;
   if(spawnTimer>40){ spawnWild(); spawnTimer=0; }
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawBg(); drawTrees(); drawWilids_and_player();
+  drawBg(); drawTrees(); drawGameNpcsAndWildsAndPlayer();
   drawMinimap();
   frameId=requestAnimationFrame(gameLoop);
 }
 
+function drawGameNpcsAndWildsAndPlayer(){
+  GAME_NPCS.forEach(n=>n.animT++);
+  // y-sort: wilds + npcs + player
+  const all=[
+    ...wildPokes.map(w=>({type:'wild',obj:w,y:w.y})),
+    ...GAME_NPCS.map(n=>({type:'npc',obj:n,y:n.y})),
+    {type:'player',y:player.y}
+  ];
+  all.sort((a,b)=>a.y-b.y);
+  all.forEach(o=>{
+    if(o.type==='wild') drawOneWild(o.obj);
+    else if(o.type==='npc') drawOneGameNpc(o.obj);
+    else drawPlayer();
+  });
+}
+
+function drawOneGameNpc(n){
+  const sx=Math.round(n.x-cam.x), sy=Math.round(n.y-cam.y);
+  if(sx<-80||sx>canvas.width+80||sy<-80||sy>canvas.height+80) return;
+  const bob=Math.sin(n.animT*.04)*3;
+  const dist=Math.hypot(player.x-n.x,player.y-n.y);
+
+  // 影
+  ctx.fillStyle='rgba(0,0,0,.13)';
+  ctx.beginPath(); ctx.ellipse(sx,sy+22,22,7,0,0,Math.PI*2); ctx.fill();
+
+  // スプライト
+  if(n.img.complete&&n.img.naturalWidth>0){
+    const aspect=n.img.naturalHeight/n.img.naturalWidth||1;
+    const w=60, h=60*aspect;
+    ctx.drawImage(n.img,sx-w/2,sy-h+bob,w,h);
+  }
+
+  // 近づいたら吹き出し
+  if(dist<110){
+    const bw=Math.min(180,ctx.measureText(n.dlg).width+24);
+    const bx=sx-bw/2, by=sy-80+bob;
+    ctx.fillStyle='rgba(255,255,255,.93)';
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,28,8); ctx.fill();
+    ctx.fillStyle='#333';
+    ctx.font='bold 10px "M PLUS Rounded 1c",sans-serif';
+    ctx.textAlign='center';
+    // 長いセリフは切る
+    const text=n.dlg.length>18?n.dlg.slice(0,18)+'…':n.dlg;
+    ctx.fillText(text,sx,by+18);
+    ctx.textAlign='left';
+    // しっぽ
+    ctx.fillStyle='rgba(255,255,255,.93)';
+    ctx.beginPath(); ctx.moveTo(sx-6,by+28); ctx.lineTo(sx+6,by+28); ctx.lineTo(sx,by+38); ctx.fill();
+  }
+}
+
 function drawWilids_and_player(){
-  // Draw wilds and player sorted by y
   const playerY=player.y;
   const before=wildPokes.filter(w=>w.y<=playerY);
   const after=wildPokes.filter(w=>w.y>playerY);
