@@ -421,22 +421,28 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vs-resume-btn{display:block;width:100%;margin-bottom:16px;padding:13px 24px;border:1.5px solid #4a5ab0;background:linear-gradient(180deg,#18265a,#0e1840);color:#c0d4ff;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(30,50,180,.3);transition:background .15s,box-shadow .15s;letter-spacing:.08em}
 .vs-resume-btn:hover{background:linear-gradient(180deg,#243070,#162050);box-shadow:0 6px 24px rgba(40,70,200,.45)}
 
-/* Village dialogue — CT dark style */
+/* Village dialogue — かわいいパステルスタイル */
 #vDialogue{position:absolute;bottom:0;left:0;right:0;z-index:20;display:none;flex-direction:column}
-.vd-box{background:#06060f;border:2px solid #4a5ab0;border-bottom:none;border-radius:8px 8px 0 0;box-shadow:0 -4px 36px rgba(50,70,200,.28),inset 0 0 50px rgba(0,0,20,.7);padding:16px 20px 22px;position:relative;min-height:100px}
-.vd-name{display:inline-block;background:#101840;border:1.5px solid #4a5ab0;color:#90b0ff;font-size:.72rem;font-weight:900;padding:4px 16px;border-radius:2px;margin-bottom:10px;letter-spacing:.06em}
-.vd-text{font-size:1rem;font-weight:800;color:#dde2fa;line-height:1.85;margin-bottom:12px;letter-spacing:.02em}
+.vd-box{background:linear-gradient(160deg,#FFFDF0,#FFF3C4);border-radius:28px 28px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12),inset 0 2px 0 rgba(255,255,255,.8);padding:16px 20px 24px;position:relative;min-height:100px}
+.vd-name{font-size:.8rem;font-weight:700;color:#888;margin-bottom:2px}
+.vd-name span{font-size:1.1rem;font-weight:900;color:#444;margin-left:4px}
+.vd-text{font-size:.95rem;font-weight:700;color:#444;line-height:1.8;margin-bottom:12px}
 .vd-choices{display:flex;gap:8px;flex-wrap:wrap}
-.vd-choice{background:#0c1438;border:1.5px solid #4a5ab0;border-radius:2px;padding:9px 20px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#90b0ff;transition:background .15s,border-color .15s}
-.vd-choice:hover,.vd-choice:active{background:#1a2850;border-color:#7090e0;color:#c0d4ff}
+.vd-choice{flex:1;min-width:100px;border:none;border-radius:18px;padding:11px 10px;font-size:.82rem;font-weight:900;font-family:inherit;cursor:pointer;color:#fff;transition:transform .1s,box-shadow .1s;box-shadow:0 4px 10px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.vd-choice::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,.18);border-radius:18px 18px 0 0}
+.vd-choice:active{transform:scale(.96)}
 .vd-choice:disabled{opacity:.35;cursor:not-allowed}
-.vd-next{position:absolute;bottom:14px;right:18px;color:#4a5ab0;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
-.vd-gauge-row{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
-.vd-gauge-bg{flex:1;height:5px;background:#1a2050;border-radius:3px;overflow:hidden}
-.vd-gauge-fill{height:100%;background:linear-gradient(90deg,#a03060,#ff6090);border-radius:3px;transition:width .6s}
-.vd-gauge-txt{font-size:.68rem;color:#6070c0;min-width:48px;text-align:right;white-space:nowrap}
-.vd-bag{font-size:.72rem;color:#607080;margin-bottom:8px;min-height:1em}
-.vd-fav{font-size:.72rem;color:#c0a030;margin-bottom:6px;min-height:1em}
+.vd-choice.berry{background:linear-gradient(135deg,#7BC67E,#4CAF50);box-shadow:0 4px 10px rgba(76,175,80,.35)}
+.vd-choice.ask{background:linear-gradient(135deg,#FFB6C1,#FF7BAC);box-shadow:0 4px 10px rgba(255,107,172,.35)}
+.vd-choice.back{background:linear-gradient(135deg,#89CFF0,#5BA4CF);box-shadow:0 4px 10px rgba(91,164,207,.35)}
+.vd-choice.next{background:linear-gradient(135deg,#B8A9E8,#8B72D4);box-shadow:0 4px 10px rgba(139,114,212,.35)}
+.vd-next{position:absolute;bottom:14px;right:18px;color:#ccc;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
+.vd-gauge-row{display:flex;align-items:center;gap:8px;margin:8px 0 6px}
+.vd-gauge-bg{flex:1;height:10px;background:#EEE;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
+.vd-gauge-fill{height:100%;background:linear-gradient(90deg,#FF8FAB,#FF6B9D);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.vd-gauge-txt{font-size:.7rem;font-weight:700;color:#FF6B9D;min-width:52px;text-align:right;white-space:nowrap}
+.vd-bag{font-size:.72rem;color:#999;margin-bottom:6px;min-height:1em}
+.vd-fav{font-size:.75rem;color:#4A9E2F;font-weight:700;background:#F0FAE8;border:1.5px solid #B8E89A;border-radius:10px;padding:4px 10px;margin-bottom:8px;min-height:1em;display:inline-block}
 
 /* Village move-in toast — CT style */
 #vMoveIn{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#06060f;border:2px solid #4a5ab0;color:#c0d4ff;font-size:.85rem;font-weight:900;padding:12px 26px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap;z-index:500;box-shadow:0 4px 28px rgba(50,70,200,.35)}
@@ -3535,15 +3541,17 @@ function renderVDlg(){
   const lv=fr[id]||0;
   const heartCount=Math.min(Math.floor(lv/20),5);
   const hearts=heartCount>0?' '+'♥'.repeat(heartCount):'';
-  document.getElementById('vdName').textContent=house.data.name+hearts;
+  document.getElementById('vdName').innerHTML=`No.${String(id).padStart(3,'0')} <span>${house.data.name}${hearts}</span>`;
   document.getElementById('vdGaugeFill').style.width=lv+'%';
   document.getElementById('vdGaugeTxt').textContent='なつき度 '+lv+'/100';
 
   // 好みのきのみ表示
   const known=loadKnown();
   const fav=getFavBerry(id);
-  document.getElementById('vdFav').textContent=
-    known[id] ? BERRY_ICON[fav]+'　好きなきのみ: '+fav : lv>=30 ? '💭　好みを　聞いてみよう…' : '';
+  const favEl=document.getElementById('vdFav');
+  const favText=known[id]?BERRY_ICON[fav]+'　好きなきのみ: '+fav:lv>=30?'💭 好みを聞いてみよう…':'';
+  favEl.textContent=favText;
+  favEl.style.display=favText?'inline-block':'none';
 
   // バッグ
   const bag=loadBag();
@@ -3559,16 +3567,15 @@ function renderVDlg(){
     let btns=BERRY_NAMES.map(n=>{
       const cnt=bag[n]||0;
       const isFav=known[id]&&n===fav;
-      const label=BERRY_ICON[n]+(isFav?'★':'')+'　'+(cnt>0?'×'+cnt:'なし');
-      return `<button class="vd-choice" onclick="giveVBerry(vDialogueState.house,'${n}')" ${cnt===0?'disabled':''}>
-        ${label}</button>`;
+      const label=BERRY_ICON[n]+(isFav?'★':'')+' '+(cnt>0?'×'+cnt:'なし');
+      return `<button class="vd-choice berry" onclick="giveVBerry(vDialogueState.house,'${n}')" ${cnt===0?'disabled':''}>${label}</button>`;
     }).join('');
-    if(canAsk) btns+=`<button class="vd-choice" onclick="askVFavorite(vDialogueState.house)">🌸　好みを聞く</button>`;
-    btns+=`<button class="vd-choice" onclick="closeVDlg()">👋　もどる</button>`;
+    if(canAsk) btns+=`<button class="vd-choice ask" onclick="askVFavorite(vDialogueState.house)">🌸 好みを聞く</button>`;
+    btns+=`<button class="vd-choice back" onclick="closeVDlg()">👋 もどる</button>`;
     document.getElementById('vdChoices').innerHTML=btns;
   } else {
     document.getElementById('vdChoices').innerHTML=
-      `<button class="vd-choice" onclick="advanceVDlg()">つぎへ ▶</button>`;
+      `<button class="vd-choice next" onclick="advanceVDlg()">つぎへ ▶</button>`;
   }
 }
 
