@@ -421,15 +421,40 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vs-resume-btn{display:block;width:100%;margin-bottom:16px;padding:13px 24px;border:1.5px solid #4a5ab0;background:linear-gradient(180deg,#18265a,#0e1840);color:#c0d4ff;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(30,50,180,.3);transition:background .15s,box-shadow .15s;letter-spacing:.08em}
 .vs-resume-btn:hover{background:linear-gradient(180deg,#243070,#162050);box-shadow:0 6px 24px rgba(40,70,200,.45)}
 
-/* Village dialogue — CT dark style */
+/* Village dialogue — かわいいパステルスタイル */
 #vDialogue{position:absolute;bottom:0;left:0;right:0;z-index:20;display:none;flex-direction:column}
-.vd-box{background:#06060f;border:2px solid #4a5ab0;border-bottom:none;border-radius:8px 8px 0 0;box-shadow:0 -4px 36px rgba(50,70,200,.28),inset 0 0 50px rgba(0,0,20,.7);padding:16px 20px 22px;position:relative;min-height:100px}
-.vd-name{display:inline-block;background:#101840;border:1.5px solid #4a5ab0;color:#90b0ff;font-size:.72rem;font-weight:900;padding:4px 16px;border-radius:2px;margin-bottom:10px;letter-spacing:.06em}
-.vd-text{font-size:1rem;font-weight:800;color:#dde2fa;line-height:1.85;margin-bottom:12px;letter-spacing:.02em}
+.vd-box{background:linear-gradient(160deg,#FFFDF0,#FFF3C4);border-radius:28px 28px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12),inset 0 2px 0 rgba(255,255,255,.8);padding:16px 20px 24px;position:relative;min-height:100px}
+.vd-name{font-size:.8rem;font-weight:700;color:#888;margin-bottom:2px}
+.vd-name span{font-size:1.1rem;font-weight:900;color:#444;margin-left:4px}
+.vd-text{font-size:.95rem;font-weight:700;color:#444;line-height:1.8;margin-bottom:12px}
 .vd-choices{display:flex;gap:8px;flex-wrap:wrap}
-.vd-choice{background:#0c1438;border:1.5px solid #4a5ab0;border-radius:2px;padding:9px 20px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#90b0ff;transition:background .15s,border-color .15s}
-.vd-choice:hover,.vd-choice:active{background:#1a2850;border-color:#7090e0;color:#c0d4ff}
-.vd-next{position:absolute;bottom:14px;right:18px;color:#4a5ab0;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
+.vd-choice{flex:1;min-width:100px;border:none;border-radius:18px;padding:11px 10px;font-size:.82rem;font-weight:900;font-family:inherit;cursor:pointer;color:#fff;transition:transform .1s,box-shadow .1s;box-shadow:0 4px 10px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.vd-choice::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,.18);border-radius:18px 18px 0 0}
+.vd-choice:active{transform:scale(.96)}
+.vd-choice:disabled{opacity:.35;cursor:not-allowed}
+.vd-choice.berry{background:linear-gradient(135deg,#7BC67E,#4CAF50);box-shadow:0 4px 10px rgba(76,175,80,.35)}
+.vd-choice.ask{background:linear-gradient(135deg,#FFB6C1,#FF7BAC);box-shadow:0 4px 10px rgba(255,107,172,.35)}
+.vd-choice.back{background:linear-gradient(135deg,#89CFF0,#5BA4CF);box-shadow:0 4px 10px rgba(91,164,207,.35)}
+.vd-choice.next{background:linear-gradient(135deg,#B8A9E8,#8B72D4);box-shadow:0 4px 10px rgba(139,114,212,.35)}
+.vd-next{position:absolute;bottom:14px;right:18px;color:#ccc;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
+.vd-gauge-row{display:flex;align-items:center;gap:8px;margin:8px 0 6px}
+.vd-gauge-bg{flex:1;height:10px;background:#EEE;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
+.vd-gauge-fill{height:100%;background:linear-gradient(90deg,#FF8FAB,#FF6B9D);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.vd-gauge-txt{font-size:.7rem;font-weight:700;color:#FF6B9D;min-width:52px;text-align:right;white-space:nowrap}
+.vd-bag{font-size:.72rem;color:#999;margin-bottom:6px;min-height:1em}
+.vd-fav{font-size:.75rem;color:#4A9E2F;font-weight:700;background:#F0FAE8;border:1.5px solid #B8E89A;border-radius:10px;padding:4px 10px;margin-bottom:8px;min-height:1em;display:inline-block}
+
+/* ── Pokemon nurture screen — canvas draws behind, only topbar is HTML ── */
+#vNurtureScreen{position:absolute;inset:0;z-index:15;display:none;flex-direction:column;background:transparent;pointer-events:none}
+#vNurtureScreen.open{display:flex}
+.vn-topbar{pointer-events:all;position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;z-index:18}
+.vn-back{background:rgba(255,255,255,.72);backdrop-filter:blur(8px);border:none;border-radius:20px;
+  padding:8px 18px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;color:#444;
+  box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.vn-poke-label{background:rgba(255,255,255,.72);backdrop-filter:blur(8px);border-radius:20px;
+  padding:8px 16px;font-size:.8rem;font-weight:900;color:#444;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.vn-heart{position:absolute;font-size:20px;pointer-events:none;opacity:0;z-index:17;animation:vnHeart 1.8s ease-out forwards}
+@keyframes vnHeart{0%{opacity:1;transform:translateY(0) scale(.5)}60%{opacity:1;transform:translateY(-70px) scale(1.3)}100%{opacity:0;transform:translateY(-110px) scale(.8)}}
 
 /* Village move-in toast — CT style */
 #vMoveIn{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#06060f;border:2px solid #4a5ab0;color:#c0d4ff;font-size:.85rem;font-weight:900;padding:12px 26px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap;z-index:500;box-shadow:0 4px 28px rgba(50,70,200,.35)}
@@ -788,15 +813,30 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
     </div>
   </div>
   <canvas id="vCanvas"></canvas>
+
+  <!-- Pokemon nurture full-screen — bg/pokemon drawn on vCanvas -->
+  <div id="vNurtureScreen">
+    <div class="vn-topbar">
+      <button class="vn-back" onclick="closeVNurture()">← もどる</button>
+      <div class="vn-poke-label" id="vnPokeLabel"></div>
+    </div>
+  </div>
+
   <div id="vDialogue">
     <div class="vd-box">
       <div class="vd-name" id="vdName"></div>
+      <div class="vd-gauge-row">
+        <div class="vd-gauge-bg"><div class="vd-gauge-fill" id="vdGaugeFill" style="width:0%"></div></div>
+        <div class="vd-gauge-txt" id="vdGaugeTxt"></div>
+      </div>
+      <div class="vd-fav" id="vdFav"></div>
+      <div class="vd-bag" id="vdBag"></div>
       <div class="vd-text" id="vdText"></div>
       <div class="vd-choices" id="vdChoices"></div>
       <div class="vd-next" id="vdNext">▼</div>
     </div>
   </div>
-  <button id="vChangeBtn" onclick="showVSelector()">👤 キャラをかえる</button>
+  <button id="vChangeBtn" onclick="showVSelector()" style="display:none">👤 キャラをかえる</button>
 
   <!-- Garden panel -->
   <div id="vGardenPanel">
@@ -1211,7 +1251,7 @@ function switchTo(s){
   document.getElementById('tabVillage').classList.toggle('active', s==='village');
   if(s==='game'){ stopVillage(); startGame(); }
   else if(s==='dex'){ stopGame(); stopVillage(); renderDex(); }
-  else if(s==='village'){ stopGame(); showVSelector(); }
+  else if(s==='village'){ stopGame(); startVillage(); }
   else { stopGame(); stopVillage(); }
 }
 
@@ -1526,6 +1566,16 @@ let frameId = null;
 let inBattle = false;
 let wildPokes = [];
 let spawnTimer = 0;
+
+// ── ゲームワールドのNPC ──
+const GAME_NPCS = [
+  { id:'hikoki',  name:'ひこうき',    src:'assets/npcs/hikoki.png',  x:400,  y:300,  dlg:'はやいでしょ！かぜにのれば　どこまでも！' },
+  { id:'heart',   name:'ハートちゃん', src:'assets/npcs/heart.png',   x:1200, y:380,  dlg:'ふわふわ　してるでしょ！　♥' },
+  { id:'moja',    name:'モジャ',      src:'assets/npcs/moja.png',    x:2050, y:900,  dlg:'…もじゃ…（ビンのなかから　みてる）' },
+  { id:'potato',  name:'ポテトさん',   src:'assets/npcs/potato.png',  x:550,  y:1450, dlg:'はなが　とれた！　みつけたら　かえしてね！' },
+  { id:'soldier', name:'ヘイタイ',    src:'assets/npcs/soldier.png', x:1850, y:1520, dlg:'きをつけ！　このエリアを　まもっているぞ！' },
+];
+GAME_NPCS.forEach(n=>{ n.img=new Image(); n.img.src=n.src; n.animT=0; });
 
 // Build wild pool: spawn from ALL, weighted
 function spawnWild(){
@@ -1847,13 +1897,64 @@ function gameLoop(){
   spawnTimer++;
   if(spawnTimer>40){ spawnWild(); spawnTimer=0; }
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawBg(); drawTrees(); drawWilids_and_player();
+  drawBg(); drawTrees(); drawGameNpcsAndWildsAndPlayer();
   drawMinimap();
   frameId=requestAnimationFrame(gameLoop);
 }
 
+function drawGameNpcsAndWildsAndPlayer(){
+  GAME_NPCS.forEach(n=>n.animT++);
+  // y-sort: wilds + npcs + player
+  const all=[
+    ...wildPokes.map(w=>({type:'wild',obj:w,y:w.y})),
+    ...GAME_NPCS.map(n=>({type:'npc',obj:n,y:n.y})),
+    {type:'player',y:player.y}
+  ];
+  all.sort((a,b)=>a.y-b.y);
+  all.forEach(o=>{
+    if(o.type==='wild') drawOneWild(o.obj);
+    else if(o.type==='npc') drawOneGameNpc(o.obj);
+    else drawPlayer();
+  });
+}
+
+function drawOneGameNpc(n){
+  const sx=Math.round(n.x-cam.x), sy=Math.round(n.y-cam.y);
+  if(sx<-80||sx>canvas.width+80||sy<-80||sy>canvas.height+80) return;
+  const bob=Math.sin(n.animT*.04)*3;
+  const dist=Math.hypot(player.x-n.x,player.y-n.y);
+
+  // 影
+  ctx.fillStyle='rgba(0,0,0,.13)';
+  ctx.beginPath(); ctx.ellipse(sx,sy+22,22,7,0,0,Math.PI*2); ctx.fill();
+
+  // スプライト
+  if(n.img.complete&&n.img.naturalWidth>0){
+    const aspect=n.img.naturalHeight/n.img.naturalWidth||1;
+    const w=60, h=60*aspect;
+    ctx.drawImage(n.img,sx-w/2,sy-h+bob,w,h);
+  }
+
+  // 近づいたら吹き出し
+  if(dist<110){
+    const bw=Math.min(180,ctx.measureText(n.dlg).width+24);
+    const bx=sx-bw/2, by=sy-80+bob;
+    ctx.fillStyle='rgba(255,255,255,.93)';
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,28,8); ctx.fill();
+    ctx.fillStyle='#333';
+    ctx.font='bold 10px "M PLUS Rounded 1c",sans-serif';
+    ctx.textAlign='center';
+    // 長いセリフは切る
+    const text=n.dlg.length>18?n.dlg.slice(0,18)+'…':n.dlg;
+    ctx.fillText(text,sx,by+18);
+    ctx.textAlign='left';
+    // しっぽ
+    ctx.fillStyle='rgba(255,255,255,.93)';
+    ctx.beginPath(); ctx.moveTo(sx-6,by+28); ctx.lineTo(sx+6,by+28); ctx.lineTo(sx,by+38); ctx.fill();
+  }
+}
+
 function drawWilids_and_player(){
-  // Draw wilds and player sorted by y
   const playerY=player.y;
   const before=wildPokes.filter(w=>w.y<=playerY);
   const after=wildPokes.filter(w=>w.y>playerY);
@@ -1910,7 +2011,12 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Enter'||e.key===' '){
       e.preventDefault();
       if(vDialogueState) advanceVDlg();
-      else { const h=vHouses.find(h=>h.near); if(h) openVDialogue(h); }
+      else {
+        const h=vHouses.find(h=>h.near);
+        if(h){ openVDialogue(h); return; }
+        const n=vNpcs.find(n=>n.near);
+        if(n) openNpcDialogue(n);
+      }
     }
   }
 });
@@ -2605,6 +2711,21 @@ let vAreas  = [];
 let vDialogueState = null;
 let vActiveQuest = null;
 let vGardenPos = [];    // [{wx,wy}] — 3 garden plot positions in iso-world
+
+// ── ともだちNPC ──
+const V_NPC_DATA = [
+  { id:'hikoki',  name:'ひこうき',    src:'assets/npcs/hikoki.png',
+    dlg:[['はやいでしょ！','かぜにのれば　どこまでも！','いっしょに　とびたい？']] },
+  { id:'heart',   name:'ハートちゃん', src:'assets/npcs/heart.png',
+    dlg:[['ふわふわ　してるでしょ！','だいすきって　つたえたいな　♥','きみのことも　すきだよ！']] },
+  { id:'moja',    name:'モジャ',      src:'assets/npcs/moja.png',
+    dlg:[['（ビンのなかから　じっとみてくる）','…もじゃ…','（なにかいいたそう）']] },
+  { id:'potato',  name:'ポテトさん',   src:'assets/npcs/potato.png',
+    dlg:[['はなが　とれた！','みつけたら　かえしてね！','ぼうしも　どこかに…']] },
+  { id:'soldier', name:'ヘイタイ',    src:'assets/npcs/soldier.png',
+    dlg:[['きをつけ！','このむらを　まもっているぞ！','あやしいやつは　とおさん！']] },
+];
+let vNpcs = [];
 let vGardenNear = false;
 
 // ── Isometric engine ──
@@ -2691,6 +2812,26 @@ const V_SPECIAL = {
   143: [['ぐう…ぐう…','（すやすや　ねてる）','…（まだ　ねてる）']],
   150: [['…。','きさまは　なにものだ？','…（じっとみてくる）']],
 };
+
+// ── きのみ育成システム ──
+const BERRY_NAMES = ['オレンのみ','ラムのみ','ヤチェのみ'];
+const BERRY_GAIN  = {'オレンのみ':10,'ラムのみ':15,'ヤチェのみ':20};
+const BERRY_ICON  = {'オレンのみ':'🍊','ラムのみ':'🍋','ヤチェのみ':'🫐'};
+const BERRY_FAV_OVR = {25:'ラムのみ',133:'ヤチェのみ',143:'オレンのみ',150:'ラムのみ',151:'ヤチェのみ'};
+function getFavBerry(id){ return BERRY_FAV_OVR[id]||BERRY_NAMES[id%3]; }
+
+function loadFr(){ return JSON.parse(localStorage.getItem('pkmFriendship')||'{}'); }
+function saveFr(fr){ localStorage.setItem('pkmFriendship',JSON.stringify(fr)); }
+function loadBag(){
+  const def={'オレンのみ':3,'ラムのみ':1,'ヤチェのみ':0};
+  const b=JSON.parse(localStorage.getItem('pkmBag')||'null');
+  if(!b){ localStorage.setItem('pkmBag',JSON.stringify(def)); return def; }
+  BERRY_NAMES.forEach(n=>{if(b[n]==null)b[n]=0;});
+  return b;
+}
+function saveBag(b){ localStorage.setItem('pkmBag',JSON.stringify(b)); }
+function loadKnown(){ return JSON.parse(localStorage.getItem('pkmBerryKnown')||'{}'); }
+function saveKnown(k){ localStorage.setItem('pkmBerryKnown',JSON.stringify(k)); }
 
 function buildVHouses(){
   const caughtArr=[...caught].map(id=>ALL.find(p=>p.id===id)).filter(Boolean);
@@ -3110,6 +3251,64 @@ function drawIsoGround(){
 }
 
 // chibi-style sprite: squish + glow + blush
+function drawVProtagonist(ctx, cx, footY, bob){
+  const fy=footY+bob;
+  // 足
+  ctx.fillStyle='#5B8DD9';
+  ctx.beginPath(); ctx.ellipse(cx-7,fy,5,7,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx+7,fy,5,7,0,0,Math.PI*2); ctx.fill();
+  // 体
+  ctx.fillStyle='#E84A6A';
+  ctx.beginPath(); ctx.roundRect(cx-13,fy-30,26,22,6); ctx.fill();
+  // ハイライト（服）
+  ctx.fillStyle='rgba(255,255,255,.2)';
+  ctx.beginPath(); ctx.roundRect(cx-13,fy-30,26,10,6); ctx.fill();
+  // 腕（左）
+  ctx.fillStyle='#E8C49A';
+  ctx.beginPath(); ctx.ellipse(cx-16,fy-22,5,8,0.3,0,Math.PI*2); ctx.fill();
+  // 腕（右）
+  ctx.beginPath(); ctx.ellipse(cx+16,fy-22,5,8,-0.3,0,Math.PI*2); ctx.fill();
+  // 首
+  ctx.fillStyle='#E8C49A';
+  ctx.beginPath(); ctx.ellipse(cx,fy-32,5,5,0,0,Math.PI*2); ctx.fill();
+  // 頭
+  ctx.fillStyle='#E8C49A';
+  ctx.beginPath(); ctx.ellipse(cx,fy-46,14,14,0,0,Math.PI*2); ctx.fill();
+  // 髪
+  ctx.fillStyle='#3A2010';
+  ctx.beginPath(); ctx.ellipse(cx,fy-54,12,8,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx-12,fy-48,5,7,0.3,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx+12,fy-48,5,7,-0.3,0,Math.PI*2); ctx.fill();
+  // 帽子
+  ctx.fillStyle='#CC0000';
+  ctx.beginPath(); ctx.roundRect(cx-14,fy-62,28,10,4); ctx.fill();
+  ctx.fillStyle='#AA0000';
+  ctx.beginPath(); ctx.ellipse(cx,fy-62,16,4,0,0,Math.PI*2); ctx.fill();
+  // 目（左）
+  ctx.fillStyle='#2A1A0A';
+  ctx.beginPath(); ctx.ellipse(cx-5,fy-46,2.5,3,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='white';
+  ctx.beginPath(); ctx.ellipse(cx-4,fy-47,1,1,0,0,Math.PI*2); ctx.fill();
+  // 目（右）
+  ctx.fillStyle='#2A1A0A';
+  ctx.beginPath(); ctx.ellipse(cx+5,fy-46,2.5,3,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='white';
+  ctx.beginPath(); ctx.ellipse(cx+6,fy-47,1,1,0,0,Math.PI*2); ctx.fill();
+  // ほっぺ
+  ctx.fillStyle='rgba(220,100,80,.35)';
+  ctx.beginPath(); ctx.ellipse(cx-9,fy-43,4,3,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx+9,fy-43,4,3,0,0,Math.PI*2); ctx.fill();
+  // 名前ラベル
+  ctx.font='bold 10px "M PLUS Rounded 1c",sans-serif';
+  const lbl='ゆいこ';
+  const lw=ctx.measureText(lbl).width+14;
+  const lx=cx-lw/2, ly=fy-78+bob;
+  ctx.fillStyle='rgba(255,255,255,.9)';
+  ctx.beginPath(); ctx.roundRect(lx,ly,lw,17,8); ctx.fill();
+  ctx.fillStyle='#CC0000';
+  ctx.textAlign='center'; ctx.fillText(lbl,cx,ly+12); ctx.textAlign='left';
+}
+
 function drawChibiSprite(ctx, img, cx, footY, size, bob){
   if(!img||!img.complete||!img.naturalWidth) return;
   const by=footY+bob;
@@ -3244,9 +3443,9 @@ function drawIsoHouse(h){
   if(h.near){
     const pulse=0.7+Math.sin(Date.now()*.005)*0.3;
     let frLv=0;
-    try{ frLv=JSON.parse(localStorage.getItem('pkmFriendship')||'{}')[h.data.id]||0; }catch(e){}
+    try{ frLv=loadFr()[h.data.id]||0; }catch(e){}
     ctx.save(); ctx.globalAlpha=pulse;
-    ctx.strokeStyle=frLv>=3?'#ff88cc':'#ffd700'; ctx.lineWidth=2.5;
+    ctx.strokeStyle=frLv>=60?'#ff88cc':'#ffd700'; ctx.lineWidth=2.5;
     ctx.setLineDash([5,4]);
     ctx.beginPath(); ctx.arc(pkx,pky-38+bob,24,0,Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
@@ -3297,25 +3496,7 @@ function drawIsoPlayer(){
   ctx.beginPath(); ctx.ellipse(sx,sy+6,18,5,0,0,Math.PI*2); ctx.fill();
 
   const bob=Math.sin(vPlayer.wf*.15)*2.5;
-  if(vAvatarImg&&vAvatarImg.complete&&vAvatarImg.naturalWidth>0){
-    drawChibiSprite(ctx,vAvatarImg,sx,sy-2,58,bob);
-  } else {
-    ctx.fillStyle='#CC0000';
-    ctx.beginPath(); ctx.arc(sx,sy-18,16,0,Math.PI*2); ctx.fill();
-  }
-
-  // "YOU" label
-  const yp=vAvatarId?ALL.find(p=>p.id===vAvatarId):null;
-  if(yp){
-    ctx.font='bold 10px "M PLUS Rounded 1c",sans-serif';
-    const lbl='ゆいこ';
-    const lw=ctx.measureText(lbl).width+14;
-    const lx=sx-lw/2, ly=sy-68+bob;
-    ctx.fillStyle='rgba(255,255,255,.88)';
-    ctx.beginPath(); ctx.roundRect(lx,ly,lw,17,8); ctx.fill();
-    ctx.fillStyle='#CC0000';
-    ctx.textAlign='center'; ctx.fillText(lbl,sx,ly+12); ctx.textAlign='left';
-  }
+  drawVProtagonist(ctx,sx,sy,bob);
 }
 
 function drawVHUD(){
@@ -3354,6 +3535,7 @@ function drawVHUD(){
 
 function checkVApproach(){
   vHouses.forEach(h=>{ h.near=Math.hypot(vPlayer.wx-(h.wx+0.5),vPlayer.wy-(h.wy+0.5))<2.2; });
+  vNpcs.forEach(n=>{ n.near=Math.hypot(vPlayer.wx-n.wx,vPlayer.wy-n.wy)<2.5; });
   // Garden proximity
   vGardenNear=vGardenPos.some(p=>Math.hypot(vPlayer.wx-p.wx,vPlayer.wy-p.wy)<2.5);
   const gb=document.getElementById('vGardenBtn');
@@ -3432,29 +3614,98 @@ function drawVSky(){
   });
 }
 
+// ── Nurture scene canvas state ──
+let vNurtureMode=false;
+let vNurtureHouseImg=null;
+
+function drawNurtureScene(){
+  const W=vLW, H=vLH;
+  const t=Date.now()/1000;
+  // Sky — same gradient as bat-sky
+  const gSky=vCtx.createLinearGradient(0,0,0,H*.65);
+  gSky.addColorStop(0,'#87CEEB'); gSky.addColorStop(1,'#B0E0FF');
+  vCtx.fillStyle=gSky; vCtx.fillRect(0,0,W,H);
+  // Clouds
+  [[.12,.14,90,28],[.70,.11,70,22],[.42,.22,50,18]].forEach(([rx,ry,cw,ch],i)=>{
+    const dx=Math.sin(t*.5+i*2.1)*12;
+    const cx=W*rx+dx, cy=H*ry;
+    vCtx.globalAlpha=.82; vCtx.fillStyle='#fff';
+    vCtx.beginPath(); vCtx.ellipse(cx,cy,cw,ch*.8,0,0,Math.PI*2); vCtx.fill();
+    vCtx.beginPath(); vCtx.ellipse(cx+cw*.3,cy-ch*.5,cw*.55,ch,0,0,Math.PI*2); vCtx.fill();
+    vCtx.beginPath(); vCtx.ellipse(cx-cw*.25,cy-ch*.35,cw*.45,ch*.85,0,0,Math.PI*2); vCtx.fill();
+    vCtx.globalAlpha=1;
+  });
+  // Ground — same gradient as bat-ground
+  const gGnd=vCtx.createLinearGradient(0,H*.65,0,H);
+  gGnd.addColorStop(0,'#7EC850'); gGnd.addColorStop(1,'#5A9E30');
+  vCtx.fillStyle=gGnd; vCtx.fillRect(0,H*.65,W,H*.35);
+  // Ground ellipse platform
+  vCtx.fillStyle='#8FD45A';
+  vCtx.beginPath(); vCtx.ellipse(W/2,H*.68,W*.36,44,0,0,Math.PI*2); vCtx.fill();
+  // Grass detail lines on platform
+  vCtx.strokeStyle='#6BBF3A'; vCtx.lineWidth=1.5;
+  for(let i=-2;i<=2;i++){
+    const gx=W/2+i*28, gy=H*.665;
+    vCtx.beginPath(); vCtx.moveTo(gx,gy); vCtx.lineTo(gx-4,gy-10); vCtx.stroke();
+    vCtx.beginPath(); vCtx.moveTo(gx+6,gy+4); vCtx.lineTo(gx+2,gy-8); vCtx.stroke();
+  }
+  // Decorative flowers (left and right of platform)
+  const sway=Math.sin(t*1.5)*6;
+  vCtx.font=`22px serif`;
+  vCtx.save(); vCtx.translate(W/2-100,H*.65); vCtx.rotate(sway*Math.PI/180); vCtx.fillText('🌸',0,0); vCtx.restore();
+  vCtx.save(); vCtx.translate(W/2+82,H*.65); vCtx.rotate(-sway*Math.PI/180); vCtx.fillText('🌼',0,0); vCtx.restore();
+  // Shadow
+  const bob=Math.sin(t*2)*10;
+  vCtx.save();
+  vCtx.globalAlpha=.22-Math.sin(t*2)*.07;
+  vCtx.fillStyle='#000';
+  const sr=(1-Math.sin(t*2)*.18);
+  vCtx.beginPath(); vCtx.ellipse(W/2,H*.67,42*sr,10*sr,0,0,Math.PI*2); vCtx.fill();
+  vCtx.restore();
+  // Pokémon sprite
+  if(vNurtureHouseImg&&vNurtureHouseImg.complete&&vNurtureHouseImg.naturalWidth>0){
+    const sz=Math.min(W,H)*.4;
+    vCtx.drawImage(vNurtureHouseImg,W/2-sz/2,H*.46-sz+bob,sz,sz);
+  }
+}
+
 function villageLoop(){
   if(!vRunning) return;
-  updateVPlayer(); checkVApproach();
   vCtx.clearRect(0,0,vLW,vLH);
-  drawVSky();
-  drawIsoGround();
-  // Garden plots drawn in iso-depth with objects
-  const gardenObjs=vGardenPos.map((p,i)=>({type:'garden',idx:i,depth:p.wx+p.wy+0.5}));
-  const objects=[
-    ...gardenObjs,
-    ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
-    {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
-  ];
-  objects.sort((a,b)=>a.depth-b.depth);
-  let gardenBatchDone=false;
-  objects.forEach(o=>{
-    if(o.type==='garden'&&!gardenBatchDone){
-      drawGardenSpots(vCtx); gardenBatchDone=true;
-    } else if(o.type==='house') drawIsoHouse(o.obj);
-    else if(o.type==='player') drawIsoPlayer();
-  });
-  drawVHUD();
+  if(vNurtureMode){
+    drawNurtureScene();
+  } else {
+    updateVPlayer(); checkVApproach();
+    drawVSky();
+    drawIsoGround();
+    const gardenObjs=vGardenPos.map((p,i)=>({type:'garden',idx:i,depth:p.wx+p.wy+0.5}));
+    const objects=[
+      ...gardenObjs,
+      ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
+      ...vNpcs.map(n=>({type:'npc',obj:n,depth:n.wx+n.wy})),
+      {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
+    ];
+    objects.sort((a,b)=>a.depth-b.depth);
+    let gardenBatchDone=false;
+    objects.forEach(o=>{
+      if(o.type==='garden'&&!gardenBatchDone){
+        drawGardenSpots(vCtx); gardenBatchDone=true;
+      } else if(o.type==='house') drawIsoHouse(o.obj);
+      else if(o.type==='npc')   drawVNpc(o.obj);
+      else if(o.type==='player') drawIsoPlayer();
+    });
+    drawVHUD();
+  }
   vFrameId=requestAnimationFrame(villageLoop);
+}
+
+function openNpcDialogue(npc){
+  if(vDialogueState) return;
+  const opts=npc.dlg;
+  const lines=[...opts[Math.floor(Math.random()*opts.length)]];
+  vDialogueState={npc,lines,step:0,isNpc:true};
+  renderVDlg();
+  document.getElementById('vDialogue').style.display='flex';
 }
 
 function openVDialogue(house){
@@ -3468,10 +3719,10 @@ function openVDialogue(house){
   }
   // ── Friendship bonus dialogue ──
   try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const fr=loadFr();
     const lv=fr[house.data.id]||0;
-    if(lv>=3) lines.push('（きのみ、ありがとう！　だいすきだよ！🌟）');
-    else if(lv>=1) lines.push('（きのみを　もらったこと、おぼえてるよ！）');
+    if(lv>=60) lines.push('（きのみ、ありがとう！　だいすきだよ！🌟）');
+    else if(lv>=20) lines.push('（きのみを　もらったこと、おぼえてるよ！）');
   }catch(e){}
   const qData=JSON.parse(localStorage.getItem('villageQuests')||'{}');
   if(vActiveQuest&&vActiveQuest.targetId===house.data.id){
@@ -3488,27 +3739,81 @@ function openVDialogue(house){
     }
   }
   vDialogueState={house,lines,step:0};
+
+  // 育成画面に遷移 — canvasで描画
+  vNurtureMode=true;
+  vNurtureHouseImg=new Image(); vNurtureHouseImg.src=artUrl(house.data.id,false);
+  document.getElementById('vnPokeLabel').textContent=`No.${String(house.data.id).padStart(3,'0')} ${house.data.name}`;
+  const ns=document.getElementById('vNurtureScreen');
+  ns.classList.add('open'); ns.style.display='flex';
+
   renderVDlg();
   document.getElementById('vDialogue').style.display='flex';
 }
 
 function renderVDlg(){
   if(!vDialogueState) return;
-  const {house,lines,step}=vDialogueState;
-  // Friendship hearts
-  let hearts='';
-  try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
-    const lv=Math.min(fr[house.data.id]||0,5);
-    if(lv>0) hearts=' '+'♥'.repeat(lv);
-  }catch(e){}
-  document.getElementById('vdName').textContent=house.data.name+hearts;
+  const {lines,step,isNpc,npc,house}=vDialogueState;
+
+  // NPCの場合はシンプル表示
+  if(isNpc){
+    document.getElementById('vdName').innerHTML=`<span>${npc.name}</span>`;
+    document.getElementById('vdGaugeFill').style.width='0%';
+    document.getElementById('vdGaugeTxt').textContent='';
+    document.getElementById('vdFav').style.display='none';
+    document.getElementById('vdBag').textContent='';
+    document.getElementById('vdText').textContent=lines[step];
+    const last=step>=lines.length-1;
+    document.getElementById('vdNext').style.display=last?'none':'';
+    document.getElementById('vdChoices').innerHTML=last
+      ?`<button class="vd-choice back" onclick="closeVDlg()">👋 おわり</button>`
+      :`<button class="vd-choice next" onclick="advanceVDlg()">つぎへ ▶</button>`;
+    return;
+  }
+
+  const id=house.data.id;
+
+  // なつき度ゲージ
+  const fr=loadFr();
+  const lv=fr[id]||0;
+  const heartCount=Math.min(Math.floor(lv/20),5);
+  const hearts=heartCount>0?' '+'♥'.repeat(heartCount):'';
+  document.getElementById('vdName').innerHTML=`No.${String(id).padStart(3,'0')} <span>${house.data.name}${hearts}</span>`;
+  document.getElementById('vdGaugeFill').style.width=lv+'%';
+  document.getElementById('vdGaugeTxt').textContent='なつき度 '+lv+'/100';
+
+  // 好みのきのみ表示
+  const known=loadKnown();
+  const fav=getFavBerry(id);
+  const favEl=document.getElementById('vdFav');
+  const favText=known[id]?BERRY_ICON[fav]+'　好きなきのみ: '+fav:lv>=30?'💭 好みを聞いてみよう…':'';
+  favEl.textContent=favText;
+  favEl.style.display=favText?'inline-block':'none';
+
+  // バッグ
+  const bag=loadBag();
+  const bagStr=BERRY_NAMES.filter(n=>bag[n]>0).map(n=>BERRY_ICON[n]+'×'+bag[n]).join('  ');
+  document.getElementById('vdBag').textContent=bagStr?'バッグ: '+bagStr:'';
+
   document.getElementById('vdText').textContent=lines[step];
   const last=step>=lines.length-1;
   document.getElementById('vdNext').style.display=last?'none':'';
-  document.getElementById('vdChoices').innerHTML=last
-    ?`<button class="vd-choice" onclick="closeVDlg()">おわり 👋</button>`
-    :`<button class="vd-choice" onclick="advanceVDlg()">つぎへ ▶</button>`;
+
+  if(last){
+    const canAsk=lv>=30&&!known[id];
+    let btns=BERRY_NAMES.map(n=>{
+      const cnt=bag[n]||0;
+      const isFav=known[id]&&n===fav;
+      const label=BERRY_ICON[n]+(isFav?'★':'')+' '+(cnt>0?'×'+cnt:'なし');
+      return `<button class="vd-choice berry" onclick="giveVBerry(vDialogueState.house,'${n}')" ${cnt===0?'disabled':''}>${label}</button>`;
+    }).join('');
+    if(canAsk) btns+=`<button class="vd-choice ask" onclick="askVFavorite(vDialogueState.house)">🌸 好みを聞く</button>`;
+    btns+=`<button class="vd-choice back" onclick="closeVNurture()">👋 もどる</button>`;
+    document.getElementById('vdChoices').innerHTML=btns;
+  } else {
+    document.getElementById('vdChoices').innerHTML=
+      `<button class="vd-choice next" onclick="advanceVDlg()">つぎへ ▶</button>`;
+  }
 }
 
 function advanceVDlg(){
@@ -3521,6 +3826,69 @@ function advanceVDlg(){
 function closeVDlg(){
   vDialogueState=null;
   document.getElementById('vDialogue').style.display='none';
+}
+
+function closeVNurture(){
+  closeVDlg();
+  vNurtureMode=false;
+  const ns=document.getElementById('vNurtureScreen');
+  ns.classList.remove('open');
+  ns.style.display='none';
+}
+
+function giveVBerry(house,berryName){
+  const id=house.data.id;
+  const bag=loadBag();
+  if(!bag[berryName]||bag[berryName]<=0) return;
+  bag[berryName]--;
+  saveBag(bag);
+
+  const fr=loadFr();
+  const known=loadKnown();
+  const fav=getFavBerry(id);
+  const isFav=known[id]&&berryName===fav;
+  const gain=isFav?BERRY_GAIN[berryName]+10:BERRY_GAIN[berryName];
+  fr[id]=Math.min(100,(fr[id]||0)+gain);
+  saveFr(fr);
+
+  const reaction=isFav
+    ?[BERRY_ICON[berryName]+'「やった！だいすき！！」','（なつき度　+'+gain+'　💕）']
+    :[BERRY_ICON[berryName]+'「ありがとう！」','（なつき度　+'+gain+'）'];
+  vDialogueState.lines=reaction;
+  vDialogueState.step=0;
+  renderVDlg();
+
+  // ハートパーティクル
+  const wrap=document.getElementById('vNurtureScreen');
+  const icons=isFav?['💕','💖','✨','🌟']:['💕','💗','✨'];
+  for(let i=0;i<(isFav?5:3);i++){
+    setTimeout(()=>{
+      const h=document.createElement('div');
+      h.className='vn-heart';
+      h.textContent=icons[Math.floor(Math.random()*icons.length)];
+      h.style.left=(10+Math.random()*80)+'%';
+      h.style.top=(20+Math.random()*40)+'%';
+      wrap.appendChild(h);
+      setTimeout(()=>h.remove(),1900);
+    },i*160);
+  }
+}
+
+function askVFavorite(house){
+  const id=house.data.id;
+  const fav=getFavBerry(id);
+  const known=loadKnown();
+  known[id]=true;
+  saveKnown(known);
+  const fr=loadFr();
+  fr[id]=Math.min(100,(fr[id]||0)+3);
+  saveFr(fr);
+  vDialogueState.lines=[
+    '「…'+fav+'、かな。」',
+    '（好みのきのみが　わかった！'+BERRY_ICON[fav]+'）'
+  ];
+  vDialogueState.step=0;
+  renderVDlg();
 }
 
 function showVSelector(){
@@ -3570,7 +3938,11 @@ function selectVAvatar(id){
 }
 
 function startVillage(){
+  document.getElementById('vSelector').style.display='none';
+  document.getElementById('vCanvas').style.display='block';
+  document.getElementById('vChangeBtn').style.display='';
   buildVHouses();
+  buildVNpcs();
   resizeVCanvas();
   computeGardenPos();
   loadGarden(); autoPlantGarden(); tickGarden();
@@ -3699,13 +4071,21 @@ function harvestSlot(i){
   if(slot.state!=='grown') return;
   const th=AREA_THEMES[slot.type]||AREA_THEMES.normal;
   const msg=`${th.icon}${TNAMES[slot.type]||''}の　きのみを　しゅうかくした！`;
-  // Boost friendship for matching-type Pokémon
+  // Boost friendship for matching-type Pokémon + add berry to bag
   try{
-    const fr=JSON.parse(localStorage.getItem('pkmFriendship')||'{}');
+    const fr=loadFr();
     vHouses.filter(h=>h.data.types[0]===slot.type).forEach(h=>{
-      fr[h.data.id]=(fr[h.data.id]||0)+1;
+      fr[h.data.id]=Math.min(100,(fr[h.data.id]||0)+5);
     });
-    localStorage.setItem('pkmFriendship',JSON.stringify(fr));
+    saveFr(fr);
+    // タイプによってきのみをバッグに追加
+    const typeToberry={'grass':'オレンのみ','water':'オレンのみ','normal':'オレンのみ',
+      'flying':'オレンのみ','ice':'オレンのみ','fire':'ラムのみ','electric':'ラムのみ',
+      'psychic':'ラムのみ','fairy':'ラムのみ','bug':'ラムのみ'};
+    const harvestedBerry=typeToberry[slot.type]||'ヤチェのみ';
+    const bag=loadBag();
+    bag[harvestedBerry]=(bag[harvestedBerry]||0)+2;
+    saveBag(bag);
   }catch(e){}
   // Re-plant for next cycle
   slot.state='planted'; slot.wateredAt=0;
@@ -3733,6 +4113,61 @@ function renderGardenPanel(){
       ${btn}
     </div>`;
   }).join('');
+}
+
+function buildVNpcs(){
+  const areaRows=Math.ceil(Math.max(1,vAreas.length)/AREA_COLS);
+  const totalW=AREA_COLS*(AREA_W+AREA_GAP);
+  const totalH=areaRows*(AREA_H+AREA_GAP);
+  // 家と被らない固定オフセット位置
+  const offsets=[
+    {dx:-2, dy:-2},
+    {dx:totalW+1, dy:2},
+    {dx:-2, dy:totalH+1},
+    {dx:totalW+1, dy:totalH},
+    {dx:totalW/2, dy:-3},
+  ];
+  vNpcs=V_NPC_DATA.map((d,i)=>{
+    const img=new Image(); img.src=d.src;
+    const off=offsets[i]||{dx:i*4,dy:-3};
+    return {
+      ...d, img,
+      wx: AREA_COLS*(AREA_W+AREA_GAP)/2 + off.dx,
+      wy: off.dy,
+      near: false,
+    };
+  });
+}
+
+function drawVNpc(npc){
+  const {sx,sy}=isoToScreen(npc.wx,npc.wy);
+  const bob=Math.sin(Date.now()*.002+npc.wx)*4;
+  const sz=54;
+
+  // 影
+  vCtx.save();
+  vCtx.globalAlpha=0.18;
+  vCtx.fillStyle='#000';
+  vCtx.beginPath(); vCtx.ellipse(sx,sy+4,18,5,0,0,Math.PI*2); vCtx.fill();
+  vCtx.restore();
+
+  // スプライト
+  if(npc.img&&npc.img.complete&&npc.img.naturalWidth>0){
+    const aspect=npc.img.naturalHeight/npc.img.naturalWidth||1;
+    const w=sz, h=sz*aspect;
+    vCtx.drawImage(npc.img,sx-w/2,sy-h+bob,w,h);
+  }
+
+  // 近づいたら名前ラベル
+  if(npc.near){
+    vCtx.font='bold 11px "M PLUS Rounded 1c",sans-serif';
+    const lw=vCtx.measureText(npc.name).width+14;
+    const lx=sx-lw/2, ly=sy-72+bob;
+    vCtx.fillStyle='rgba(255,255,255,.9)';
+    vCtx.beginPath(); vCtx.roundRect(lx,ly,lw,17,8); vCtx.fill();
+    vCtx.fillStyle='#CC0000';
+    vCtx.textAlign='center'; vCtx.fillText(npc.name,sx,ly+12); vCtx.textAlign='left';
+  }
 }
 
 function computeGardenPos(){
@@ -3854,7 +4289,9 @@ vCanvas.addEventListener('click', e=>{
   const rect=vCanvas.getBoundingClientRect();
   const {wx,wy}=screenToIsoWorld(e.clientX-rect.left, e.clientY-rect.top);
   const near=vHouses.find(h=>Math.hypot(wx-(h.wx+0.5),wy-(h.wy+0.5))<1.2);
-  if(near) openVDialogue(near);
+  if(near){ openVDialogue(near); return; }
+  const nearNpc=vNpcs.find(n=>Math.hypot(wx-n.wx,wy-n.wy)<2.0);
+  if(nearNpc) openNpcDialogue(nearNpc);
 });
 
 window.addEventListener('resize',()=>{ if(currentScreen==='village'&&vRunning) resizeVCanvas(); });
