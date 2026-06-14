@@ -3801,6 +3801,9 @@ function selectVAvatar(id){
 }
 
 function startVillage(){
+  document.getElementById('vSelector').style.display='none';
+  document.getElementById('vCanvas').style.display='block';
+  document.getElementById('vChangeBtn').style.display='';
   buildVHouses();
   resizeVCanvas();
   computeGardenPos();
