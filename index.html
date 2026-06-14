@@ -1950,7 +1950,12 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Enter'||e.key===' '){
       e.preventDefault();
       if(vDialogueState) advanceVDlg();
-      else { const h=vHouses.find(h=>h.near); if(h) openVDialogue(h); }
+      else {
+        const h=vHouses.find(h=>h.near);
+        if(h){ openVDialogue(h); return; }
+        const n=vNpcs.find(n=>n.near);
+        if(n) openNpcDialogue(n);
+      }
     }
   }
 });
@@ -2645,6 +2650,21 @@ let vAreas  = [];
 let vDialogueState = null;
 let vActiveQuest = null;
 let vGardenPos = [];    // [{wx,wy}] — 3 garden plot positions in iso-world
+
+// ── ともだちNPC ──
+const V_NPC_DATA = [
+  { id:'hikoki',  name:'ひこうき',    src:'assets/npcs/hikoki.png',
+    dlg:[['はやいでしょ！','かぜにのれば　どこまでも！','いっしょに　とびたい？']] },
+  { id:'heart',   name:'ハートちゃん', src:'assets/npcs/heart.png',
+    dlg:[['ふわふわ　してるでしょ！','だいすきって　つたえたいな　♥','きみのことも　すきだよ！']] },
+  { id:'moja',    name:'モジャ',      src:'assets/npcs/moja.png',
+    dlg:[['（ビンのなかから　じっとみてくる）','…もじゃ…','（なにかいいたそう）']] },
+  { id:'potato',  name:'ポテトさん',   src:'assets/npcs/potato.png',
+    dlg:[['はなが　とれた！','みつけたら　かえしてね！','ぼうしも　どこかに…']] },
+  { id:'soldier', name:'ヘイタイ',    src:'assets/npcs/soldier.png',
+    dlg:[['きをつけ！','このむらを　まもっているぞ！','あやしいやつは　とおさん！']] },
+];
+let vNpcs = [];
 let vGardenNear = false;
 
 // ── Isometric engine ──
@@ -3454,6 +3474,7 @@ function drawVHUD(){
 
 function checkVApproach(){
   vHouses.forEach(h=>{ h.near=Math.hypot(vPlayer.wx-(h.wx+0.5),vPlayer.wy-(h.wy+0.5))<2.2; });
+  vNpcs.forEach(n=>{ n.near=Math.hypot(vPlayer.wx-n.wx,vPlayer.wy-n.wy)<2.5; });
   // Garden proximity
   vGardenNear=vGardenPos.some(p=>Math.hypot(vPlayer.wx-p.wx,vPlayer.wy-p.wy)<2.5);
   const gb=document.getElementById('vGardenBtn');
@@ -3600,6 +3621,7 @@ function villageLoop(){
     const objects=[
       ...gardenObjs,
       ...vHouses.map(h=>({type:'house',obj:h,depth:h.wx+h.wy})),
+      ...vNpcs.map(n=>({type:'npc',obj:n,depth:n.wx+n.wy})),
       {type:'player',obj:vPlayer,depth:vPlayer.wx+vPlayer.wy}
     ];
     objects.sort((a,b)=>a.depth-b.depth);
@@ -3608,11 +3630,21 @@ function villageLoop(){
       if(o.type==='garden'&&!gardenBatchDone){
         drawGardenSpots(vCtx); gardenBatchDone=true;
       } else if(o.type==='house') drawIsoHouse(o.obj);
+      else if(o.type==='npc')   drawVNpc(o.obj);
       else if(o.type==='player') drawIsoPlayer();
     });
     drawVHUD();
   }
   vFrameId=requestAnimationFrame(villageLoop);
+}
+
+function openNpcDialogue(npc){
+  if(vDialogueState) return;
+  const opts=npc.dlg;
+  const lines=[...opts[Math.floor(Math.random()*opts.length)]];
+  vDialogueState={npc,lines,step:0,isNpc:true};
+  renderVDlg();
+  document.getElementById('vDialogue').style.display='flex';
 }
 
 function openVDialogue(house){
@@ -3660,7 +3692,24 @@ function openVDialogue(house){
 
 function renderVDlg(){
   if(!vDialogueState) return;
-  const {house,lines,step}=vDialogueState;
+  const {lines,step,isNpc,npc,house}=vDialogueState;
+
+  // NPCの場合はシンプル表示
+  if(isNpc){
+    document.getElementById('vdName').innerHTML=`<span>${npc.name}</span>`;
+    document.getElementById('vdGaugeFill').style.width='0%';
+    document.getElementById('vdGaugeTxt').textContent='';
+    document.getElementById('vdFav').style.display='none';
+    document.getElementById('vdBag').textContent='';
+    document.getElementById('vdText').textContent=lines[step];
+    const last=step>=lines.length-1;
+    document.getElementById('vdNext').style.display=last?'none':'';
+    document.getElementById('vdChoices').innerHTML=last
+      ?`<button class="vd-choice back" onclick="closeVDlg()">👋 おわり</button>`
+      :`<button class="vd-choice next" onclick="advanceVDlg()">つぎへ ▶</button>`;
+    return;
+  }
+
   const id=house.data.id;
 
   // なつき度ゲージ
@@ -3832,6 +3881,7 @@ function startVillage(){
   document.getElementById('vCanvas').style.display='block';
   document.getElementById('vChangeBtn').style.display='';
   buildVHouses();
+  buildVNpcs();
   resizeVCanvas();
   computeGardenPos();
   loadGarden(); autoPlantGarden(); tickGarden();
@@ -4004,6 +4054,61 @@ function renderGardenPanel(){
   }).join('');
 }
 
+function buildVNpcs(){
+  const areaRows=Math.ceil(Math.max(1,vAreas.length)/AREA_COLS);
+  const totalW=AREA_COLS*(AREA_W+AREA_GAP);
+  const totalH=areaRows*(AREA_H+AREA_GAP);
+  // 家と被らない固定オフセット位置
+  const offsets=[
+    {dx:-2, dy:-2},
+    {dx:totalW+1, dy:2},
+    {dx:-2, dy:totalH+1},
+    {dx:totalW+1, dy:totalH},
+    {dx:totalW/2, dy:-3},
+  ];
+  vNpcs=V_NPC_DATA.map((d,i)=>{
+    const img=new Image(); img.src=d.src;
+    const off=offsets[i]||{dx:i*4,dy:-3};
+    return {
+      ...d, img,
+      wx: AREA_COLS*(AREA_W+AREA_GAP)/2 + off.dx,
+      wy: off.dy,
+      near: false,
+    };
+  });
+}
+
+function drawVNpc(npc){
+  const {sx,sy}=isoToScreen(npc.wx,npc.wy);
+  const bob=Math.sin(Date.now()*.002+npc.wx)*4;
+  const sz=54;
+
+  // 影
+  vCtx.save();
+  vCtx.globalAlpha=0.18;
+  vCtx.fillStyle='#000';
+  vCtx.beginPath(); vCtx.ellipse(sx,sy+4,18,5,0,0,Math.PI*2); vCtx.fill();
+  vCtx.restore();
+
+  // スプライト
+  if(npc.img&&npc.img.complete&&npc.img.naturalWidth>0){
+    const aspect=npc.img.naturalHeight/npc.img.naturalWidth||1;
+    const w=sz, h=sz*aspect;
+    vCtx.drawImage(npc.img,sx-w/2,sy-h+bob,w,h);
+  }
+
+  // 近づいたら名前ラベル
+  if(npc.near){
+    vCtx.font='bold 11px "M PLUS Rounded 1c",sans-serif';
+    const lw=vCtx.measureText(npc.name).width+14;
+    const lx=sx-lw/2, ly=sy-72+bob;
+    vCtx.fillStyle='rgba(255,255,255,.9)';
+    vCtx.beginPath(); vCtx.roundRect(lx,ly,lw,17,8); vCtx.fill();
+    vCtx.fillStyle='#CC0000';
+    vCtx.textAlign='center'; vCtx.fillText(npc.name,sx,ly+12); vCtx.textAlign='left';
+  }
+}
+
 function computeGardenPos(){
   // Place 3 soil plots in the inter-column gap between area col 0 and col 1
   const gapX=AREA_W+AREA_GAP/2; // = 11.5
@@ -4123,7 +4228,9 @@ vCanvas.addEventListener('click', e=>{
   const rect=vCanvas.getBoundingClientRect();
   const {wx,wy}=screenToIsoWorld(e.clientX-rect.left, e.clientY-rect.top);
   const near=vHouses.find(h=>Math.hypot(wx-(h.wx+0.5),wy-(h.wy+0.5))<1.2);
-  if(near) openVDialogue(near);
+  if(near){ openVDialogue(near); return; }
+  const nearNpc=vNpcs.find(n=>Math.hypot(wx-n.wx,wy-n.wy)<2.0);
+  if(nearNpc) openNpcDialogue(nearNpc);
 });
 
 window.addEventListener('resize',()=>{ if(currentScreen==='village'&&vRunning) resizeVCanvas(); });
