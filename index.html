@@ -436,6 +436,7 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vd-choice.ask{background:linear-gradient(135deg,#FFB6C1,#FF7BAC);box-shadow:0 4px 10px rgba(255,107,172,.35)}
 .vd-choice.back{background:linear-gradient(135deg,#89CFF0,#5BA4CF);box-shadow:0 4px 10px rgba(91,164,207,.35)}
 .vd-choice.next{background:linear-gradient(135deg,#B8A9E8,#8B72D4);box-shadow:0 4px 10px rgba(139,114,212,.35)}
+.vd-choice.garden{background:linear-gradient(135deg,#A8D860,#5A9E28);box-shadow:0 4px 10px rgba(90,158,40,.35)}
 .vd-next{position:absolute;bottom:14px;right:18px;color:#ccc;font-size:.75rem;font-weight:900;animation:blink 1s step-end infinite}
 .vd-gauge-row{display:flex;align-items:center;gap:8px;margin:8px 0 6px}
 .vd-gauge-bg{flex:1;height:10px;background:#EEE;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
@@ -475,6 +476,8 @@ footer{background:#0f0f1e;color:rgba(255,255,255,.4);text-align:center;padding:2
 .vg-btn{border:1.5px solid currentColor;background:transparent;font-size:.72rem;font-weight:900;font-family:inherit;padding:6px 8px;cursor:pointer;width:100%;transition:background .15s;letter-spacing:.04em}
 .vg-btn.water{color:#60b8ff;border-color:#3880d0}.vg-btn.water:hover{background:rgba(56,128,208,.2)}
 .vg-btn.harvest{color:#f0d040;border-color:#b89020;animation:harvestPulse 1.2s ease-in-out infinite alternate}
+.vg-plant-btns{display:flex;flex-direction:column;gap:4px;width:100%}
+.vg-btn.plant{color:#a0d860;border-color:#5a9020}.vg-btn.plant:hover{background:rgba(90,144,32,.2)}
 @keyframes harvestPulse{from{box-shadow:none}to{box-shadow:0 0 10px rgba(240,208,64,.4)}}
 .vg-btn.harvest:hover{background:rgba(184,144,32,.25)}
 .vg-close{display:block;width:100%;border:1.5px solid #2a3060;background:transparent;color:#5870b8;font-size:.8rem;font-weight:900;font-family:inherit;padding:9px;cursor:pointer;transition:background .15s,border-color .15s}
@@ -3829,6 +3832,10 @@ function renderVDlg(){
       return `<button class="vd-choice berry" onclick="giveVBerry(vDialogueState.house,'${n}')" ${cnt===0?'disabled':''}>${label}</button>`;
     }).join('');
     if(canAsk) btns+=`<button class="vd-choice ask" onclick="askVFavorite(vDialogueState.house)">🌸 好みを聞く</button>`;
+    if(vDialogueState._favBerry){
+      const fb=vDialogueState._favBerry;
+      btns+=`<button class="vd-choice garden" onclick="closeVNurture();openGarden()">🌱 畑に植えにいく（${BERRY_ICON[fb]}）</button>`;
+    }
     btns+=`<button class="vd-choice back" onclick="closeVNurture()">👋 もどる</button>`;
     document.getElementById('vdChoices').innerHTML=btns;
   } else {
@@ -3905,10 +3912,12 @@ function askVFavorite(house){
   fr[id]=Math.min(100,(fr[id]||0)+3);
   saveFr(fr);
   vDialogueState.lines=[
-    '「…'+fav+'、かな。」',
+    '「…'+fav+'、かな。　そだててくれると　うれしいな！」',
     '（好みのきのみが　わかった！'+BERRY_ICON[fav]+'）'
   ];
   vDialogueState.step=0;
+  // 最後のセリフに「畑に植えにいく」ボタンを差し込む
+  vDialogueState._favBerry=fav;
   renderVDlg();
 }
 
@@ -3966,7 +3975,7 @@ function startVillage(){
   buildVNpcs();
   resizeVCanvas();
   computeGardenPos();
-  loadGarden(); autoPlantGarden(); tickGarden();
+  loadGarden(); tickGarden();
   const areaRows=Math.ceil(Math.max(1,vAreas.length)/AREA_COLS);
   vPlayer.wx=AREA_COLS*(AREA_W+AREA_GAP)/2;
   vPlayer.wy=areaRows>1 ? AREA_H+AREA_GAP/2 : AREA_H+1;
@@ -3998,15 +4007,25 @@ function showVMoveIn(name){
 // ═══════════════════════════════════════════
 const GARDEN_GROW_MS = 8*60*60*1000; // 8 hours real-time
 let vGardenData = [
-  {state:'empty',wateredAt:0,type:null},
-  {state:'empty',wateredAt:0,type:null},
-  {state:'empty',wateredAt:0,type:null},
+  {state:'empty',wateredAt:0,berry:null},
+  {state:'empty',wateredAt:0,berry:null},
+  {state:'empty',wateredAt:0,berry:null},
 ];
 
 function loadGarden(){
   try{
     const s=JSON.parse(localStorage.getItem('pkmGarden')||'null');
-    if(s&&Array.isArray(s)&&s.length===3) vGardenData=s;
+    if(s&&Array.isArray(s)&&s.length===3){
+      // migrate old type-based slots to berry-based
+      const typeToberry={'grass':'オレンのみ','water':'オレンのみ','normal':'オレンのみ',
+        'flying':'オレンのみ','ice':'オレンのみ','fire':'ラムのみ','electric':'ラムのみ',
+        'psychic':'ラムのみ','fairy':'ラムのみ','bug':'ラムのみ'};
+      vGardenData=s.map(slot=>({
+        state:slot.state||'empty',
+        wateredAt:slot.wateredAt||0,
+        berry:slot.berry||(slot.type?typeToberry[slot.type]||'ヤチェのみ':null),
+      }));
+    }
   }catch(e){}
 }
 
@@ -4014,18 +4033,12 @@ function saveGarden(){
   localStorage.setItem('pkmGarden',JSON.stringify(vGardenData));
 }
 
-function autoPlantGarden(){
-  // Assign caught Pokémon types to empty/overdue slots
-  const types=[...new Set([...caught].map(id=>{
-    const p=ALL.find(x=>x.id===id); return p?p.types[0]:null;
-  }).filter(Boolean))];
-  let changed=false;
-  vGardenData.forEach((slot,i)=>{
-    if(slot.state==='empty'&&types[i]){
-      slot.state='planted'; slot.type=types[i]; slot.wateredAt=0; changed=true;
-    }
-  });
-  if(changed) saveGarden();
+function plantBerry(i, berryName){
+  const slot=vGardenData[i];
+  if(slot.state!=='empty') return;
+  slot.state='planted'; slot.berry=berryName; slot.wateredAt=0;
+  saveGarden(); renderGardenPanel();
+  showVMoveIn(BERRY_ICON[berryName]+' '+berryName+'の　たねを　うえた！');
 }
 
 function tickGarden(){
@@ -4047,7 +4060,7 @@ function updateGardenBtn(){
 }
 
 function openGarden(){
-  tickGarden(); autoPlantGarden();
+  tickGarden();
   renderGardenPanel();
   document.getElementById('vGardenPanel').style.display='flex';
 }
@@ -4059,18 +4072,17 @@ function closeGarden(){
 
 function slotIcon(slot){
   if(slot.state==='empty') return '🟫';
-  const th=AREA_THEMES[slot.type]||AREA_THEMES.normal;
   if(slot.state==='planted') return '🌱';
-  if(slot.state==='watered') return '💧';
-  if(slot.state==='grown')   return th.icon||'🍎';
+  if(slot.state==='watered') return '🌿';
+  if(slot.state==='grown')   return BERRY_ICON[slot.berry]||'🍎';
   return '🌱';
 }
 
 function slotStatusText(slot){
   if(slot.state==='empty') return 'あきスペース';
-  const tn=TNAMES[slot.type]||slot.type||'';
-  if(slot.state==='planted') return tn+'の　たね';
-  if(slot.state==='grown')   return 'みがついた！';
+  const bn=slot.berry||'きのみ';
+  if(slot.state==='planted') return bn+'の　なえ';
+  if(slot.state==='grown')   return bn+'　みがついた！';
   if(slot.state==='watered'){
     const rem=Math.max(0,GARDEN_GROW_MS-(Date.now()-slot.wateredAt));
     const h=Math.floor(rem/3600000), m=Math.floor((rem%3600000)/60000);
@@ -4090,26 +4102,12 @@ function waterSlot(i){
 function harvestSlot(i){
   const slot=vGardenData[i];
   if(slot.state!=='grown') return;
-  const th=AREA_THEMES[slot.type]||AREA_THEMES.normal;
-  const msg=`${th.icon}${TNAMES[slot.type]||''}の　きのみを　しゅうかくした！`;
-  // Boost friendship for matching-type Pokémon + add berry to bag
-  try{
-    const fr=loadFr();
-    vHouses.filter(h=>h.data.types[0]===slot.type).forEach(h=>{
-      fr[h.data.id]=Math.min(100,(fr[h.data.id]||0)+5);
-    });
-    saveFr(fr);
-    // タイプによってきのみをバッグに追加
-    const typeToberry={'grass':'オレンのみ','water':'オレンのみ','normal':'オレンのみ',
-      'flying':'オレンのみ','ice':'オレンのみ','fire':'ラムのみ','electric':'ラムのみ',
-      'psychic':'ラムのみ','fairy':'ラムのみ','bug':'ラムのみ'};
-    const harvestedBerry=typeToberry[slot.type]||'ヤチェのみ';
-    const bag=loadBag();
-    bag[harvestedBerry]=(bag[harvestedBerry]||0)+2;
-    saveBag(bag);
-  }catch(e){}
-  // Re-plant for next cycle
-  slot.state='planted'; slot.wateredAt=0;
+  const berry=slot.berry||'オレンのみ';
+  const bag=loadBag();
+  bag[berry]=(bag[berry]||0)+1;
+  saveBag(bag);
+  const msg=`${BERRY_ICON[berry]} ${berry}を　しゅうかくした！（バッグに　+1）`;
+  slot.state='empty'; slot.berry=null; slot.wateredAt=0;
   saveGarden(); renderGardenPanel();
   showVMoveIn(msg);
 }
@@ -4121,18 +4119,27 @@ function renderGardenPanel(){
     const icon=slotIcon(slot);
     const status=slotStatusText(slot);
     const cls=[slot.state==='grown'?'grown':slot.state==='watered'?'watered':''].filter(Boolean).join(' ');
-    let btn='';
-    if(slot.state==='planted')
-      btn=`<button class="vg-btn water" onclick="waterSlot(${i})">💧 みずをあげる</button>`;
-    else if(slot.state==='grown')
-      btn=`<button class="vg-btn harvest" onclick="harvestSlot(${i})">🍎 しゅうかく！</button>`;
-    else if(slot.state==='watered')
-      btn=`<div class="vg-slot-timer">${status}</div>`;
-    return `<div class="vg-slot ${cls}">
-      <div class="vg-slot-icon">${icon}</div>
-      <div class="vg-slot-name">${slot.state==='watered'?'':(status)}</div>
-      ${btn}
-    </div>`;
+    let inner='';
+    if(slot.state==='empty'){
+      inner=`<div class="vg-slot-icon">${icon}</div>
+        <div class="vg-slot-name">うえるきのみを えらぼう</div>
+        <div class="vg-plant-btns">
+          ${BERRY_NAMES.map(n=>`<button class="vg-btn plant" onclick="plantBerry(${i},'${n}')">${BERRY_ICON[n]} ${n}</button>`).join('')}
+        </div>`;
+    } else if(slot.state==='planted'){
+      inner=`<div class="vg-slot-icon">${icon}</div>
+        <div class="vg-slot-name">${status}</div>
+        <button class="vg-btn water" onclick="waterSlot(${i})">💧 みずをあげる</button>`;
+    } else if(slot.state==='watered'){
+      inner=`<div class="vg-slot-icon">${icon}</div>
+        <div class="vg-slot-name"></div>
+        <div class="vg-slot-timer">${status}</div>`;
+    } else if(slot.state==='grown'){
+      inner=`<div class="vg-slot-icon">${icon}</div>
+        <div class="vg-slot-name">${status}</div>
+        <button class="vg-btn harvest" onclick="harvestSlot(${i})">🍎 しゅうかく！</button>`;
+    }
+    return `<div class="vg-slot ${cls}">${inner}</div>`;
   }).join('');
 }
 
@@ -4249,17 +4256,18 @@ function drawGardenSpots(ctx){
       ctx.restore();
     }
     if(slot.state==='grown'){
-      const th=AREA_THEMES[slot.type]||AREA_THEMES.normal;
+      const BERRY_COL={'オレンのみ':'#ff8c42','ラムのみ':'#f5e642','ヤチェのみ':'#6ab0f5'};
+      const fruitCol=BERRY_COL[slot.berry]||'#ff8c42';
       // Stem + leaves
       ctx.strokeStyle='#2e7d32'; ctx.lineWidth=2.5;
       ctx.beginPath(); ctx.moveTo(sx,mid.sy); ctx.lineTo(sx,mid.sy-22); ctx.stroke();
       ctx.fillStyle='#388e3c';
       ctx.beginPath(); ctx.ellipse(sx-7,mid.sy-20,8,5,-.5,0,Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(sx+6,mid.sy-24,7,4,.4,0,Math.PI*2); ctx.fill();
-      // Fruit (type color, pulsing)
+      // Fruit (berry color, pulsing)
       const pulse=0.85+Math.sin(Date.now()*.004+i*.8)*.15;
       ctx.save(); ctx.globalAlpha=pulse;
-      ctx.fillStyle=th.border;
+      ctx.fillStyle=fruitCol;
       ctx.beginPath(); ctx.arc(sx,mid.sy-28,9,0,Math.PI*2); ctx.fill();
       ctx.fillStyle='rgba(255,255,255,.38)';
       ctx.beginPath(); ctx.arc(sx-3,mid.sy-32,3.5,0,Math.PI*2); ctx.fill();
