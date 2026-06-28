@@ -3984,7 +3984,7 @@ function startVillage(){
   if(vFrameId) cancelAnimationFrame(vFrameId);
   vFrameId=requestAnimationFrame(villageLoop);
   const gb=document.getElementById('vGardenBtn');
-  if(gb){ gb.style.display=''; updateGardenBtn(); }
+  if(gb){ gb.style.display='block'; updateGardenBtn(); }
 }
 
 function stopVillage(){
